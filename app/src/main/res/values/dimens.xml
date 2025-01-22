@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="title_text">22sp</dimen>
+    <dimen name="main_screen_radius_bt">16dp</dimen>
+
+    <dimen name="main_screen_text">22sp</dimen>
+
+    <dimen name="settings_screen_text">16sp</dimen>
+    <dimen name="settings_screen_bt_size">24dp</dimen>
+
+    <dimen name="settings_screen_pad_start">16dp</dimen>
+    <dimen name="settings_screen_pad_end">12dp</dimen>
+    <dimen name="settings_screen_marg_top">21dp</dimen>
+    <dimen name="settings_screen_marg_bottom">21dp</dimen>
+</resources>

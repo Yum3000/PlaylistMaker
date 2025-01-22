@@ -1,19 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="@color/main_screen_bg"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="28dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="14dp"
+        android:paddingBottom="16dp"
+        android:text="@string/app_name"
+        android:textColor="@color/main_screen_title"
+        android:textSize="@dimen/title_text"
+        android:textStyle="normal" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/main_screen_bt_bg"
+        android:text="@string/search_bt"
+        android:textAllCaps="false"
+        android:textColor="@color/main_screen_bt_text"
+        android:textSize="@dimen/main_screen_text"
+        android:contentDescription="@string/search_bt_desc"
+        app:cornerRadius="@dimen/main_screen_radius_bt"
+        app:icon="@drawable/search_icon"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/main_screen_icon"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/main_screen_bt_bg"
+        android:text="@string/media_bt"
+        android:textAllCaps="false"
+        android:textColor="@color/main_screen_bt_text"
+        android:textSize="@dimen/main_screen_text"
+        android:contentDescription="@string/media_bt_desc"
+        app:cornerRadius="@dimen/main_screen_radius_bt"
+        app:icon="@drawable/media_icon"
+        app:iconGravity="textStart"
+        app:iconTint="@color/main_screen_icon"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/main_screen_bt_bg"
+        android:text="@string/settings_bt"
+        android:textAllCaps="false"
+        android:textColor="@color/main_screen_bt_text"
+        android:textSize="@dimen/main_screen_text"
+        android:contentDescription="@string/settings_bt_desc"
+        app:cornerRadius="@dimen/main_screen_radius_bt"
+        app:icon="@drawable/settings_icon"
+        app:iconGravity="textStart"
+        app:iconTint="@color/main_screen_icon"/>
+
+</LinearLayout>
