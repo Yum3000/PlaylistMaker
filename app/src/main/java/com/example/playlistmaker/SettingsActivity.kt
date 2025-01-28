@@ -14,5 +14,6 @@ class SettingsActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             finish()
         }
+
     }
 }
