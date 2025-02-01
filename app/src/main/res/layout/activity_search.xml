@@ -53,8 +53,8 @@
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="12dp"
             android:src="@drawable/clear_input_icon16"
-            android:contentDescription="@string/clear_input"/>
-            <!-->android:visibility="gone" /> <!-->
+            android:contentDescription="@string/clear_input"
+            android:visibility="gone" />
 
     </FrameLayout>
 
