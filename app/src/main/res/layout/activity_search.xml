@@ -40,7 +40,7 @@
             android:hint="@string/search_text"
             android:autofillHints="@string/search_autofillhint"
             android:textColor="@color/black"
-            android:textColorHint="@color/grey"
+            android:textColorHint="@color/search_screen_hint"
             android:background="@android:color/transparent"
             android:maxLines="1"
             android:maxLength="30"
@@ -53,8 +53,8 @@
             android:layout_gravity="end|center_vertical"
             android:layout_marginEnd="12dp"
             android:src="@drawable/clear_input_icon16"
-            android:contentDescription="@string/clear_input"
-            android:visibility="gone" />
+            android:contentDescription="@string/clear_input"/>
+            <!-->android:visibility="gone" /> <!-->
 
     </FrameLayout>
 
