@@ -71,12 +71,7 @@ class SettingsActivity : AppCompatActivity() {
         supportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
         supportIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
         supportIntent.putExtra(Intent.EXTRA_TEXT, body)
-
-        if (supportIntent.resolveActivity(packageManager) != null) {
-            startActivity(supportIntent)
-        } else {
-            Toast.makeText(this, getString(R.string.no_email_clients), Toast.LENGTH_SHORT).show()
-        }
+        startActivity(supportIntent)
     }
 
     private fun openUserAgreement() {

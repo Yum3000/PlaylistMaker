@@ -12,7 +12,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import android.view.inputmethod.InputMethodManager
 
 class SearchActivity : AppCompatActivity() {
-    private var inputedText: String = SEARCH_DEFAULT
+    private var inputedText: String = ""
     private var searchLineFocus: Boolean = false
     private lateinit var inputSearchLine: EditText
 
@@ -28,7 +28,7 @@ class SearchActivity : AppCompatActivity() {
         inputSearchLine = findViewById<EditText>(R.id.search_edit_text)
 
         if (savedInstanceState != null) {
-            inputedText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEFAULT)
+            inputedText = savedInstanceState.getString(SEARCH_TEXT, "")
             searchLineFocus = savedInstanceState.getBoolean(SEARCH_FOCUS, false)
         }
 
@@ -75,7 +75,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        inputedText = savedInstanceState.getString(SEARCH_TEXT, SEARCH_DEFAULT)
+        inputedText = savedInstanceState.getString(SEARCH_TEXT, "")
         inputSearchLine.setText(inputedText)
         searchLineFocus = savedInstanceState.getBoolean(SEARCH_FOCUS, false)
 
@@ -89,7 +89,6 @@ class SearchActivity : AppCompatActivity() {
 
     private companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val SEARCH_DEFAULT = ""
         const val SEARCH_FOCUS = "SEARCH_FOCUS"
     }
 }

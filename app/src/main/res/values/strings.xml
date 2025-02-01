@@ -22,7 +22,6 @@
     <string name="support_email">fooco800@gmail.com</string>
     <string name="support_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="support_body">Спасибо разработчикам и разработчицам за крутое приложение!</string>
-    <string name="no_email_clients">Нет доступных почтовых приложений</string>
     <string name="practicum_offer">https://yandex.ru/legal/practicum_offer/</string>
 
     <string name="search_text">Поиск</string>
