@@ -15,35 +15,20 @@
         app:navigationIcon="@drawable/arrow_back_icon">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/settings_bt"
-            android:textSize="@dimen/title_text"
-            android:textColor="@color/settings_screen_toolbar"
-            android:textStyle="normal"/>
+            style="@style/ToolBarTitle"/>
 
     </com.google.android.material.appbar.MaterialToolbar>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/settings_screen_pad_start"
-        android:paddingEnd="@dimen/settings_screen_pad_end"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        style="@style/SettingsLayoutForButton">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/settings_screen_marg_top"
-            android:layout_marginBottom="@dimen/settings_screen_marg_bottom"
             android:text="@string/dark_theme"
-            android:textColor="@color/settings_screen_text"
-            android:textFontWeight="500"
-            android:textSize="@dimen/settings_screen_text"/>
+            style="@style/SettingsTextViewForButton"/>
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="false"
@@ -55,25 +40,15 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/settings_screen_pad_start"
-        android:paddingEnd="@dimen/settings_screen_pad_end"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        style="@style/SettingsLayoutForButton">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/settings_screen_marg_top"
-            android:layout_marginBottom="@dimen/settings_screen_marg_bottom"
+            android:id="@+id/share_textview"
             android:text="@string/share_bt"
-            android:textColor="@color/settings_screen_text"
-            android:textFontWeight="500"
-            android:textSize="@dimen/settings_screen_text"/>
+            style="@style/SettingsTextViewForButton"/>
 
         <ImageView
+            android:id="@+id/share_icon"
             android:layout_width="@dimen/settings_screen_bt_size"
             android:layout_height="@dimen/settings_screen_bt_size"
             android:src="@drawable/share_icon"
@@ -83,25 +58,15 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/settings_screen_pad_start"
-        android:paddingEnd="@dimen/settings_screen_pad_end"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        style="@style/SettingsLayoutForButton">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/settings_screen_marg_top"
-            android:layout_marginBottom="@dimen/settings_screen_marg_bottom"
+            android:id="@+id/support_textview"
             android:text="@string/support_bt"
-            android:textColor="@color/settings_screen_text"
-            android:textFontWeight="500"
-            android:textSize="@dimen/settings_screen_text"/>
+            style="@style/SettingsTextViewForButton"/>
 
         <ImageView
+            android:id="@+id/support_icon"
             android:layout_width="@dimen/settings_screen_bt_size"
             android:layout_height="@dimen/settings_screen_bt_size"
             android:src="@drawable/support_icon"
@@ -111,25 +76,15 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/settings_screen_pad_start"
-        android:paddingEnd="@dimen/settings_screen_pad_end"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        style="@style/SettingsLayoutForButton">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/settings_screen_marg_top"
-            android:layout_marginBottom="@dimen/settings_screen_marg_bottom"
+            android:id="@+id/user_agreement_textview"
             android:text="@string/user_agreement"
-            android:textColor="@color/settings_screen_text"
-            android:textFontWeight="500"
-            android:textSize="@dimen/settings_screen_text"/>
+            style="@style/SettingsTextViewForButton"/>
 
         <ImageView
+            android:id="@+id/user_agreement_icon"
             android:layout_width="@dimen/settings_screen_bt_size"
             android:layout_height="@dimen/settings_screen_bt_size"
             android:src="@drawable/arrow_forward_icon"

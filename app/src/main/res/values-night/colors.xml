@@ -21,4 +21,6 @@
     <color name="settings_screen_sw_thumb">@color/blue</color>
     <color name="settings_screen_sw_track">@color/light_blue</color>
 
+    <color name="search_screen_hint">@color/dark_grey</color>
+
 </resources>
