@@ -28,5 +28,9 @@
     <color name="settings_screen_sw_track">@color/light_grey</color>
 
     <color name="search_screen_hint">@color/grey</color>
+    <color name="search_screen_track_bg">@color/white</color>
+    <color name="search_screen_track_title">@color/dark_grey</color>
+    <color name="search_screen_track_desc">@color/grey</color>
+    <color name="search_screen_arrow_icon">@color/grey</color>
 
 </resources>

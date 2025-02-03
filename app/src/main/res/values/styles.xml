@@ -45,4 +45,16 @@
         <item name="android:textColor">@color/settings_screen_toolbar</item>
         <item name="android:textFontWeight">500</item>
     </style>
+    
+    <style name="SearchScreenTrackText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>>
+        <item name="android:textColor">@color/search_screen_track_desc</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        
+    </style>
 </resources>

@@ -27,4 +27,7 @@
     <string name="search_text">Поиск</string>
     <string name="search_autofillhint">track/artist</string>
     <string name="clear_input">Очистить ввод</string>
+
+    <string name="track_cover">Обложка трека</string>
+    <string name="track_select">Перейти к треку</string>
 </resources>
