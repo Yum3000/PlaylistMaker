@@ -39,6 +39,7 @@
             android:drawablePadding="8dp"
             android:hint="@string/search_text"
             android:autofillHints="@string/search_autofillhint"
+            android:textCursorDrawable="@drawable/search_cursor"
             android:textColor="@color/black"
             android:textColorHint="@color/search_screen_hint"
             android:background="@android:color/transparent"
