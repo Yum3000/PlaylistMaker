@@ -27,4 +27,6 @@
     <color name="search_screen_track_desc">@color/white</color>
     <color name="search_screen_arrow_icon">@color/white</color>
 
+    <color name="search_screen_ph_bt">@color/white</color>
+
 </resources>

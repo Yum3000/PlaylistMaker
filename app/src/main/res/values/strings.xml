@@ -30,4 +30,8 @@
 
     <string name="track_cover">Обложка трека</string>
     <string name="track_select">Перейти к треку</string>
+
+    <string name="nothings_found">Ничего не нашлось</string>
+    <string name="smth_wrong">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="refresh">Обновить</string>
 </resources>
