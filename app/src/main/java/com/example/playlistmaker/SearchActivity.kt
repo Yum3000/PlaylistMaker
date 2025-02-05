@@ -20,18 +20,10 @@ import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 class SearchActivity : AppCompatActivity() {
 
-    private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://itunes.apple.com/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val musicAPIService = retrofit.create<MusicAPIService>()
+    private val musicAPIService = RetrofitClient.musicAPIService
 
     private lateinit var placeholderMessage: TextView
     private lateinit var trackList: RecyclerView
