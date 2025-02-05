@@ -17,12 +17,13 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackCover: ImageView = itemView.findViewById(R.id.track_cover)
 
     fun bind(track: Track) {
-        trackTitle.text = track.trackName
-        trackArtist.text = track.artistName
-        val trackTimeMinSec = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong())
+        trackTitle.text = track.trackName ?: ""
+        trackArtist.text = track.artistName ?: ""
+        trackArtist.requestLayout()
+        val trackTimeMinSec = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis?.toLong() ?: "")
         trackDuration.text = trackTimeMinSec
         Glide.with(itemView)
-            .load(track.artworkUrl100)
+            .load(track.artworkUrl100 ?: "")
             .placeholder(R.drawable.cover_placeholder)
             .transform(RoundedCorners(2))
             .centerCrop()

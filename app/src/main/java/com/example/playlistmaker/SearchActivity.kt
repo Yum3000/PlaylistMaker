@@ -36,7 +36,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderMessage: TextView
     private lateinit var trackList: RecyclerView
 
-    private val tracks = ArrayList<Track>()
+    private val tracks: MutableList<Track> = mutableListOf()
 
     private val adapter = TrackAdapter()
 
