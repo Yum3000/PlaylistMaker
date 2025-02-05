@@ -82,6 +82,8 @@ class SearchActivity : AppCompatActivity() {
             inputSearchLine.clearFocus()
             searchLineFocus = false
             tracks.clear()
+            adapter.notifyDataSetChanged()
+            hidePlaceholder(messageView)
         }
 
         inputSearchLine.setOnFocusChangeListener { _, hasFocus ->
@@ -194,6 +196,10 @@ class SearchActivity : AppCompatActivity() {
         } else {
             placeholderButton.visibility = View.GONE
         }
+    }
+
+    private fun hidePlaceholder(messageView: View) {
+        messageView.visibility = View.GONE
     }
 
     private fun isNightMode(): Boolean {
