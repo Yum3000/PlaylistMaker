@@ -106,6 +106,11 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = !s.isNullOrEmpty()
+                if (s.isNullOrEmpty()){
+                    tracks.clear()
+                    adapter.notifyDataSetChanged()
+                    hidePlaceholder(messageView)
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {}
