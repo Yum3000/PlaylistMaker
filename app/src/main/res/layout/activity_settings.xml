@@ -27,7 +27,7 @@
             android:text="@string/dark_theme"
             style="@style/SettingsTextViewForButton"/>
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switch_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
