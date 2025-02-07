@@ -39,12 +39,15 @@
             android:drawablePadding="8dp"
             android:hint="@string/search_text"
             android:autofillHints="@string/search_autofillhint"
+            android:textCursorDrawable="@drawable/search_cursor"
             android:textColor="@color/black"
             android:textColorHint="@color/search_screen_hint"
             android:background="@android:color/transparent"
             android:maxLines="1"
             android:maxLength="30"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
 
         <ImageView
             android:id="@+id/clearIcon"
@@ -61,8 +64,16 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    <include
+        layout="@layout/placeholder_search"
+        android:id="@+id/message_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="102dp"
+        android:visibility="gone"/>
 
 </LinearLayout>

@@ -33,4 +33,6 @@
     <color name="search_screen_track_desc">@color/grey</color>
     <color name="search_screen_arrow_icon">@color/grey</color>
 
+    <color name="search_screen_ph_bt">@color/dark_grey</color>
+
 </resources>
