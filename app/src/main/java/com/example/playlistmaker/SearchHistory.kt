@@ -2,7 +2,6 @@ package com.example.playlistmaker
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 class SearchHistory(private val sharedPref: SharedPreferences) {
     val KEY_FOR_SEARCH_HISTORY = "KEY"

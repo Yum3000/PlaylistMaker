@@ -1,15 +1,13 @@
 package com.example.playlistmaker
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 
 class TrackAdapter(
     var tracks: MutableList<Track>,
-    private val onTrackClick: (Track) -> Unit = {_ ->}
+    private val onTrackClick: (Track, TrackAdapter) -> Unit
 ) : RecyclerView.Adapter<TrackViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
@@ -21,7 +19,7 @@ class TrackAdapter(
         holder.bind(tracks[position])
 
         holder.itemView.setOnClickListener {
-            onTrackClick(tracks[position])
+            onTrackClick(tracks[position], this)
         }
     }
 

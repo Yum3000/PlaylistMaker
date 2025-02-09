@@ -32,7 +32,7 @@ class SearchActivity : AppCompatActivity() {
     private val tracks: MutableList<Track> = mutableListOf()
     private lateinit var searchHistory: SearchHistory
 
-    private val searchAdapter = TrackAdapter(tracks) { track ->
+    private val searchAdapter = TrackAdapter(tracks) { track, _ ->
         searchHistory.updateHistory(track)
     }
 
@@ -56,7 +56,10 @@ class SearchActivity : AppCompatActivity() {
         val historyTrackList = findViewById<RecyclerView>(R.id.recyclerViewHistory)
         val historyClearButton = findViewById<Button>(R.id.clearHistory)
 
-        val historyAdapter = TrackAdapter(searchHistory.history)
+        val historyAdapter = TrackAdapter(searchHistory.history) { track, adapter ->
+            searchHistory.updateHistory(track)
+            showSearchHistory(adapter, historyLayout)
+        }
         historyTrackList.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         historyTrackList.adapter = historyAdapter
