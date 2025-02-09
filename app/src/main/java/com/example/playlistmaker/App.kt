@@ -8,15 +8,15 @@ import androidx.appcompat.app.AppCompatDelegate
 class App : Application() {
 
     var darkTheme = false
-    private lateinit var sharedPrefs: SharedPreferences
+    lateinit var sharedPref: SharedPreferences
 
     override fun onCreate() {
         super.onCreate()
 
-        sharedPrefs = getSharedPreferences(SH_PREF_FILE, MODE_PRIVATE)
+        sharedPref = getSharedPreferences(SH_PREF_FILE, MODE_PRIVATE)
         val isDarkMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
                 Configuration.UI_MODE_NIGHT_YES
-        darkTheme = sharedPrefs.getBoolean(DARK_THEME_KEY, isDarkMode)
+        darkTheme = sharedPref.getBoolean(DARK_THEME_KEY, isDarkMode)
         switchTheme(isDarkMode)
     }
 
@@ -26,7 +26,7 @@ class App : Application() {
             if (darkThemeEnabled) AppCompatDelegate.MODE_NIGHT_YES
             else AppCompatDelegate.MODE_NIGHT_NO
         )
-        sharedPrefs.edit()
+        sharedPref.edit()
             .putBoolean(DARK_THEME_KEY, darkThemeEnabled)
             .apply()
     }

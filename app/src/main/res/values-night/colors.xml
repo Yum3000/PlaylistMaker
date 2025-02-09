@@ -28,5 +28,6 @@
     <color name="search_screen_arrow_icon">@color/white</color>
 
     <color name="search_screen_ph_bt">@color/white</color>
+    <color name="search_screen_history_title">@color/white</color>
 
 </resources>
