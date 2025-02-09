@@ -4,14 +4,14 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 
 class SearchHistory(private val sharedPref: SharedPreferences) {
-    val KEY_FOR_SEARCH_HISTORY = "KEY"
 
-    val history: MutableList<Track> = mutableListOf()
+    val history = mutableListOf<Track>()
+    private val gson = Gson()
 
     init {
         val json = sharedPref.getString(KEY_FOR_SEARCH_HISTORY, null)
         if (json != null) {
-            history.addAll(Gson().fromJson(json, Array<Track>::class.java))
+            history.addAll(gson.fromJson(json, Array<Track>::class.java))
         }
     }
 
@@ -27,12 +27,16 @@ class SearchHistory(private val sharedPref: SharedPreferences) {
     }
 
     private fun saveHistory() {
-        val json = Gson().toJson(history)
+        val json = gson.toJson(history)
         sharedPref.edit().putString(KEY_FOR_SEARCH_HISTORY, json).apply()
     }
 
     fun clearHistory() {
         history.clear()
         saveHistory()
+    }
+
+    companion object{
+        const val KEY_FOR_SEARCH_HISTORY = "KEY"
     }
 }

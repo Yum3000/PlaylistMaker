@@ -29,7 +29,7 @@ class App : Application() {
         )
         sharedPref.edit()
             .putBoolean(DARK_THEME_KEY, darkThemeEnabled)
-            .apply()
+            .commit()
     }
 
     companion object {

@@ -97,7 +97,7 @@ class SearchActivity : AppCompatActivity() {
             tracks.clear()
             searchAdapter.notifyDataSetChanged()
             hidePlaceholder(messageView)
-            hideSearchHistory(historyAdapter, historyLayout)
+            showSearchHistory(historyAdapter, historyLayout)
         }
 
         searchField.setOnEditorActionListener { _, actionId, _ ->
