@@ -87,6 +87,7 @@
         <Button
             android:id="@+id/clearHistory"
             android:text="@string/search_history_clear"
+            android:layout_marginTop="24dp"
             style="@style/SearchScreenBt"/>
 
     </LinearLayout>

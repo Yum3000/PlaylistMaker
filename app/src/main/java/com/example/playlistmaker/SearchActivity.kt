@@ -67,7 +67,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchField = findViewById(R.id.search_edit_text)
-        searchField.setOnFocusChangeListener { view, hasFocus ->
+        searchField.setOnFocusChangeListener { _, hasFocus ->
             if (searchField.text.isEmpty() && hasFocus) {
                 showSearchHistory(historyAdapter, historyLayout)
             } else {
@@ -94,7 +94,6 @@ class SearchActivity : AppCompatActivity() {
             tracks.clear()
             searchAdapter.notifyDataSetChanged()
             hidePlaceholder(messageView)
-
             hideSearchHistory(historyAdapter, historyLayout)
         }
 
@@ -117,7 +116,9 @@ class SearchActivity : AppCompatActivity() {
                 if (s.isNullOrEmpty()) {
                     tracks.clear()
                     hidePlaceholder(messageView)
-                    showSearchHistory(historyAdapter, historyLayout)
+                    if (searchField.hasFocus()){
+                        showSearchHistory(historyAdapter, historyLayout)
+                    }
                 } else {
                     hideSearchHistory(historyAdapter, historyLayout)
                 }
