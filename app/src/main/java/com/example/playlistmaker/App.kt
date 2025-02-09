@@ -17,7 +17,8 @@ class App : Application() {
         val isDarkMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
                 Configuration.UI_MODE_NIGHT_YES
         darkTheme = sharedPref.getBoolean(DARK_THEME_KEY, isDarkMode)
-        switchTheme(isDarkMode)
+
+        switchTheme(darkTheme)
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
