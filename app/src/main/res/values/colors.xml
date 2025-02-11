@@ -34,5 +34,6 @@
     <color name="search_screen_arrow_icon">@color/grey</color>
 
     <color name="search_screen_ph_bt">@color/dark_grey</color>
+    <color name="search_screen_history_title">@color/dark_grey</color>
 
 </resources>
