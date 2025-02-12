@@ -30,4 +30,12 @@
     <color name="search_screen_ph_bt">@color/white</color>
     <color name="search_screen_history_title">@color/white</color>
 
+    <color name="audioplayer_screen_bg">@color/dark_grey</color>
+
+    <color name="audioplayer_titles">@color/white</color>
+    <color name="audioplayer_tvs">@color/white</color>
+
+    <color name="audioplayer_play_btn_bg_tint">@color/dark_grey</color>
+    <color name="audioplayer_play_btn_tint">@color/white</color>
+
 </resources>

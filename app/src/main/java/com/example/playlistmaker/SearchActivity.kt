@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.App.Companion.INTENT_TRACK_KEY
 import com.google.android.material.appbar.MaterialToolbar
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,7 +35,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistory: SearchHistory
 
     private val searchAdapter = TrackAdapter(tracks) { track, _ ->
-        searchHistory.updateHistory(track)
+        openAudioPlayer(track)
     }
 
     private var inputedText: String = ""
@@ -57,7 +59,7 @@ class SearchActivity : AppCompatActivity() {
         val historyClearButton = findViewById<Button>(R.id.clearHistory)
 
         val historyAdapter = TrackAdapter(searchHistory.history) { track, adapter ->
-            searchHistory.updateHistory(track)
+            openAudioPlayer(track)
             showSearchHistory(adapter, historyLayout)
         }
         historyTrackList.layoutManager =
@@ -271,5 +273,12 @@ class SearchActivity : AppCompatActivity() {
                 R.drawable.no_results_icon_light
             }
         }
+    }
+
+    private fun openAudioPlayer(track: Track){
+        searchHistory.updateHistory(track)
+        val intent = Intent(this, AudioPlayerActivity::class.java)
+        intent.putExtra(INTENT_TRACK_KEY, track)
+        startActivity(intent)
     }
 }
