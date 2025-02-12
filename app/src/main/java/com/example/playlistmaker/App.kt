@@ -35,6 +35,7 @@ class App : Application() {
     companion object {
         const val SH_PREF_FILE = "shared_preferences"
         const val DARK_THEME_KEY = "is_dark_theme"
+        const val INTENT_TRACK_KEY = "track_to_player"
     }
 
 }

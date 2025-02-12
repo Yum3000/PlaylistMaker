@@ -36,4 +36,9 @@
     <color name="search_screen_ph_bt">@color/dark_grey</color>
     <color name="search_screen_history_title">@color/dark_grey</color>
 
+    <color name="audioplayer_titles">@color/dark_grey</color>
+    <color name="audioplayer_tvs">@color/dark_grey</color>
+
+    <color name="audioplayer_play_btn_bg_tint">@color/white</color>
+    <color name="audioplayer_play_btn_tint">@color/dark_grey</color>
 </resources>

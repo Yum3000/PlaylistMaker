@@ -12,4 +12,7 @@
     <dimen name="settings_screen_pad_end">12dp</dimen>
     <dimen name="settings_screen_marg_top">21dp</dimen>
     <dimen name="settings_screen_marg_bottom">21dp</dimen>
+
+    <dimen name="player_add_buttons_size">51dp</dimen>
+    <dimen name="player_track_desc_titles_margin">17dp</dimen>
 </resources>
