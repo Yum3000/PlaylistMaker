@@ -49,6 +49,7 @@
     <string name="cover_ph_desc">Обложка трека</string>
     <string name="add_to_fav_btn_desc">Добавить трек в любимые</string>
 
-    <string name="track_timer_ph">0:30</string>
+    <string name="track_timer_ph">00:00</string>
     <string name="no_data">Нет данных</string>
+    <string name="playing_error">Не удалось воспроизвести</string>
 </resources>
