@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -42,6 +44,11 @@ class SearchActivity : AppCompatActivity() {
     private var searchFieldFocus: Boolean = false
     private lateinit var searchField: EditText
     private var lastSearchQuery: String? = null
+    private var messageView: View? = null
+
+    private val searchRunnable = Runnable { messageView?.let { executeRequest(it, inputedText) } }
+
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +56,7 @@ class SearchActivity : AppCompatActivity() {
 
         placeholderMessage = findViewById(R.id.placeholder_message)
         trackList = findViewById(R.id.recyclerView)
-        val messageView = findViewById<View>(R.id.message_view)
+        messageView = findViewById(R.id.message_view)
 
         trackList.adapter = searchAdapter
 
@@ -98,19 +105,10 @@ class SearchActivity : AppCompatActivity() {
             searchFieldFocus = false
             tracks.clear()
             searchAdapter.notifyDataSetChanged()
-            hidePlaceholder(messageView)
-            showSearchHistory(historyAdapter, historyLayout)
-        }
-
-        searchField.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-
-                if (searchField.text.isNotEmpty()) {
-                    lastSearchQuery = searchField.text.toString()
-                    executeRequest(messageView, lastSearchQuery.toString())
-                }
+            messageView?.let { view ->
+                hidePlaceholder(view)
             }
-            false
+            showSearchHistory(historyAdapter, historyLayout)
         }
 
         val searchTextWatcher = object : TextWatcher {
@@ -118,14 +116,18 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = !s.isNullOrEmpty()
+                inputedText = s.toString()
                 if (s.isNullOrEmpty()) {
                     tracks.clear()
-                    hidePlaceholder(messageView)
+                    messageView?.let { view ->
+                        hidePlaceholder(view)
+                    }
                     if (searchField.hasFocus()){
                         showSearchHistory(historyAdapter, historyLayout)
                     }
                 } else {
                     hideSearchHistory(historyAdapter, historyLayout)
+                    searchDebounce()
                 }
             }
 
@@ -171,6 +173,7 @@ class SearchActivity : AppCompatActivity() {
     private companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_FOCUS = "SEARCH_FOCUS"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
     private fun showSearchHistory(historyAdapter: TrackAdapter, historyLayout: LinearLayout) {
@@ -280,5 +283,10 @@ class SearchActivity : AppCompatActivity() {
         val intent = Intent(this, AudioPlayerActivity::class.java)
         intent.putExtra(INTENT_TRACK_KEY, track)
         startActivity(intent)
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 }
