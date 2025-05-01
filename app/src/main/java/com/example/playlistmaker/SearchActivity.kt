@@ -9,12 +9,12 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -43,8 +43,8 @@ class SearchActivity : AppCompatActivity() {
     private var inputedText: String = ""
     private var searchFieldFocus: Boolean = false
     private lateinit var searchField: EditText
-    private var lastSearchQuery: String? = null
     private var messageView: View? = null
+    private lateinit var progressBar: ProgressBar
 
     private val searchRunnable = Runnable { messageView?.let { executeRequest(it, inputedText) } }
 
@@ -57,6 +57,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderMessage = findViewById(R.id.placeholder_message)
         trackList = findViewById(R.id.recyclerView)
         messageView = findViewById(R.id.message_view)
+        progressBar = findViewById(R.id.progressBar)
 
         trackList.adapter = searchAdapter
 
@@ -189,6 +190,10 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun executeRequest(messageView: View, inputQuery: String) {
+        placeholderMessage.visibility = View.GONE
+        trackList.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
+
         musicAPIService.searchTracks(inputQuery)
             .enqueue(object : Callback<TracksResponse> {
                 override fun onResponse(
@@ -196,6 +201,7 @@ class SearchActivity : AppCompatActivity() {
                     response: Response<TracksResponse>
                 ) {
                     tracks.clear()
+                    progressBar.visibility = View.GONE
                     if (response.code() == 200) {
                         if (response.body()?.results?.isNotEmpty() == true) {
                             tracks.addAll(response.body()?.results!!)
@@ -224,6 +230,7 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE
                     showPlaceholder(messageView, getString(R.string.smth_wrong), true, inputQuery)
                 }
             })
