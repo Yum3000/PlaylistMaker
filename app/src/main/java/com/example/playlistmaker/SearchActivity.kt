@@ -45,6 +45,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchField: EditText
     private var messageView: View? = null
     private lateinit var progressBar: ProgressBar
+    private var isTrackClickAllowed: Boolean = true
 
     private val searchRunnable = Runnable { messageView?.let { executeRequest(it, inputedText) } }
 
@@ -175,6 +176,7 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_FOCUS = "SEARCH_FOCUS"
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
     }
 
     private fun showSearchHistory(historyAdapter: TrackAdapter, historyLayout: LinearLayout) {
@@ -285,15 +287,26 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun openAudioPlayer(track: Track){
-        searchHistory.updateHistory(track)
-        val intent = Intent(this, AudioPlayerActivity::class.java)
-        intent.putExtra(INTENT_TRACK_KEY, track)
-        startActivity(intent)
+    private fun openAudioPlayer(track: Track) {
+        if (trackClickDebounce()) {
+            searchHistory.updateHistory(track)
+            val intent = Intent(this, AudioPlayerActivity::class.java)
+            intent.putExtra(INTENT_TRACK_KEY, track)
+            startActivity(intent)
+        }
     }
 
     private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun trackClickDebounce() : Boolean {
+        val current = isTrackClickAllowed
+        if (isTrackClickAllowed) {
+            isTrackClickAllowed = false
+            handler.postDelayed({ isTrackClickAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 }
