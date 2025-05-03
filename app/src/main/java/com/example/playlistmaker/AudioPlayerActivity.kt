@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -125,7 +126,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         mediaPlayer.setOnCompletionListener {
             playBtn.setImageResource(R.drawable.play_btn)
             playerState = STATE_PREPARED
-            currentTrackTimer.text = "00:00"
+            currentTrackTimer.text = getString(R.string.track_timer_ph)
             handler?.removeCallbacks(updateTrackTimeRunnable)
         }
     }
