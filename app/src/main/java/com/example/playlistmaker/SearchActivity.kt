@@ -4,15 +4,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -41,7 +43,13 @@ class SearchActivity : AppCompatActivity() {
     private var inputedText: String = ""
     private var searchFieldFocus: Boolean = false
     private lateinit var searchField: EditText
-    private var lastSearchQuery: String? = null
+    private var messageView: View? = null
+    private lateinit var progressBar: ProgressBar
+    private var isTrackClickAllowed: Boolean = true
+
+    private val searchRunnable = Runnable { messageView?.let { executeRequest(it, inputedText) } }
+
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +57,8 @@ class SearchActivity : AppCompatActivity() {
 
         placeholderMessage = findViewById(R.id.placeholder_message)
         trackList = findViewById(R.id.recyclerView)
-        val messageView = findViewById<View>(R.id.message_view)
+        messageView = findViewById(R.id.message_view)
+        progressBar = findViewById(R.id.progressBar)
 
         trackList.adapter = searchAdapter
 
@@ -98,19 +107,10 @@ class SearchActivity : AppCompatActivity() {
             searchFieldFocus = false
             tracks.clear()
             searchAdapter.notifyDataSetChanged()
-            hidePlaceholder(messageView)
-            showSearchHistory(historyAdapter, historyLayout)
-        }
-
-        searchField.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-
-                if (searchField.text.isNotEmpty()) {
-                    lastSearchQuery = searchField.text.toString()
-                    executeRequest(messageView, lastSearchQuery.toString())
-                }
+            messageView?.let { view ->
+                hidePlaceholder(view)
             }
-            false
+            showSearchHistory(historyAdapter, historyLayout)
         }
 
         val searchTextWatcher = object : TextWatcher {
@@ -118,14 +118,18 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = !s.isNullOrEmpty()
+                inputedText = s.toString()
                 if (s.isNullOrEmpty()) {
                     tracks.clear()
-                    hidePlaceholder(messageView)
+                    messageView?.let { view ->
+                        hidePlaceholder(view)
+                    }
                     if (searchField.hasFocus()){
                         showSearchHistory(historyAdapter, historyLayout)
                     }
                 } else {
                     hideSearchHistory(historyAdapter, historyLayout)
+                    searchDebounce()
                 }
             }
 
@@ -171,6 +175,8 @@ class SearchActivity : AppCompatActivity() {
     private companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_FOCUS = "SEARCH_FOCUS"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
     }
 
     private fun showSearchHistory(historyAdapter: TrackAdapter, historyLayout: LinearLayout) {
@@ -186,6 +192,10 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun executeRequest(messageView: View, inputQuery: String) {
+        placeholderMessage.visibility = View.GONE
+        trackList.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
+
         musicAPIService.searchTracks(inputQuery)
             .enqueue(object : Callback<TracksResponse> {
                 override fun onResponse(
@@ -193,6 +203,7 @@ class SearchActivity : AppCompatActivity() {
                     response: Response<TracksResponse>
                 ) {
                     tracks.clear()
+                    progressBar.visibility = View.GONE
                     if (response.code() == 200) {
                         if (response.body()?.results?.isNotEmpty() == true) {
                             tracks.addAll(response.body()?.results!!)
@@ -221,6 +232,7 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE
                     showPlaceholder(messageView, getString(R.string.smth_wrong), true, inputQuery)
                 }
             })
@@ -275,10 +287,26 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun openAudioPlayer(track: Track){
-        searchHistory.updateHistory(track)
-        val intent = Intent(this, AudioPlayerActivity::class.java)
-        intent.putExtra(INTENT_TRACK_KEY, track)
-        startActivity(intent)
+    private fun openAudioPlayer(track: Track) {
+        if (trackClickDebounce()) {
+            searchHistory.updateHistory(track)
+            val intent = Intent(this, AudioPlayerActivity::class.java)
+            intent.putExtra(INTENT_TRACK_KEY, track)
+            startActivity(intent)
+        }
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun trackClickDebounce() : Boolean {
+        val current = isTrackClickAllowed
+        if (isTrackClickAllowed) {
+            isTrackClickAllowed = false
+            handler.postDelayed({ isTrackClickAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 }

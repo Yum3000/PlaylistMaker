@@ -1,17 +1,46 @@
 package com.example.playlistmaker
 
+import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.App.Companion.INTENT_TRACK_KEY
 import com.google.android.material.appbar.MaterialToolbar
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
+
+    private companion object {
+        const val STATE_DEFAULT = 0
+        const val STATE_PREPARED = 1
+        const val STATE_PLAYING = 2
+        const val STATE_PAUSED = 3
+    }
+
+    private var playerState = STATE_DEFAULT
+    private var mediaPlayer = MediaPlayer()
+    private var handler = Handler(Looper.getMainLooper())
+    private lateinit var currentTrackTimer: TextView
+    private lateinit var playBtn: ImageButton
+
+    private val updateTrackTimeRunnable = object : Runnable {
+        override fun run() {
+            if (playerState == STATE_PLAYING) {
+                currentTrackTimer.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                handler?.postDelayed(this, 500L)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +61,10 @@ class AudioPlayerActivity : AppCompatActivity() {
         val artistName: TextView = findViewById(R.id.artistName)
 
         val addToPlaylistBtn: ImageButton = findViewById(R.id.addBtn)
-        val playBtn: ImageButton = findViewById(R.id.playBtn)
+        playBtn = findViewById(R.id.playBtn)
+        playBtn.isEnabled = false
         val addToFavBtn: ImageButton = findViewById(R.id.addFavBtn)
-        val currentTrackTimer: TextView = findViewById(R.id.currentTrackTimer)
+        currentTrackTimer = findViewById(R.id.currentTrackTimer)
 
         val durTrack: TextView = findViewById(R.id.durationTV)
         val albumTrack: TextView = findViewById(R.id.albumTV)
@@ -58,5 +88,71 @@ class AudioPlayerActivity : AppCompatActivity() {
         genreTrack.text = track?.primaryGenreName ?: getString(R.string.no_data)
         countryTrack.text = track?.country ?: getString(R.string.no_data)
 
+        if (track?.previewUrl != null) {
+            preparePlayer(track.previewUrl)
+        }
+
+        playBtn.setOnClickListener {
+            if (playerState != STATE_DEFAULT) {
+                playerControl()
+            } else {
+                Toast.makeText(
+                    this,
+                    getString(R.string.playing_error),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+        handler?.removeCallbacks(updateTrackTimeRunnable)
+    }
+
+    private fun preparePlayer(trackUrl: String) {
+        mediaPlayer.setDataSource(trackUrl)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            playBtn.isEnabled = true
+            playerState = STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            playBtn.setImageResource(R.drawable.play_btn)
+            playerState = STATE_PREPARED
+            currentTrackTimer.text = getString(R.string.track_timer_ph)
+            handler?.removeCallbacks(updateTrackTimeRunnable)
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        playBtn.setImageResource(R.drawable.pause_btn)
+        playerState = STATE_PLAYING
+        handler?.post(updateTrackTimeRunnable)
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        playBtn.setImageResource(R.drawable.play_btn)
+        playerState = STATE_PAUSED
+        handler?.removeCallbacks(updateTrackTimeRunnable)
+    }
+
+    private fun playerControl() {
+        when(playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
     }
 }
