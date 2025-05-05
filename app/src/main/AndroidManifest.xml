@@ -16,7 +16,7 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>
@@ -26,11 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:exported="false">
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name=".ui.search.SearchActivity"
             android:exported="false">
         </activity>
         <activity
@@ -38,7 +38,7 @@
             android:exported="false">
         </activity>
         <activity
-            android:name=".AudioPlayerActivity"
+            android:name=".ui.audioPlayer.AudioPlayerActivity"
             android:exported="false">
         </activity>
     </application>

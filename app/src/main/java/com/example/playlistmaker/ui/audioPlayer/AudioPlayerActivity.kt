@@ -1,7 +1,5 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.audioPlayer
 
-import android.annotation.SuppressLint
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -13,7 +11,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.App.Companion.INTENT_TRACK_KEY
+import com.example.playlistmaker.CreatorAudioPlayer
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
 import com.google.android.material.appbar.MaterialToolbar
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -21,23 +21,30 @@ import java.util.Locale
 class AudioPlayerActivity : AppCompatActivity() {
 
     private companion object {
-        const val STATE_DEFAULT = 0
-        const val STATE_PREPARED = 1
-        const val STATE_PLAYING = 2
-        const val STATE_PAUSED = 3
+        const val INTENT_TRACK_KEY = "track_to_player"
     }
 
-    private var playerState = STATE_DEFAULT
-    private var mediaPlayer = MediaPlayer()
+    enum class PlayerState {
+        DEFAULT,
+        PREPARED,
+        PLAYING,
+        PAUSED
+    }
+
+    private var playerState = PlayerState.DEFAULT
+    private var audioPlayerInteractor = CreatorAudioPlayer.provideAudioPlayerInteractor()
     private var handler = Handler(Looper.getMainLooper())
     private lateinit var currentTrackTimer: TextView
     private lateinit var playBtn: ImageButton
 
     private val updateTrackTimeRunnable = object : Runnable {
         override fun run() {
-            if (playerState == STATE_PLAYING) {
-                currentTrackTimer.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-                handler?.postDelayed(this, 500L)
+            if (playerState == PlayerState.PLAYING) {
+                currentTrackTimer.text = SimpleDateFormat(
+                    "mm:ss",
+                    Locale.getDefault()
+                ).format(audioPlayerInteractor.getCurrentPosition())
+                handler.postDelayed(this, 500L)
             }
         }
     }
@@ -82,18 +89,18 @@ class AudioPlayerActivity : AppCompatActivity() {
         trackName.text = track?.trackName ?: getString(R.string.no_data)
         artistName.text = track?.artistName ?: getString(R.string.no_data)
         currentTrackTimer.text = getString(R.string.track_timer_ph)
-        durTrack.text = track?.getTimeInMinSec() ?: getString(R.string.no_data)
+        durTrack.text = track?.trackTimeMillis ?: getString(R.string.no_data)
         albumTrack.text = track?.collectionName ?: getString(R.string.no_data)
         releaseDataTrack.text = track?.getTrackReleaseDate() ?: getString(R.string.no_data)
         genreTrack.text = track?.primaryGenreName ?: getString(R.string.no_data)
         countryTrack.text = track?.country ?: getString(R.string.no_data)
 
-        if (track?.previewUrl != null) {
-            preparePlayer(track.previewUrl)
+        track?.previewUrl?.let { url ->
+            preparePlayer(url)
         }
 
         playBtn.setOnClickListener {
-            if (playerState != STATE_DEFAULT) {
+            if (playerState != PlayerState.DEFAULT) {
                 playerControl()
             } else {
                 Toast.makeText(
@@ -112,47 +119,47 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
+        audioPlayerInteractor.release()
         handler?.removeCallbacks(updateTrackTimeRunnable)
     }
 
-    private fun preparePlayer(trackUrl: String) {
-        mediaPlayer.setDataSource(trackUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playBtn.isEnabled = true
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            playBtn.setImageResource(R.drawable.play_btn)
-            playerState = STATE_PREPARED
-            currentTrackTimer.text = getString(R.string.track_timer_ph)
-            handler?.removeCallbacks(updateTrackTimeRunnable)
-        }
-    }
-
     private fun startPlayer() {
-        mediaPlayer.start()
+        audioPlayerInteractor.startPlayback()
         playBtn.setImageResource(R.drawable.pause_btn)
-        playerState = STATE_PLAYING
+        playerState = PlayerState.PLAYING
         handler?.post(updateTrackTimeRunnable)
     }
 
     private fun pausePlayer() {
-        mediaPlayer.pause()
+        audioPlayerInteractor.pausePlayback()
         playBtn.setImageResource(R.drawable.play_btn)
-        playerState = STATE_PAUSED
+        playerState = PlayerState.PAUSED
         handler?.removeCallbacks(updateTrackTimeRunnable)
     }
 
+    private fun preparePlayer(trackUrl: String) {
+        audioPlayerInteractor.prepare(trackUrl) {
+            playBtn.isEnabled = true
+            playerState = PlayerState.PREPARED
+        }
+        audioPlayerInteractor.setOnCompletionListener {
+            playBtn.setImageResource(R.drawable.play_btn)
+            playerState = PlayerState.PREPARED
+            currentTrackTimer.text = getString(R.string.track_timer_ph)
+            handler.removeCallbacks(updateTrackTimeRunnable)
+        }
+    }
+
     private fun playerControl() {
-        when(playerState) {
-            STATE_PLAYING -> {
+        when (playerState) {
+            PlayerState.PLAYING -> {
                 pausePlayer()
             }
-            STATE_PREPARED, STATE_PAUSED -> {
+
+            PlayerState.PREPARED, PlayerState.PAUSED -> {
                 startPlayer()
             }
+            else -> { }
         }
     }
 }
