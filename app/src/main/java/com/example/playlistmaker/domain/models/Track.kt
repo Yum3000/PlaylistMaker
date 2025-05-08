@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.domain.models
 
 import android.icu.text.SimpleDateFormat
 import java.io.Serializable
@@ -18,10 +18,6 @@ data class Track(
 ) : Serializable {
 
     fun getCoverArtwork() = artworkUrl100?.replaceAfterLast('/',"512x512bb.jpg")
-
-    fun getTimeInMinSec(): String? {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(this.trackTimeMillis?.toLong())
-    }
 
     fun getTrackReleaseDate(): String? {
         val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())

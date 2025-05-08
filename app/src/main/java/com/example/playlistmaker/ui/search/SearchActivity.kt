@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.search
 
 import android.content.Context
 import android.content.Intent
@@ -20,21 +20,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.App.Companion.INTENT_TRACK_KEY
+import com.example.playlistmaker.CreatorHistory
+import com.example.playlistmaker.ui.audioPlayer.AudioPlayerActivity
+import com.example.playlistmaker.CreatorSearch
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.TracksHistoryInteractor
+import com.example.playlistmaker.domain.api.TracksInteractor
+import com.example.playlistmaker.domain.models.Track
 import com.google.android.material.appbar.MaterialToolbar
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
 
-    private val musicAPIService = RetrofitClient.musicAPIService
+    private var tracksInteractorSearch: TracksInteractor =
+        CreatorSearch.provideTracksInteractor()
+
+    private var tracksHistoryInteractor: TracksHistoryInteractor =
+        CreatorHistory.provideTracksHistoryInteractor()
 
     private lateinit var placeholderMessage: TextView
     private lateinit var trackList: RecyclerView
 
     private val tracks: MutableList<Track> = mutableListOf()
-    private lateinit var searchHistory: SearchHistory
 
     private val searchAdapter = TrackAdapter(tracks) { track, _ ->
         openAudioPlayer(track)
@@ -47,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private var isTrackClickAllowed: Boolean = true
 
-    private val searchRunnable = Runnable { messageView?.let { executeRequest(it, inputedText) } }
+    private val searchRunnable = Runnable { messageView?.let {executeRequest(it, inputedText)} }
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -62,15 +68,15 @@ class SearchActivity : AppCompatActivity() {
 
         trackList.adapter = searchAdapter
 
-        searchHistory = SearchHistory((applicationContext as App).sharedPref)
         val historyLayout = findViewById<LinearLayout>(R.id.historyLayout)
         val historyTrackList = findViewById<RecyclerView>(R.id.recyclerViewHistory)
         val historyClearButton = findViewById<Button>(R.id.clearHistory)
 
-        val historyAdapter = TrackAdapter(searchHistory.history) { track, adapter ->
+        val historyAdapter = TrackAdapter(tracksHistoryInteractor.getHistory().toMutableList()) { track, adapter ->
             openAudioPlayer(track)
             showSearchHistory(adapter, historyLayout)
         }
+
         historyTrackList.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         historyTrackList.adapter = historyAdapter
@@ -146,7 +152,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         historyClearButton.setOnClickListener {
-            searchHistory.clearHistory()
+            tracksHistoryInteractor.clearHistory()
             hideSearchHistory(historyAdapter, historyLayout)
         }
     }
@@ -177,11 +183,15 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_FOCUS = "SEARCH_FOCUS"
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
+        const val INTENT_TRACK_KEY = "track_to_player"
     }
 
     private fun showSearchHistory(historyAdapter: TrackAdapter, historyLayout: LinearLayout) {
-        if (searchHistory.history.isEmpty()) return
+        val historyTracks = tracksHistoryInteractor.getHistory().toMutableList()
+        if (historyTracks.isEmpty()) return
 
+        historyAdapter.tracks.clear()
+        historyAdapter.tracks.addAll(historyTracks)
         historyAdapter.notifyDataSetChanged()
         historyLayout.visibility = View.VISIBLE
     }
@@ -192,22 +202,17 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun executeRequest(messageView: View, inputQuery: String) {
-        placeholderMessage.visibility = View.GONE
         trackList.visibility = View.GONE
-        progressBar.visibility = View.VISIBLE
+        showProgressBar()
 
-        musicAPIService.searchTracks(inputQuery)
-            .enqueue(object : Callback<TracksResponse> {
-                override fun onResponse(
-                    call: Call<TracksResponse>,
-                    response: Response<TracksResponse>
-                ) {
+        tracksInteractorSearch.searchTracks(inputQuery, object: TracksInteractor.TracksConsumer{
+            override fun consume(foundTracks: List<Track>?) {
+                handler.post {
                     tracks.clear()
-                    progressBar.visibility = View.GONE
-                    if (response.code() == 200) {
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            tracks.addAll(response.body()?.results!!)
-                        }
+                    hideProgressBar()
+                    if (foundTracks != null) {
+                        tracks.addAll(foundTracks)
+
                         if (tracks.isEmpty()) {
                             showPlaceholder(
                                 messageView,
@@ -229,13 +234,10 @@ class SearchActivity : AppCompatActivity() {
                         )
                     }
                     searchAdapter.notifyDataSetChanged()
-                }
 
-                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    progressBar.visibility = View.GONE
-                    showPlaceholder(messageView, getString(R.string.smth_wrong), true, inputQuery)
                 }
-            })
+            }
+        })
     }
 
     private fun showPlaceholder(
@@ -246,7 +248,7 @@ class SearchActivity : AppCompatActivity() {
     ) {
         trackList.visibility = View.GONE
         messageView.visibility = View.VISIBLE
-        messageView.findViewById<TextView>(R.id.placeholder_message).text = message
+        placeholderMessage.text = message
         val placeholderImage = messageView.findViewById<ImageView>(R.id.placeholder_image)
         val placeholderButton = messageView.findViewById<Button>(R.id.placeholder_button)
 
@@ -259,7 +261,7 @@ class SearchActivity : AppCompatActivity() {
                 executeRequest(messageView, lastSearchQuery)
             }
         } else {
-            placeholderButton.visibility = View.GONE
+            placeholderButton?.visibility = View.GONE
         }
     }
 
@@ -289,7 +291,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun openAudioPlayer(track: Track) {
         if (trackClickDebounce()) {
-            searchHistory.updateHistory(track)
+            tracksHistoryInteractor.updateHistory(track)
             val intent = Intent(this, AudioPlayerActivity::class.java)
             intent.putExtra(INTENT_TRACK_KEY, track)
             startActivity(intent)
@@ -308,5 +310,13 @@ class SearchActivity : AppCompatActivity() {
             handler.postDelayed({ isTrackClickAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
         }
         return current
+    }
+
+    private fun showProgressBar() {
+        progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        progressBar.visibility = View.GONE
     }
 }
