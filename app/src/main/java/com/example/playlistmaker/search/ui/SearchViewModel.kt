@@ -1,7 +1,6 @@
 package com.example.playlistmaker.search.ui
 
 import android.app.Application
-import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.AndroidViewModel
@@ -9,14 +8,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import com.example.playlistmaker.creator.CreatorSearch
-import com.example.playlistmaker.search.domain.api.TracksInteractor
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.App
 import com.example.playlistmaker.creator.CreatorHistory
-import com.example.playlistmaker.player.ui.AudioPlayerActivity
+import com.example.playlistmaker.creator.CreatorSearch
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
+import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.SearchTrackInfo
 import com.example.playlistmaker.search.domain.models.Track
 
@@ -24,7 +22,7 @@ class SearchViewModel(
     application: Application,
     private val trackInteractor: TracksInteractor,
     private val historyInteractor: TracksHistoryInteractor,
-    ) : AndroidViewModel(application) {
+) : AndroidViewModel(application) {
 
     val searchTracks: MutableList<Track> = mutableListOf()
 
@@ -33,7 +31,7 @@ class SearchViewModel(
     private val handler = Handler(Looper.getMainLooper())
 
     private var inputedText = ""
-    private val searchRunnable = Runnable {executeRequest(inputedText)}
+    private val searchRunnable = Runnable { executeRequest(inputedText) }
 
     private val searchStateLiveData = MutableLiveData<SearchScreenState>()
     fun getSearchStateLiveData(): LiveData<SearchScreenState> = searchStateLiveData
@@ -76,9 +74,9 @@ class SearchViewModel(
     private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
-    } 
+    }
 
-    private fun trackClickDebounce() : Boolean {
+    private fun trackClickDebounce(): Boolean {
         val current = isTrackClickAllowed
         if (isTrackClickAllowed) {
             isTrackClickAllowed = false
@@ -108,10 +106,6 @@ class SearchViewModel(
             searchTracks.clear()
             val tracks = historyInteractor.getHistory().map { trackToSearchTrackInfo(it) }
             searchStateLiveData.postValue(SearchScreenState.History(tracks))
-
-//            if (binding.searchEditText.hasFocus()) {
-//                showHistory(historyAdapter, binding.historyLayout)
-//            }
         } else {
             searchDebounce()
             searchStateLiveData.postValue(SearchScreenState.Loading)
@@ -137,6 +131,9 @@ class SearchViewModel(
     }
 
     fun handleSearchTextFocus(focused: Boolean) {
-
+        if (focused) {
+            val tracks = historyInteractor.getHistory().map { trackToSearchTrackInfo(it) }
+            searchStateLiveData.postValue(SearchScreenState.History(tracks))
+        }
     }
 }
