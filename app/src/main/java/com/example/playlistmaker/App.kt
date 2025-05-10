@@ -2,7 +2,9 @@ package com.example.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.domain.api.SettingsInteractor
+import com.example.playlistmaker.creator.CreatorHistory
+import com.example.playlistmaker.creator.CreatorSettings
+import com.example.playlistmaker.settings.domain.api.SettingsInteractor
 
 class App : Application() {
 
