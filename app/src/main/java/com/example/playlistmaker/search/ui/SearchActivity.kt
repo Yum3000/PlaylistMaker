@@ -29,7 +29,7 @@ class SearchActivity : ComponentActivity() {
     }
 
     private val historyAdapter = TrackAdapter(mutableListOf()) { track, _ ->
-        viewModel.handleTrackClick(track.trackId)
+        viewModel.handleHistoryTrackClick(track.trackId)
     }
 
     private var inputedText: String = ""
@@ -57,14 +57,14 @@ class SearchActivity : ComponentActivity() {
 
         val liveData = viewModel.getSearchStateLiveData()
         when (val liveDataValue = liveData.value) {
-            is SearchScreenState.Loading -> showLoading()
+            is SearchScreenState.Loading -> this.showProgressBar()
             is SearchScreenState.History -> showHistory(liveDataValue.tracks)
             is SearchScreenState.Content -> showContent(liveDataValue.tracks)
             is SearchScreenState.Error -> showError(liveDataValue.query)
         }
         liveData.observe(this) { state ->
             when (state) {
-                is SearchScreenState.Loading -> showLoading()
+                is SearchScreenState.Loading -> this.showProgressBar()
                 is SearchScreenState.History -> showHistory(state.tracks)
                 is SearchScreenState.Content -> showContent(state.tracks)
                 is SearchScreenState.Error -> showError(state.query)
@@ -75,6 +75,7 @@ class SearchActivity : ComponentActivity() {
 
         binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
             viewModel.handleSearchTextFocus(hasFocus)
+            searchFieldFocus = hasFocus
         }
 
         if (savedInstanceState != null) {
@@ -105,16 +106,16 @@ class SearchActivity : ComponentActivity() {
         }
         binding.searchEditText.addTextChangedListener(searchTextWatcher)
 
-//        if (searchFieldFocus || savedInstanceState == null) {
-//            binding.searchEditText.requestFocus()
-//            binding.searchEditText.setSelection(binding.searchEditText.text.length)
-//            val inputMethodManager =
-//                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-//            inputMethodManager?.showSoftInput(
-//                binding.searchEditText,
-//                InputMethodManager.SHOW_IMPLICIT
-//            )
-//        }
+        if (searchFieldFocus || savedInstanceState == null) {
+            binding.searchEditText.requestFocus()
+            binding.searchEditText.setSelection(binding.searchEditText.text.length)
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.showSoftInput(
+                binding.searchEditText,
+                InputMethodManager.SHOW_IMPLICIT
+            )
+        }
 
         binding.clearHistory.setOnClickListener {
             viewModel.clearHistory()
@@ -166,7 +167,7 @@ class SearchActivity : ComponentActivity() {
         connectionFailed: Boolean,
         lastSearchQuery: String = ""
     ) {
-        binding.recyclerView.visibility = View.GONE
+        hideContent()
         binding.messageView.root.visibility = View.VISIBLE
         binding.messageView.placeholderMessage.text = message
 
@@ -207,23 +208,21 @@ class SearchActivity : ComponentActivity() {
         }
     }
 
-    private fun showProgressBar() {
-        binding.progressBar.visibility = View.VISIBLE
-    }
-
     private fun hideProgressBar() {
         binding.progressBar.visibility = View.GONE
     }
 
-    private fun showLoading() {
-        binding.recyclerView.visibility = View.GONE
+    private fun showProgressBar() {
+        hideContent()
         hidePlaceholder()
         hideSearchHistory()
-        showProgressBar()
+        binding.progressBar.visibility = View.VISIBLE
     }
 
     private fun showHistory(tracks: List<SearchTrackInfo>) {
         hideProgressBar()
+        hideContent()
+        hidePlaceholder()
         historyAdapter.tracks.clear()
         historyAdapter.tracks.addAll(tracks)
         historyAdapter.notifyDataSetChanged()
@@ -232,19 +231,24 @@ class SearchActivity : ComponentActivity() {
 
     private fun showContent(tracks: List<SearchTrackInfo>) {
         hideProgressBar()
+        hidePlaceholder()
+        hideSearchHistory()
         searchAdapter.tracks.clear()
         if (tracks.isEmpty()) {
             showPlaceholder(
                 getString(R.string.nothings_found),
                 false,
             )
-            binding.recyclerView.visibility = View.GONE
+            hideContent()
         } else {
             searchAdapter.tracks.addAll(tracks)
             binding.recyclerView.visibility = View.VISIBLE
-            binding.messageView.root.visibility = View.GONE
         }
         searchAdapter.notifyDataSetChanged()
+    }
+
+    private fun hideContent() {
+        binding.recyclerView.visibility = View.GONE
     }
 
     private fun showError(lastSearchQuery: String) {

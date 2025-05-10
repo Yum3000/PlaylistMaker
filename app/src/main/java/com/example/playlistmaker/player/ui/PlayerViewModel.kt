@@ -39,7 +39,6 @@ class PlayerViewModel(
         playerStateLiveData.value = PlayerScreenState(
             playerState = PlayerState.DEFAULT,
             trackInfo = playerTrackInfo,
-            curPosition = DEFAULT_CUR_POSITION
         )
 
         val preview = playerTrackInfo.previewUrl
@@ -48,7 +47,6 @@ class PlayerViewModel(
                 playerStateLiveData.value = PlayerScreenState(
                     playerState = PlayerState.PREPARED,
                     trackInfo = playerTrackInfo,
-                    curPosition = DEFAULT_CUR_POSITION
                 )
             }
         }
@@ -57,7 +55,6 @@ class PlayerViewModel(
             playerStateLiveData.value = PlayerScreenState(
                 playerState = PlayerState.PREPARED,
                 trackInfo = playerTrackInfo,
-                curPosition = DEFAULT_CUR_POSITION
             )
             handler.removeCallbacks(updateTrackTimeRunnable)
         }
@@ -97,8 +94,6 @@ class PlayerViewModel(
                     )
                 }
             }
-
-        const val DEFAULT_CUR_POSITION = "00:00"
     }
 
     private fun trackToPlayerTrackInfo(track: Track?): PlayerTrackInfo {

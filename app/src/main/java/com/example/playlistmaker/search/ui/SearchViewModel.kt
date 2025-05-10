@@ -27,7 +27,6 @@ class SearchViewModel(
     ) : AndroidViewModel(application) {
 
     val searchTracks: MutableList<Track> = mutableListOf()
-    val historyTracks: MutableList<Track> = mutableListOf()
 
     private var isTrackClickAllowed: Boolean = true
 
@@ -60,6 +59,14 @@ class SearchViewModel(
 
     fun handleTrackClick(trackId: Int) {
         val track = searchTracks.find { it.trackId == trackId }
+        if (trackClickDebounce() && track != null) {
+            historyInteractor.updateHistory(track)
+            trackIdToOpenPlayer.postValue(trackId)
+        }
+    }
+
+    fun handleHistoryTrackClick(trackId: Int) {
+        val track = historyInteractor.getHistory().find { it.trackId == trackId }
         if (trackClickDebounce() && track != null) {
             historyInteractor.updateHistory(track)
             trackIdToOpenPlayer.postValue(trackId)
