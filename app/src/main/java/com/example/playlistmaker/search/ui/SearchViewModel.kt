@@ -1,16 +1,14 @@
 package com.example.playlistmaker.search.ui
 
-import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.App
+import com.example.playlistmaker.SingleLiveEvent
 import com.example.playlistmaker.creator.CreatorHistory
 import com.example.playlistmaker.creator.CreatorSearch
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
@@ -19,10 +17,9 @@ import com.example.playlistmaker.search.domain.models.SearchTrackInfo
 import com.example.playlistmaker.search.domain.models.Track
 
 class SearchViewModel(
-    application: Application,
     private val trackInteractor: TracksInteractor,
     private val historyInteractor: TracksHistoryInteractor,
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     val searchTracks: MutableList<Track> = mutableListOf()
 
@@ -36,14 +33,13 @@ class SearchViewModel(
     private val searchStateLiveData = MutableLiveData<SearchScreenState>()
     fun getSearchStateLiveData(): LiveData<SearchScreenState> = searchStateLiveData
 
-    private val trackIdToOpenPlayer = MutableLiveData<Int>(-1)
+    private val trackIdToOpenPlayer = SingleLiveEvent<Int>()
     fun getTrackIdToOpenPlayer(): LiveData<Int> = trackIdToOpenPlayer
 
     companion object {
         fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 SearchViewModel(
-                    (this[APPLICATION_KEY] as App),
                     CreatorSearch.provideTracksInteractor(),
                     CreatorHistory.provideTracksHistoryInteractor(),
                 )

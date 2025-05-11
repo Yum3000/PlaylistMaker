@@ -1,7 +1,5 @@
 package com.example.playlistmaker.search.data
 
-import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
 import com.example.playlistmaker.search.data.dto.TracksRequest
 import com.example.playlistmaker.search.data.dto.TracksResponse
@@ -10,14 +8,11 @@ import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
 
 class MusicRepositoryImpl (private val networkClient: NetworkClient,
-                           application: Application? = null
+                           private val sharedPref: SharedPreferences? = null
 ) : MusicRepository {
 
     private val history = mutableListOf<Track>()
     private val gson = Gson()
-
-    private val sharedPref: SharedPreferences? = application?.getSharedPreferences(
-        HISTORY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
     init {
 
@@ -77,6 +72,5 @@ class MusicRepositoryImpl (private val networkClient: NetworkClient,
 
     companion object {
         private const val KEY_FOR_SEARCH_HISTORY = "KEY"
-        private const val HISTORY_SHARED_PREFERENCES = "sh_pr_history"
     }
 }

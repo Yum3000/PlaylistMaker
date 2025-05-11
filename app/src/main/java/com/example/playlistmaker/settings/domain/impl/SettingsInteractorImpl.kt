@@ -11,4 +11,8 @@ class SettingsInteractorImpl(private val settingsManager: SettingsManager) : Set
     override fun saveTheme(isDark: Boolean) {
         settingsManager.saveTheme(isDark)
     }
+
+    override fun setSavedTheme() {
+        settingsManager.setSavedTheme()
+    }
 }

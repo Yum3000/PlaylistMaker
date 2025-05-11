@@ -5,8 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.databinding.TrackViewBinding
 import com.example.playlistmaker.search.domain.models.SearchTrackInfo
-import com.example.playlistmaker.search.domain.models.Track
-
 
 class TrackAdapter(
     var tracks: MutableList<SearchTrackInfo>,

@@ -8,7 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +18,7 @@ import com.example.playlistmaker.player.ui.AudioPlayerActivity
 import com.example.playlistmaker.search.domain.models.SearchTrackInfo
 import com.example.playlistmaker.search.ui.SearchViewModel.Companion.INTENT_TRACK_KEY
 
-class SearchActivity : ComponentActivity() {
+class SearchActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SearchViewModel
 
@@ -71,7 +71,9 @@ class SearchActivity : ComponentActivity() {
             }
         }
 
-        viewModel.getTrackIdToOpenPlayer().observe(this) { trackId -> openPlayerActivity(trackId) }
+        viewModel.getTrackIdToOpenPlayer().observe(this) {
+            trackId -> openPlayerActivity(trackId)
+        }
 
         binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
             viewModel.handleSearchTextFocus(hasFocus)
@@ -152,7 +154,6 @@ class SearchActivity : ComponentActivity() {
     }
 
     private fun openPlayerActivity(trackId: Int) {
-        if (trackId < 0) return
         val intent = Intent(this, AudioPlayerActivity::class.java)
         intent.putExtra(INTENT_TRACK_KEY, trackId)
         startActivity(intent)

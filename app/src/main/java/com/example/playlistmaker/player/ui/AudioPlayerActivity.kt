@@ -9,7 +9,6 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityAudioplayerBinding
 import com.example.playlistmaker.player.domain.models.PlayerTrackInfo
 
-
 class AudioPlayerActivity : AppCompatActivity() {
 
     private lateinit var viewModel : PlayerViewModel

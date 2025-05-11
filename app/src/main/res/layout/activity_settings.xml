@@ -45,13 +45,8 @@
         <TextView
             android:id="@+id/share_textview"
             android:text="@string/share_bt"
-            style="@style/SettingsTextViewForButton"/>
-
-        <ImageView
-            android:id="@+id/share_icon"
-            android:layout_width="@dimen/settings_screen_bt_size"
-            android:layout_height="@dimen/settings_screen_bt_size"
-            android:src="@drawable/share_icon"
+            style="@style/SettingsTextViewForButton"
+            app:drawableEndCompat="@drawable/share_icon"
             app:tint="@color/settings_screen_icon"
             android:contentDescription="@string/share_bt_desc"/>
 
@@ -63,13 +58,8 @@
         <TextView
             android:id="@+id/support_textview"
             android:text="@string/support_bt"
-            style="@style/SettingsTextViewForButton"/>
-
-        <ImageView
-            android:id="@+id/support_icon"
-            android:layout_width="@dimen/settings_screen_bt_size"
-            android:layout_height="@dimen/settings_screen_bt_size"
-            android:src="@drawable/support_icon"
+            style="@style/SettingsTextViewForButton"
+            app:drawableEndCompat="@drawable/support_icon"
             app:tint="@color/settings_screen_icon"
             android:contentDescription="@string/support_bt_desc"/>
 
@@ -81,13 +71,8 @@
         <TextView
             android:id="@+id/user_agreement_textview"
             android:text="@string/user_agreement"
-            style="@style/SettingsTextViewForButton"/>
-
-        <ImageView
-            android:id="@+id/user_agreement_icon"
-            android:layout_width="@dimen/settings_screen_bt_size"
-            android:layout_height="@dimen/settings_screen_bt_size"
-            android:src="@drawable/arrow_forward_icon"
+            style="@style/SettingsTextViewForButton"
+            app:drawableEndCompat="@drawable/arrow_forward_icon"
             app:tint="@color/settings_screen_icon"
             android:contentDescription="@string/user_agreement_desc"/>
 
