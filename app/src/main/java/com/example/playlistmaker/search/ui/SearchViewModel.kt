@@ -84,8 +84,8 @@ class SearchViewModel(
     private fun trackToSearchTrackInfo(track: Track?): SearchTrackInfo {
         return SearchTrackInfo(
             track?.trackId ?: -1,
-            track?.artistName ?: "",
             track?.trackName ?: "",
+            track?.artistName ?: "",
             track?.trackTimeMillis ?: "",
             track?.artworkUrl100 ?: ""
         )

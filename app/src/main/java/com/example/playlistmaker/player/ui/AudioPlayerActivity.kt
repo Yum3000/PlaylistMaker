@@ -1,6 +1,7 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -35,13 +36,17 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(
             this,
-            PlayerViewModel.getViewModelFactory(application, trackId)
+            PlayerViewModel.getViewModelFactory(trackId)
         )[PlayerViewModel::class.java]
 
         viewModel.getPlayerStateLiveData().observe(this) { state ->
             playerState = state.playerState
             redrawPlayer(state.playerState, state.curPosition)
             redrawTrack(state.trackInfo)
+        }
+
+        viewModel.getPlayerErrorToast().observe(this) {
+            showToast()
         }
 
         binding.playBtn.setOnClickListener {
@@ -83,5 +88,13 @@ class AudioPlayerActivity : AppCompatActivity() {
         binding.yearTV.text = track.releaseDate ?: getString(R.string.no_data)
         binding.genreTV.text = track.primaryGenreName ?: getString(R.string.no_data)
         binding.countryTV.text = track.country ?: getString(R.string.no_data)
+    }
+
+    private fun showToast() {
+        Toast.makeText(
+            this,
+            R.string.playing_error,
+            Toast.LENGTH_LONG
+        ).show()
     }
 }

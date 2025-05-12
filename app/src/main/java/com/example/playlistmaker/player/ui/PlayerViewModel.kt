@@ -1,16 +1,14 @@
 package com.example.playlistmaker.player.ui
 
-import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.R
+import com.example.playlistmaker.SingleLiveEvent
 import com.example.playlistmaker.creator.CreatorAudioPlayer
 import com.example.playlistmaker.creator.CreatorHistory
 import com.example.playlistmaker.player.domain.api.AudioPlayerInteractor
@@ -21,13 +19,14 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel(
-    private val application: Application,
     private val trackId: Int,
     private val playerInteractor: AudioPlayerInteractor,
     historyInteractor: TracksHistoryInteractor
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private var playerStateLiveData = MutableLiveData<PlayerScreenState>()
+
+    private var playerErrorToast = SingleLiveEvent<Unit>()
 
     private val playerTrackInfo: PlayerTrackInfo
 
@@ -82,12 +81,13 @@ class PlayerViewModel(
 
     fun getPlayerStateLiveData(): LiveData<PlayerScreenState> = playerStateLiveData
 
+    fun getPlayerErrorToast(): SingleLiveEvent<Unit> = playerErrorToast
+
     companion object {
-        fun getViewModelFactory(application: Application, trackId: Int): ViewModelProvider.Factory =
+        fun getViewModelFactory(trackId: Int): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
                     PlayerViewModel(
-                        application,
                         trackId,
                         CreatorAudioPlayer.provideAudioPlayerInteractor(),
                         CreatorHistory.provideTracksHistoryInteractor()
@@ -99,9 +99,9 @@ class PlayerViewModel(
     private fun trackToPlayerTrackInfo(track: Track?): PlayerTrackInfo {
         return PlayerTrackInfo(
             track?.trackId ?: -1,
-            track?.artistName ?: "",
-            track?.collectionName,
             track?.trackName ?: "",
+            track?.collectionName,
+            track?.artistName ?: "",
             track?.trackTimeMillis ?: "",
             track?.getTrackReleaseDate() ?: "",
             track?.primaryGenreName ?: "",
@@ -143,14 +143,6 @@ class PlayerViewModel(
         )
     }
 
-    private fun showToast() {
-        Toast.makeText(
-            application,
-            R.string.playing_error,
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
     fun handlePlayBtnClick() {
         when (playerStateLiveData.value?.playerState) {
             PlayerState.PLAYING -> {
@@ -166,7 +158,7 @@ class PlayerViewModel(
             }
 
             else -> {
-                showToast()
+                playerErrorToast.postValue(Unit)
             }
         }
     }

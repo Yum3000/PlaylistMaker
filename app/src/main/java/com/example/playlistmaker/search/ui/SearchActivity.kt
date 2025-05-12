@@ -224,10 +224,14 @@ class SearchActivity : AppCompatActivity() {
         hideProgressBar()
         hideContent()
         hidePlaceholder()
-        historyAdapter.tracks.clear()
-        historyAdapter.tracks.addAll(tracks)
-        historyAdapter.notifyDataSetChanged()
-        binding.historyLayout.visibility = View.VISIBLE
+        if (tracks.isEmpty()) {
+            binding.historyLayout.visibility = View.GONE
+        } else {
+            historyAdapter.tracks.clear()
+            historyAdapter.tracks.addAll(tracks)
+            historyAdapter.notifyDataSetChanged()
+            binding.historyLayout.visibility = View.VISIBLE
+        }
     }
 
     private fun showContent(tracks: List<SearchTrackInfo>) {
