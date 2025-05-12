@@ -172,9 +172,14 @@
         android:textColor="@color/audioplayer_tvs"
         android:ellipsize="end"
         android:maxLines="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBaseline_toBaselineOf="@id/albumTitle"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@id/barrier_player"
         app:layout_constraintEnd_toEndOf="@id/rightBorder2"
-        tools:text="Yesterday (Remastered 2009)" />
+        tools:text="Yesterday (Remastered 2009) Yesterday (Remastered 2009) Yesterday (Remastered 2009)" />
 
     <TextView
         android:id="@+id/yearTitle"

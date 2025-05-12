@@ -55,14 +55,7 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        val liveData = viewModel.getSearchStateLiveData()
-        when (val liveDataValue = liveData.value) {
-            is SearchScreenState.Loading -> this.showProgressBar()
-            is SearchScreenState.History -> showHistory(liveDataValue.tracks)
-            is SearchScreenState.Content -> showContent(liveDataValue.tracks)
-            is SearchScreenState.Error -> showError(liveDataValue.query)
-        }
-        liveData.observe(this) { state ->
+        viewModel.getSearchStateLiveData().observe(this) { state ->
             when (state) {
                 is SearchScreenState.Loading -> this.showProgressBar()
                 is SearchScreenState.History -> showHistory(state.tracks)
@@ -160,7 +153,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideSearchHistory() {
-        binding.historyLayout.visibility = View.GONE
+        binding.historyLayout.isVisible = false
     }
 
     private fun showPlaceholder(
@@ -169,24 +162,24 @@ class SearchActivity : AppCompatActivity() {
         lastSearchQuery: String = ""
     ) {
         hideContent()
-        binding.messageView.root.visibility = View.VISIBLE
+        binding.messageView.root.isVisible = true
         binding.messageView.placeholderMessage.text = message
 
         val imageResource = getPlaceholderImageResource(connectionFailed)
         binding.messageView.placeholderImage.setImageResource(imageResource)
 
         if (connectionFailed) {
-            binding.messageView.placeholderButton.visibility = View.VISIBLE
+            binding.messageView.placeholderButton.isVisible = true
             binding.messageView.placeholderButton.setOnClickListener {
                 viewModel.executeRequest(lastSearchQuery)
             }
         } else {
-            binding.messageView.placeholderButton.visibility = View.GONE
+            binding.messageView.placeholderButton.isVisible = false
         }
     }
 
     private fun hidePlaceholder() {
-        binding.messageView.root.visibility = View.GONE
+        binding.messageView.root.isVisible = false
     }
 
     private fun isNightMode(): Boolean {
@@ -210,14 +203,14 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideProgressBar() {
-        binding.progressBar.visibility = View.GONE
+        binding.progressBar.isVisible = false
     }
 
     private fun showProgressBar() {
         hideContent()
         hidePlaceholder()
         hideSearchHistory()
-        binding.progressBar.visibility = View.VISIBLE
+        binding.progressBar.isVisible = true
     }
 
     private fun showHistory(tracks: List<SearchTrackInfo>) {
@@ -225,12 +218,12 @@ class SearchActivity : AppCompatActivity() {
         hideContent()
         hidePlaceholder()
         if (tracks.isEmpty()) {
-            binding.historyLayout.visibility = View.GONE
+            binding.historyLayout.isVisible = false
         } else {
             historyAdapter.tracks.clear()
             historyAdapter.tracks.addAll(tracks)
             historyAdapter.notifyDataSetChanged()
-            binding.historyLayout.visibility = View.VISIBLE
+            binding.historyLayout.isVisible = true
         }
     }
 
@@ -247,13 +240,13 @@ class SearchActivity : AppCompatActivity() {
             hideContent()
         } else {
             searchAdapter.tracks.addAll(tracks)
-            binding.recyclerView.visibility = View.VISIBLE
+            binding.recyclerView.isVisible = true
         }
         searchAdapter.notifyDataSetChanged()
     }
 
     private fun hideContent() {
-        binding.recyclerView.visibility = View.GONE
+        binding.recyclerView.isVisible = false
     }
 
     private fun showError(lastSearchQuery: String) {
