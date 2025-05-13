@@ -39,7 +39,6 @@ class MusicRepositoryImpl (private val networkClient: NetworkClient,
                     it.artworkUrl100,
                     it.previewUrl
                 ) }
-            tracks.forEach { updateHistory(it) }
             return tracks
         } else {
             return null

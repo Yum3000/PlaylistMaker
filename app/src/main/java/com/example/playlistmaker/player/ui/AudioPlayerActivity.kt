@@ -44,7 +44,6 @@ class AudioPlayerActivity : AppCompatActivity() {
             playerState = state.playerState
             redrawPlayer(state.playerState, state.curPosition)
             redrawTrack(state.trackInfo)
-            Log.d("!!!", "${state.trackInfo.trackId}, ${state.trackInfo.trackName}, ${state.trackInfo.previewUrl} " )
         }
 
         viewModel.getPlayerErrorToast().observe(this) {
@@ -68,10 +67,9 @@ class AudioPlayerActivity : AppCompatActivity() {
                 binding.playBtn.setImageResource(R.drawable.pause_btn)
             }
 
-            PlayerState.PREPARED, PlayerState.PAUSED -> {
+            PlayerState.PREPARED, PlayerState.PAUSED, PlayerState.DEFAULT -> {
                 binding.playBtn.setImageResource(R.drawable.play_btn)
             }
-            else -> { }
         }
     }
 

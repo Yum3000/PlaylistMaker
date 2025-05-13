@@ -21,7 +21,7 @@ val repositoryModule = module {
         MusicRepositoryImpl(get(), get(named(HISTORY_DI)), get())
     }
 
-    single<AudioPlayerManager> {
+    single <AudioPlayerManager> {
         AudioPlayerManagerImpl(get())
     }
 
