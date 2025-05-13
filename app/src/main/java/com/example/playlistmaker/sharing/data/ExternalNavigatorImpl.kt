@@ -15,11 +15,12 @@ class ExternalNavigatorImpl(private val application: Application): ExternalNavig
     }
 
     override fun shareLink(link: String) {
-        val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.type = "text/plain"
-        shareIntent.putExtra(Intent.EXTRA_TEXT, link)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, link)
+        val shareIntent = Intent.createChooser(intent, null)
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        application.startActivity(Intent.createChooser(shareIntent, null))
+        application.startActivity(shareIntent)
     }
 
     override fun sendMail(data: EmailData) {
