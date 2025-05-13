@@ -1,18 +1,24 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityAudioplayerBinding
 import com.example.playlistmaker.player.domain.models.PlayerTrackInfo
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 
 class AudioPlayerActivity : AppCompatActivity() {
 
-    private lateinit var viewModel : PlayerViewModel
+    private var trackId: Int = ERROR_TRACK_ID
+
+    private val viewModel: PlayerViewModel by lazy {
+        getViewModel { parametersOf(trackId) }
+    }
 
     private lateinit var binding: ActivityAudioplayerBinding
 
@@ -32,17 +38,13 @@ class AudioPlayerActivity : AppCompatActivity() {
             finish()
         }
 
-        val trackId: Int = this.intent.getIntExtra(INTENT_TRACK_KEY, ERROR_TRACK_ID)
-
-        viewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getViewModelFactory(trackId)
-        )[PlayerViewModel::class.java]
+        trackId = this.intent.getIntExtra(INTENT_TRACK_KEY, ERROR_TRACK_ID)
 
         viewModel.getPlayerStateLiveData().observe(this) { state ->
             playerState = state.playerState
             redrawPlayer(state.playerState, state.curPosition)
             redrawTrack(state.trackInfo)
+            Log.d("!!!", "${state.trackInfo.trackId}, ${state.trackInfo.trackName}, ${state.trackInfo.previewUrl} " )
         }
 
         viewModel.getPlayerErrorToast().observe(this) {

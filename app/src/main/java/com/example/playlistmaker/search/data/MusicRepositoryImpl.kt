@@ -8,17 +8,18 @@ import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
 
 class MusicRepositoryImpl (private val networkClient: NetworkClient,
-                           private val sharedPref: SharedPreferences? = null
+                           private val sharedPref: SharedPreferences? = null,
+                           private val gson: Gson? = null
 ) : MusicRepository {
 
     private val history = mutableListOf<Track>()
-    private val gson = Gson()
 
     init {
-
-        val json = sharedPref?.getString(KEY_FOR_SEARCH_HISTORY, null)
-        if (json != null) {
-            history.addAll(gson.fromJson(json, Array<Track>::class.java))
+        if (sharedPref != null && gson != null) {
+            val json = sharedPref.getString(KEY_FOR_SEARCH_HISTORY, null)
+            if (json != null) {
+                history.addAll(gson.fromJson(json, Array<Track>::class.java))
+            }
         }
     }
 
@@ -61,7 +62,7 @@ class MusicRepositoryImpl (private val networkClient: NetworkClient,
     }
 
     private fun saveHistory() {
-        val json = gson.toJson(history)
+        val json = gson?.toJson(history)
         sharedPref?.edit()?.putString(KEY_FOR_SEARCH_HISTORY, json)?.apply()
     }
 
@@ -71,6 +72,6 @@ class MusicRepositoryImpl (private val networkClient: NetworkClient,
     }
 
     companion object {
-        private const val KEY_FOR_SEARCH_HISTORY = "KEY"
+        private const val KEY_FOR_SEARCH_HISTORY = "KEY_FOR_SEARCH_HISTORY"
     }
 }
