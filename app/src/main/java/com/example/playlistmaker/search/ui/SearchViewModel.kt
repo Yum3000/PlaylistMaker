@@ -5,12 +5,7 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.SingleLiveEvent
-import com.example.playlistmaker.creator.CreatorHistory
-import com.example.playlistmaker.creator.CreatorSearch
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.SearchTrackInfo
@@ -37,15 +32,6 @@ class SearchViewModel(
     fun getTrackIdToOpenPlayer(): LiveData<Int> = trackIdToOpenPlayer
 
     companion object {
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SearchViewModel(
-                    CreatorSearch.provideTracksInteractor(),
-                    CreatorHistory.provideTracksHistoryInteractor(),
-                )
-            }
-        }
-
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
         const val INTENT_TRACK_KEY = "track_to_player"

@@ -5,12 +5,7 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.SingleLiveEvent
-import com.example.playlistmaker.creator.CreatorAudioPlayer
-import com.example.playlistmaker.creator.CreatorHistory
 import com.example.playlistmaker.player.domain.api.AudioPlayerInteractor
 import com.example.playlistmaker.player.domain.models.PlayerTrackInfo
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
@@ -82,19 +77,6 @@ class PlayerViewModel(
     fun getPlayerStateLiveData(): LiveData<PlayerScreenState> = playerStateLiveData
 
     fun getPlayerErrorToast(): SingleLiveEvent<Unit> = playerErrorToast
-
-    companion object {
-        fun getViewModelFactory(trackId: Int): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    PlayerViewModel(
-                        trackId,
-                        CreatorAudioPlayer.provideAudioPlayerInteractor(),
-                        CreatorHistory.provideTracksHistoryInteractor()
-                    )
-                }
-            }
-    }
 
     private fun trackToPlayerTrackInfo(track: Track?): PlayerTrackInfo {
         return PlayerTrackInfo(

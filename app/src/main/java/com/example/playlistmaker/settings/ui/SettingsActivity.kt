@@ -2,12 +2,12 @@ package com.example.playlistmaker.settings.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
 
     private lateinit var binding: ActivitySettingsBinding
 
@@ -19,11 +19,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.materialToolbar.setNavigationOnClickListener {
             finish()
         }
-
-        viewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getViewModelFactory()
-        )[SettingsViewModel::class.java]
 
         viewModel.getSettingsThemeDarkLiveData().observe(this) { isDark ->
             binding.switchTheme.isChecked = isDark

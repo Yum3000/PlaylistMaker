@@ -25,7 +25,6 @@ class SettingsManagerImpl (private val isDarkMode: Boolean,
     }
 
     companion object {
-
         const val DARK_THEME_KEY = "is_dark_theme"
     }
 }
