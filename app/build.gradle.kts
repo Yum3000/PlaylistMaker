@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.firebase.crashlytics.buildtools)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,5 +60,5 @@ dependencies {
     implementation(libs.androidx.core.ktx.v190)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
     implementation (libs.androidx.activity.ktx)
-
+    implementation (libs.koin.android)
 }
