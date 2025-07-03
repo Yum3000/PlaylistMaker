@@ -52,4 +52,11 @@
     <string name="track_timer_ph">00:00</string>
     <string name="no_data">Нет данных</string>
     <string name="playing_error">Не удалось воспроизвести</string>
+
+    <string name="media_text">Медиатека</string>
+    <string name="no_playlists">Вы не создали\n\ни одного плейлиста</string>
+    <string name="no_favourites">Ваша медиатека пуста</string>
+    <string name="favourites_tracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
+    <string name="new_playlist">Новый плейлист</string>
 </resources>

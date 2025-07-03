@@ -17,4 +17,7 @@
     <dimen name="player_track_desc_titles_margin">17dp</dimen>
 
     <dimen name="progress_bar">44dp</dimen>
+
+    <dimen name="media_screen_placeholder_top_margin">106dp</dimen>
+    <dimen name="media_button_top_margin">24dp</dimen>
 </resources>
