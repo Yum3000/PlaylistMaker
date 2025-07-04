@@ -38,4 +38,9 @@
     <color name="audioplayer_play_btn_bg_tint">@color/dark_grey</color>
     <color name="audioplayer_play_btn_tint">@color/white</color>
 
+    <color name="media_screen_bg">@color/dark_grey</color>
+    <color name="media_screen_toolbar">@color/white</color>
+    <color name="media_screen_text">@color/white</color>
+    <color name="media_tab_indicator">@color/white</color>
+
 </resources>
