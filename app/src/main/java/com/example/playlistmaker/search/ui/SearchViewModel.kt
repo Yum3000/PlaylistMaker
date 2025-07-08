@@ -23,7 +23,11 @@ class SearchViewModel(
     private val handler = Handler(Looper.getMainLooper())
 
     private var inputedText = ""
-    private val searchRunnable = Runnable { executeRequest(inputedText) }
+    private val searchRunnable = Runnable {
+        if (inputedText.isNotEmpty()) {
+            executeRequest(inputedText)
+        }
+    }
 
     private val searchStateLiveData = MutableLiveData<SearchScreenState>()
     fun getSearchStateLiveData(): LiveData<SearchScreenState> = searchStateLiveData
@@ -84,12 +88,13 @@ class SearchViewModel(
 
     fun handleSearchChange(s: String) {
         inputedText = s
+        handler.removeCallbacks(searchRunnable)
         if (s.isEmpty()) {
             searchTracks.clear()
             val tracks = historyInteractor.getHistory().map { trackToSearchTrackInfo(it) }
             searchStateLiveData.postValue(SearchScreenState.History(tracks))
         } else {
-            searchDebounce()
+            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
             searchStateLiveData.postValue(SearchScreenState.Loading)
         }
 

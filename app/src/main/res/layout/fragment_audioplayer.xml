@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/audioplayer_screen_bg">
+    android:background="@color/audioplayer_screen_bg"
+    tools:context="com.example.playlistmaker.player.ui.AudioPlayerFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/materialToolbar"

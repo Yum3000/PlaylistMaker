@@ -1,27 +1,34 @@
 package com.example.playlistmaker.search.ui
 
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.player.ui.AudioPlayerActivity
+import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.player.ui.AudioPlayerFragment
 import com.example.playlistmaker.search.domain.models.SearchTrackInfo
-import com.example.playlistmaker.search.ui.SearchViewModel.Companion.INTENT_TRACK_KEY
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
+
+    private lateinit var binding: FragmentSearchBinding
 
     private val viewModel: SearchViewModel by viewModel()
 
-    private lateinit var binding: ActivitySearchBinding
+    private companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val SEARCH_FOCUS = "SEARCH_FOCUS"
+    }
 
     private val searchAdapter = TrackAdapter(mutableListOf()) { track, _ ->
         viewModel.handleTrackClick(track.trackId)
@@ -34,22 +41,22 @@ class SearchActivity : AppCompatActivity() {
     private var inputedText: String = ""
     private var searchFieldFocus: Boolean = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerView.adapter = searchAdapter
 
         binding.recyclerViewHistory.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.recyclerViewHistory.adapter = historyAdapter
 
-        binding.materialToolbar.setNavigationOnClickListener {
-            finish()
-        }
 
-        viewModel.getSearchStateLiveData().observe(this) { state ->
+        viewModel.getSearchStateLiveData().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is SearchScreenState.Loading -> this.showProgressBar()
                 is SearchScreenState.History -> showHistory(state.tracks)
@@ -58,8 +65,8 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.getTrackIdToOpenPlayer().observe(this) {
-            trackId -> openPlayerActivity(trackId)
+        viewModel.getTrackIdToOpenPlayer().observe(viewLifecycleOwner) {
+                trackId -> openPlayerActivity(trackId)
         }
 
         binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -77,7 +84,7 @@ class SearchActivity : AppCompatActivity() {
         binding.clearIcon.setOnClickListener {
             binding.searchEditText.setText("")
             val inputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
             binding.searchEditText.clearFocus()
             searchFieldFocus = false
@@ -99,7 +106,7 @@ class SearchActivity : AppCompatActivity() {
             binding.searchEditText.requestFocus()
             binding.searchEditText.setSelection(binding.searchEditText.text.length)
             val inputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.showSoftInput(
                 binding.searchEditText,
                 InputMethodManager.SHOW_IMPLICIT
@@ -117,17 +124,19 @@ class SearchActivity : AppCompatActivity() {
         outState.putBoolean(SEARCH_FOCUS, searchFieldFocus)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        inputedText = savedInstanceState.getString(SEARCH_TEXT, "")
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            inputedText = savedInstanceState.getString(SEARCH_TEXT, "")
+            searchFieldFocus = savedInstanceState.getBoolean(SEARCH_FOCUS, false)
+        }
         binding.searchEditText.setText(inputedText)
-        searchFieldFocus = savedInstanceState.getBoolean(SEARCH_FOCUS, false)
 
         if (searchFieldFocus) {
             binding.searchEditText.requestFocus()
             binding.searchEditText.setSelection(binding.searchEditText.text.length)
             val inputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.showSoftInput(
                 binding.searchEditText,
                 InputMethodManager.SHOW_IMPLICIT
@@ -135,15 +144,9 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val SEARCH_FOCUS = "SEARCH_FOCUS"
-    }
-
     private fun openPlayerActivity(trackId: Int) {
-        val intent = Intent(this, AudioPlayerActivity::class.java)
-        intent.putExtra(INTENT_TRACK_KEY, trackId)
-        startActivity(intent)
+        val bundle = AudioPlayerFragment.createArgs(trackId) // Создаем Bundle с trackId
+        findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment, bundle)
     }
 
     private fun hideSearchHistory() {
