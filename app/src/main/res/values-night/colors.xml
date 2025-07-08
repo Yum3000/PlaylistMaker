@@ -43,4 +43,7 @@
     <color name="media_screen_text">@color/white</color>
     <color name="media_tab_indicator">@color/white</color>
 
+    <color name="bottom_menu">@color/dark_grey</color>
+    <color name="bottom_menu_icons">@color/white</color>
+
 </resources>

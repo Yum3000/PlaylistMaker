@@ -1,8 +1,11 @@
 [versions]
 activityKtx = "1.10.1"
 agp = "8.8.0"
+androidxNavigationFragmentKtx = "2.5.3"
 converterGson = "2.9.0"
 coreKtxVersion = "1.9.0"
+fragmentKtx = "1.8.8"
+fragmentKtxVersion = "1.5.6"
 glide = "4.14.2"
 gson = "2.10.1"
 koinAndroid = "3.3.0"
@@ -18,14 +21,25 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 materialVersion = "1.6.1"
 firebaseCrashlyticsBuildtools = "3.0.3"
+navigationFragmentKtx = "2.9.1"
+navigationUiKtx = "2.9.1"
+navigationUiKtxVersion = "2.5.3"
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-ktx-v190 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx" }
+androidx-fragment-ktx-v156 = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtxVersion" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx" }
+androidx-navigation-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx" }
+androidx-navigation-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx" }
+androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx" }
+androidx-navigation-ui-ktx-v253 = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtxVersion" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -37,6 +51,9 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material-v161 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+navigation-fragment-ktx-v253 = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidxNavigationFragmentKtx" }
+navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
