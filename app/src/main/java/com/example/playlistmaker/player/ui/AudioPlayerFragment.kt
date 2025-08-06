@@ -23,7 +23,8 @@ class AudioPlayerFragment: Fragment() {
         getViewModel { parametersOf(trackId) }
     }
 
-    private lateinit var binding: FragmentAudioplayerBinding
+    private var _binding: FragmentAudioplayerBinding? = null
+    private val binding get() = _binding!!
 
     private var playerState = PlayerState.DEFAULT
 
@@ -40,7 +41,7 @@ class AudioPlayerFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentAudioplayerBinding.inflate(inflater, container, false)
+        _binding = FragmentAudioplayerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -66,6 +67,11 @@ class AudioPlayerFragment: Fragment() {
         binding.materialToolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onPause() {
