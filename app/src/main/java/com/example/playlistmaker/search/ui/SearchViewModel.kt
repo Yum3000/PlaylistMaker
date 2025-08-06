@@ -35,12 +35,6 @@ class SearchViewModel(
     private val trackIdToOpenPlayer = SingleLiveEvent<Int>()
     fun getTrackIdToOpenPlayer(): LiveData<Int> = trackIdToOpenPlayer
 
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
-        const val INTENT_TRACK_KEY = "track_to_player"
-    }
-
     fun handleTrackClick(trackId: Int) {
         val track = searchTracks.find { it.trackId == trackId }
         if (trackClickDebounce() && track != null) {
@@ -122,5 +116,11 @@ class SearchViewModel(
             val tracks = historyInteractor.getHistory().map { trackToSearchTrackInfo(it) }
             searchStateLiveData.postValue(SearchScreenState.History(tracks))
         }
+    }
+
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
+        const val INTENT_TRACK_KEY = "track_to_player"
     }
 }

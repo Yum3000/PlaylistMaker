@@ -28,14 +28,6 @@ class AudioPlayerFragment: Fragment() {
 
     private var playerState = PlayerState.DEFAULT
 
-    companion object {
-        const val INTENT_TRACK_KEY = "track_to_player"
-        const val ERROR_TRACK_ID = -1
-
-        fun createArgs(trackId: Int): Bundle =
-            bundleOf(INTENT_TRACK_KEY to trackId)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -115,5 +107,13 @@ class AudioPlayerFragment: Fragment() {
             R.string.playing_error,
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    companion object {
+        const val INTENT_TRACK_KEY = "track_to_player"
+        const val ERROR_TRACK_ID = -1
+
+        fun createArgs(trackId: Int): Bundle =
+            bundleOf(INTENT_TRACK_KEY to trackId)
     }
 }
