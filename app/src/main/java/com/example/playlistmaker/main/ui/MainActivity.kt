@@ -1,38 +1,38 @@
 package com.example.playlistmaker.main.ui
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.playlistmaker.media.ui.MediaActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.R
-import com.example.playlistmaker.search.ui.SearchActivity
-import com.example.playlistmaker.settings.ui.SettingsActivity
+import com.example.playlistmaker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val buttonSearch = findViewById<Button>(R.id.search)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        buttonSearch.setOnClickListener {
-            val displaySearch = Intent(this, SearchActivity::class.java)
-            startActivity(displaySearch)
-        }
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.container_view) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        val buttonMedia = findViewById<Button>(R.id.media_lib)
+        binding.bottomNavigationView.setupWithNavController(navController)
 
-        buttonMedia.setOnClickListener {
-            val displayMedia = Intent(this, MediaActivity::class.java)
-            startActivity(displayMedia)
-        }
-
-        val buttonSettings = findViewById<Button>(R.id.settings)
-
-        buttonSettings.setOnClickListener {
-            val displaySettings = Intent(this, SettingsActivity::class.java)
-            startActivity(displaySettings)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.audioPlayerFragment -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                }
+                else -> {
+                    binding.bottomNavigationView.visibility = View.VISIBLE
+                }
+            }
         }
     }
+
 }

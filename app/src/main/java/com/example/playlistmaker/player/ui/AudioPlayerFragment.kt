@@ -1,58 +1,69 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
-import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityAudioplayerBinding
+import com.example.playlistmaker.databinding.FragmentAudioplayerBinding
 import com.example.playlistmaker.player.domain.models.PlayerTrackInfo
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
-class AudioPlayerActivity : AppCompatActivity() {
-
+class AudioPlayerFragment: Fragment() {
     private var trackId: Int = ERROR_TRACK_ID
 
     private val viewModel: PlayerViewModel by lazy {
         getViewModel { parametersOf(trackId) }
     }
 
-    private lateinit var binding: ActivityAudioplayerBinding
+    private var _binding: FragmentAudioplayerBinding? = null
+    private val binding get() = _binding!!
 
     private var playerState = PlayerState.DEFAULT
 
-    private companion object {
-        const val INTENT_TRACK_KEY = "track_to_player"
-        const val ERROR_TRACK_ID = -1
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAudioplayerBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAudioplayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        binding.materialToolbar.setNavigationOnClickListener {
-            finish()
-        }
+        trackId = requireArguments().getInt(INTENT_TRACK_KEY, ERROR_TRACK_ID)
 
-        trackId = this.intent.getIntExtra(INTENT_TRACK_KEY, ERROR_TRACK_ID)
-
-        viewModel.getPlayerStateLiveData().observe(this) { state ->
+        viewModel.getPlayerStateLiveData().observe(viewLifecycleOwner) { state ->
             playerState = state.playerState
             redrawPlayer(state.playerState, state.curPosition)
             redrawTrack(state.trackInfo)
         }
 
-        viewModel.getPlayerErrorToast().observe(this) {
+        viewModel.getPlayerErrorToast().observe(viewLifecycleOwner) {
             showToast()
         }
 
         binding.playBtn.setOnClickListener {
             viewModel.handlePlayBtnClick()
         }
+
+        binding.materialToolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onPause() {
@@ -92,9 +103,17 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private fun showToast() {
         Toast.makeText(
-            this,
+            requireContext(),
             R.string.playing_error,
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    companion object {
+        const val INTENT_TRACK_KEY = "track_to_player"
+        const val ERROR_TRACK_ID = -1
+
+        fun createArgs(trackId: Int): Bundle =
+            bundleOf(INTENT_TRACK_KEY to trackId)
     }
 }

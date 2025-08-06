@@ -15,10 +15,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FragmentPlaylists: Fragment() {
 
-    companion object {
-            fun newInstance() : FragmentPlaylists = FragmentPlaylists()
-        }
-
     private val playlistsViewModel: PlaylistsViewModel by viewModel()
 
     private lateinit var binding: FragmentPlaylistsBinding
@@ -66,5 +62,9 @@ class FragmentPlaylists: Fragment() {
 
     private fun isNightMode(): Boolean {
         return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+    }
+
+    companion object {
+        fun newInstance() : FragmentPlaylists = FragmentPlaylists()
     }
 }
