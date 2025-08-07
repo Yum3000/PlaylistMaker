@@ -1,15 +1,17 @@
 package com.example.playlistmaker.player.ui
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.SingleLiveEvent
 import com.example.playlistmaker.player.domain.api.AudioPlayerInteractor
 import com.example.playlistmaker.player.domain.models.PlayerTrackInfo
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -25,7 +27,7 @@ class PlayerViewModel(
 
     private val playerTrackInfo: PlayerTrackInfo
 
-    private var handler = Handler(Looper.getMainLooper())
+    private var timerJob: Job? = null
 
     init {
         val track: Track? = historyInteractor.getHistory().firstOrNull { it.trackId == trackId }
@@ -50,27 +52,6 @@ class PlayerViewModel(
                 playerState = PlayerState.PREPARED,
                 trackInfo = playerTrackInfo,
             )
-            handler.removeCallbacks(updateTrackTimeRunnable)
-        }
-    }
-
-    private val updateTrackTimeRunnable = object : Runnable {
-        override fun run() {
-            val curPos = SimpleDateFormat(
-                "mm:ss",
-                Locale.getDefault()
-            ).format(playerInteractor.getCurrentPosition())
-
-
-            val oldState = playerStateLiveData.value
-            playerStateLiveData.postValue(
-                PlayerScreenState(
-                    playerState = oldState.playerState,
-                    trackInfo = oldState.trackInfo,
-                    curPosition = curPos
-                )
-            )
-            handler.postDelayed(this, 500L)
         }
     }
 
@@ -96,7 +77,7 @@ class PlayerViewModel(
     override fun onCleared() {
         super.onCleared()
         playerInteractor.release()
-        handler.removeCallbacks(updateTrackTimeRunnable)
+        stopTimer()
     }
 
     private fun play() {
@@ -109,12 +90,12 @@ class PlayerViewModel(
             )
         )
         playerInteractor.startPlayback()
-        handler.post(updateTrackTimeRunnable)
+        startTimer()
     }
 
     fun pause() {
         playerInteractor.pausePlayback()
-        handler.removeCallbacks(updateTrackTimeRunnable)
+        stopTimer()
         val oldState = playerStateLiveData.value
         playerStateLiveData.postValue(
             PlayerScreenState(
@@ -131,11 +112,7 @@ class PlayerViewModel(
                 pause()
             }
 
-            PlayerState.PAUSED -> {
-                play()
-            }
-
-            PlayerState.PREPARED -> {
+            PlayerState.PAUSED, PlayerState.PREPARED -> {
                 play()
             }
 
@@ -143,5 +120,31 @@ class PlayerViewModel(
                 playerErrorToast.postValue(Unit)
             }
         }
+    }
+
+    private fun startTimer(){
+        timerJob = viewModelScope.launch {
+            while(playerInteractor.isPlaying()) {
+                delay(300L)
+                val curPos = SimpleDateFormat(
+                    "mm:ss",
+                    Locale.getDefault()
+                ).format(playerInteractor.getCurrentPosition())
+
+                val oldState = playerStateLiveData.value
+                playerStateLiveData.postValue(
+                    PlayerScreenState(
+                        playerState = oldState.playerState,
+                        trackInfo = oldState.trackInfo,
+                        curPosition = curPos
+                    )
+                )
+            }
+        }
+    }
+
+    private fun stopTimer(){
+        timerJob?.cancel()
+        timerJob = null
     }
 }
