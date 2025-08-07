@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.R
 import com.example.playlistmaker.SingleLiveEvent
 import com.example.playlistmaker.player.domain.api.AudioPlayerInteractor
 import com.example.playlistmaker.player.domain.models.PlayerTrackInfo
@@ -52,7 +53,7 @@ class PlayerViewModel(
             playerStateLiveData.value = PlayerScreenState(
                 playerState = PlayerState.PREPARED,
                 trackInfo = playerTrackInfo,
-                curPosition = "00:00"
+                curPosition = R.string.track_timer_ph.toString()
             )
         }
     }
@@ -114,12 +115,11 @@ class PlayerViewModel(
                 pause()
             }
 
-            PlayerState.PAUSED, PlayerState.PREPARED -> {
-                if (playerStateLiveData.value?.playerState == PlayerState.PREPARED) {
-                    play()
-                } else {
-                    playerErrorToast.postValue(Unit)
-                }
+            PlayerState.PAUSED -> {
+                play()
+            }
+            PlayerState.PREPARED -> {
+                play()
             }
 
             else -> {
@@ -129,9 +129,10 @@ class PlayerViewModel(
     }
 
     private fun startTimer(){
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while(playerInteractor.isPlaying()) {
-                delay(300L)
+                delay(TIMER_UPDATE_DELAY)
                 val curPos = SimpleDateFormat(
                     "mm:ss",
                     Locale.getDefault()
@@ -152,5 +153,9 @@ class PlayerViewModel(
     private fun stopTimer(){
         timerJob?.cancel()
         timerJob = null
+    }
+
+    companion object {
+        private const val TIMER_UPDATE_DELAY = 300L
     }
 }
