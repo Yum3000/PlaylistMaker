@@ -48,9 +48,11 @@ class PlayerViewModel(
         }
 
         playerInteractor.setOnCompletionListener {
+            stopTimer()
             playerStateLiveData.value = PlayerScreenState(
                 playerState = PlayerState.PREPARED,
                 trackInfo = playerTrackInfo,
+                curPosition = "00:00"
             )
         }
     }
@@ -113,7 +115,11 @@ class PlayerViewModel(
             }
 
             PlayerState.PAUSED, PlayerState.PREPARED -> {
-                play()
+                if (playerStateLiveData.value?.playerState == PlayerState.PREPARED) {
+                    play()
+                } else {
+                    playerErrorToast.postValue(Unit)
+                }
             }
 
             else -> {

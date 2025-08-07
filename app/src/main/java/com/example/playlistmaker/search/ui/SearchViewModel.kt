@@ -1,7 +1,5 @@
 package com.example.playlistmaker.search.ui
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +10,7 @@ import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.SearchTrackInfo
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.utils.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val trackInteractor: TracksInteractor,
@@ -19,8 +18,6 @@ class SearchViewModel(
 ) : ViewModel() {
 
     val searchTracks: MutableList<Track> = mutableListOf()
-
-    private val handler = Handler(Looper.getMainLooper())
 
     private val searchStateLiveData = MutableLiveData<SearchScreenState>()
     fun getSearchStateLiveData(): LiveData<SearchScreenState> = searchStateLiveData
@@ -86,20 +83,24 @@ class SearchViewModel(
     }
 
     fun executeRequest(inputQuery: String) {
-        trackInteractor.searchTracks(inputQuery, object : TracksInteractor.TracksConsumer {
-            override fun consume(foundTracks: List<Track>?) {
-                handler.post {
-                    searchTracks.clear()
-                    if (foundTracks != null) {
-                        searchTracks.addAll(foundTracks)
-                        val tracks = searchTracks.map { trackToSearchTrackInfo(it) }
-                        searchStateLiveData.postValue(SearchScreenState.Content(tracks, inputQuery))
-                    } else {
-                        searchStateLiveData.postValue(SearchScreenState.Error(inputQuery))
-                    }
-                }
-            }
-        })
+         viewModelScope.launch {
+             trackInteractor
+                 .searchTracks(inputQuery)
+                 .collect { tracks ->
+                     processSearchTracks(tracks, inputQuery)
+                 }
+         }
+    }
+
+    private fun processSearchTracks(foundTracks: List<Track>?, inputQuery: String) {
+        searchTracks.clear()
+        if (foundTracks != null) {
+            searchTracks.addAll(foundTracks)
+            val tracks = searchTracks.map { trackToSearchTrackInfo(it) }
+            searchStateLiveData.postValue(SearchScreenState.Content(tracks, inputQuery))
+        } else {
+            searchStateLiveData.postValue(SearchScreenState.Error(inputQuery))
+        }
     }
 
     fun handleSearchTextFocus(focused: Boolean) {
