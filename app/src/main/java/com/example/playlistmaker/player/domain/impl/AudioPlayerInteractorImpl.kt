@@ -29,4 +29,8 @@ class AudioPlayerInteractorImpl(private val audioPlayerManager: AudioPlayerManag
     override fun release() {
         audioPlayerManager.releasePlayer()
     }
+
+    override fun isPlaying(): Boolean {
+        return audioPlayerManager.isPlaying()
+    }
 }

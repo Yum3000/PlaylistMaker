@@ -6,6 +6,8 @@ import com.example.playlistmaker.search.data.dto.TracksResponse
 import com.example.playlistmaker.search.domain.api.MusicRepository
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class MusicRepositoryImpl (private val networkClient: NetworkClient,
                            private val sharedPref: SharedPreferences? = null,
@@ -23,25 +25,30 @@ class MusicRepositoryImpl (private val networkClient: NetworkClient,
         }
     }
 
-    override fun searchTracks(expression: String): List<Track>? {
+    override fun searchTracks(expression: String): Flow<List<Track>?> = flow {
         val response = networkClient.doRequest(TracksRequest(expression))
-        if (response.resultCode == 200) {
-            val tracks = (response as TracksResponse).results.map {
-                Track(
-                    it.trackId,
-                    it.trackName,
-                    it.collectionName,
-                    it.artistName,
-                    it.getTrackTimeString(),
-                    it.releaseDate,
-                    it.primaryGenreName,
-                    it.country,
-                    it.artworkUrl100,
-                    it.previewUrl
-                ) }
-            return tracks
-        } else {
-            return null
+        when (response.resultCode) {
+            200 -> {
+                val tracks = (response as TracksResponse).results.map {
+                    Track(
+                        it.trackId,
+                        it.trackName,
+                        it.collectionName,
+                        it.artistName,
+                        it.getTrackTimeString(),
+                        it.releaseDate,
+                        it.primaryGenreName,
+                        it.country,
+                        it.artworkUrl100,
+                        it.previewUrl
+                    )
+                }
+                emit(tracks)
+            }
+
+            else -> {
+                emit(null)
+            }
         }
     }
 

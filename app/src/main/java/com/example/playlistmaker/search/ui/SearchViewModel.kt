@@ -1,15 +1,16 @@
 package com.example.playlistmaker.search.ui
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.SingleLiveEvent
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
 import com.example.playlistmaker.search.domain.models.SearchTrackInfo
 import com.example.playlistmaker.search.domain.models.Track
+import com.example.playlistmaker.utils.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val trackInteractor: TracksInteractor,
@@ -18,51 +19,36 @@ class SearchViewModel(
 
     val searchTracks: MutableList<Track> = mutableListOf()
 
-    private var isTrackClickAllowed: Boolean = true
-
-    private val handler = Handler(Looper.getMainLooper())
-
-    private var inputedText = ""
-    private val searchRunnable = Runnable {
-        if (inputedText.isNotEmpty()) {
-            executeRequest(inputedText)
-        }
-    }
-
     private val searchStateLiveData = MutableLiveData<SearchScreenState>()
     fun getSearchStateLiveData(): LiveData<SearchScreenState> = searchStateLiveData
 
     private val trackIdToOpenPlayer = SingleLiveEvent<Int>()
     fun getTrackIdToOpenPlayer(): LiveData<Int> = trackIdToOpenPlayer
 
-    fun handleTrackClick(trackId: Int) {
+    private val handleTrackClickDebounced = debounce<Int> (
+        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
         val track = searchTracks.find { it.trackId == trackId }
-        if (trackClickDebounce() && track != null) {
+        if (track != null) {
+            historyInteractor.updateHistory(track)
+            trackIdToOpenPlayer.postValue(trackId)
+        }
+    }
+
+    fun handleTrackClick(trackId: Int) {
+        handleTrackClickDebounced(trackId)
+    }
+
+    private val handleHistoryTrackClickDebounced = debounce<Int> (
+        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
+        val track = historyInteractor.getHistory().find { it.trackId == trackId }
+        if (track != null) {
             historyInteractor.updateHistory(track)
             trackIdToOpenPlayer.postValue(trackId)
         }
     }
 
     fun handleHistoryTrackClick(trackId: Int) {
-        val track = historyInteractor.getHistory().find { it.trackId == trackId }
-        if (trackClickDebounce() && track != null) {
-            historyInteractor.updateHistory(track)
-            trackIdToOpenPlayer.postValue(trackId)
-        }
-    }
-
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
-    }
-
-    private fun trackClickDebounce(): Boolean {
-        val current = isTrackClickAllowed
-        if (isTrackClickAllowed) {
-            isTrackClickAllowed = false
-            handler.postDelayed({ isTrackClickAllowed = true }, CLICK_TRACK_DEBOUNCE_DELAY)
-        }
-        return current
+        handleHistoryTrackClickDebounced(trackId)
     }
 
     private fun trackToSearchTrackInfo(track: Track?): SearchTrackInfo {
@@ -80,35 +66,41 @@ class SearchViewModel(
         searchStateLiveData.postValue(SearchScreenState.History(listOf()))
     }
 
-    fun handleSearchChange(s: String) {
-        inputedText = s
-        handler.removeCallbacks(searchRunnable)
-        if (s.isEmpty()) {
+    private val handleSearchChangeDebounced = debounce<String>(
+        SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { querry ->
+        if (querry.isEmpty()) {
             searchTracks.clear()
             val tracks = historyInteractor.getHistory().map { trackToSearchTrackInfo(it) }
             searchStateLiveData.postValue(SearchScreenState.History(tracks))
         } else {
-            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
             searchStateLiveData.postValue(SearchScreenState.Loading)
+            executeRequest(querry)
         }
+    }
 
+    fun handleSearchChange(s: String) {
+        handleSearchChangeDebounced(s)
     }
 
     fun executeRequest(inputQuery: String) {
-        trackInteractor.searchTracks(inputQuery, object : TracksInteractor.TracksConsumer {
-            override fun consume(foundTracks: List<Track>?) {
-                handler.post {
-                    searchTracks.clear()
-                    if (foundTracks != null) {
-                        searchTracks.addAll(foundTracks)
-                        val tracks = searchTracks.map { trackToSearchTrackInfo(it) }
-                        searchStateLiveData.postValue(SearchScreenState.Content(tracks, inputQuery))
-                    } else {
-                        searchStateLiveData.postValue(SearchScreenState.Error(inputQuery))
-                    }
-                }
-            }
-        })
+         viewModelScope.launch {
+             trackInteractor
+                 .searchTracks(inputQuery)
+                 .collect { tracks ->
+                     processSearchTracks(tracks, inputQuery)
+                 }
+         }
+    }
+
+    private fun processSearchTracks(foundTracks: List<Track>?, inputQuery: String) {
+        searchTracks.clear()
+        if (foundTracks != null) {
+            searchTracks.addAll(foundTracks)
+            val tracks = searchTracks.map { trackToSearchTrackInfo(it) }
+            searchStateLiveData.postValue(SearchScreenState.Content(tracks, inputQuery))
+        } else {
+            searchStateLiveData.postValue(SearchScreenState.Error(inputQuery))
+        }
     }
 
     fun handleSearchTextFocus(focused: Boolean) {
@@ -121,6 +113,5 @@ class SearchViewModel(
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
-        const val INTENT_TRACK_KEY = "track_to_player"
     }
 }
