@@ -26,11 +26,6 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModel()
 
-    private companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val SEARCH_FOCUS = "SEARCH_FOCUS"
-    }
-
     private val searchAdapter = TrackAdapter(mutableListOf()) { track, _ ->
         viewModel.handleTrackClick(track.trackId)
     }
@@ -260,5 +255,10 @@ class SearchFragment : Fragment() {
             true,
             lastSearchQuery
         )
+    }
+
+    private companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val SEARCH_FOCUS = "SEARCH_FOCUS"
     }
 }
