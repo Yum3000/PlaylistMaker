@@ -46,6 +46,8 @@ class AudioPlayerFragment: Fragment() {
             playerState = state.playerState
             redrawPlayer(state.playerState, state.curPosition)
             redrawTrack(state.trackInfo)
+
+            updateFavBtn(state.trackInfo.isFavourite)
         }
 
         viewModel.getPlayerErrorToast().observe(viewLifecycleOwner) {
@@ -54,6 +56,10 @@ class AudioPlayerFragment: Fragment() {
 
         binding.playBtn.setOnClickListener {
             viewModel.handlePlayBtnClick()
+        }
+
+        binding.addFavBtn.setOnClickListener {
+            viewModel.onFavoriteClicked()
         }
 
         binding.materialToolbar.setNavigationOnClickListener {
@@ -71,8 +77,13 @@ class AudioPlayerFragment: Fragment() {
         viewModel.pause()
     }
 
-    private fun redrawPlayer(state: PlayerState, curPos: String) {
-        binding.currentTrackTimer.text = curPos
+    private fun redrawPlayer(state: PlayerState, curPos: String?) {
+        if (curPos == null) {
+            binding.currentTrackTimer.text = getString(R.string.track_timer_ph)
+        } else {
+            binding.currentTrackTimer.text = curPos
+        }
+
         when (state) {
             PlayerState.PLAYING -> {
                 binding.playBtn.setImageResource(R.drawable.pause_btn)
@@ -107,6 +118,15 @@ class AudioPlayerFragment: Fragment() {
             R.string.playing_error,
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    private fun updateFavBtn(isFavourite: Boolean) {
+        val btnIcon = if (isFavourite) {
+            R.drawable.add_to_fav_btn_active
+        } else {
+            R.drawable.add_to_fav_btn
+        }
+        binding.addFavBtn.setImageResource(btnIcon)
     }
 
     companion object {

@@ -1,7 +1,12 @@
 package com.example.playlistmaker.media.presentation
 
-sealed class MediaScreenFavouritesState {
+import com.example.playlistmaker.search.domain.models.Track
 
-    data object Content: MediaScreenFavouritesState()
-    data object Empty: MediaScreenFavouritesState()
+sealed interface MediaScreenFavouritesState {
+
+    object Loading: MediaScreenFavouritesState
+
+    data class Content(val tracks: List<Track>): MediaScreenFavouritesState
+    data class Empty(val message: String): MediaScreenFavouritesState
+
 }

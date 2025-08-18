@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.databinding.TrackViewBinding
-import com.example.playlistmaker.search.domain.models.SearchTrackInfo
+import com.example.playlistmaker.search.domain.models.ListTrackInfo
 
 class TrackAdapter(
-    var tracks: MutableList<SearchTrackInfo>,
-    private val onTrackClick: (SearchTrackInfo, TrackAdapter) -> Unit
+    var tracks: MutableList<ListTrackInfo>,
+    private val onTrackClick: (ListTrackInfo, TrackAdapter) -> Unit
 ) : RecyclerView.Adapter<TrackViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {

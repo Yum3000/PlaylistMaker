@@ -1,6 +1,11 @@
-package com.example.playlistmaker.player.domain.models
+package com.example.playlistmaker.media.data.db.entity
 
-data class PlayerTrackInfo(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "fav_tracks_table")
+data class FavouriteTrackEntity(
+    @PrimaryKey
     val trackId: Int?,
     val trackName: String?,
     val collectionName: String?,
@@ -11,5 +16,5 @@ data class PlayerTrackInfo(
     val country: String?,
     val artworkUrl100: String?,
     val previewUrl: String?,
-    var isFavourite: Boolean = false
+    val createdTime: Long = System.currentTimeMillis()
 )
