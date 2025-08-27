@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.example.playlistmaker.App.Companion.HISTORY_DI
 import com.example.playlistmaker.App.Companion.SETTINGS_DI
 import com.example.playlistmaker.media.data.db.AppDatabase
+import com.example.playlistmaker.media.data.db.dao.FavTracksDao
 import com.example.playlistmaker.search.data.NetworkClient
 import com.example.playlistmaker.search.data.network.MusicAPIService
 import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -49,5 +50,7 @@ val dataModule = module {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "playlistMakerDB.db")
             .build()
     }
+
+    single { get<AppDatabase>().favTracksDao() as FavTracksDao }
 
 }

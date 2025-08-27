@@ -7,10 +7,8 @@ import com.example.playlistmaker.search.data.dto.TracksResponse
 import com.example.playlistmaker.search.domain.api.MusicRepository
 import com.example.playlistmaker.search.domain.models.Track
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 
 class MusicRepositoryImpl (private val networkClient: NetworkClient,
                            private val sharedPref: SharedPreferences? = null,
@@ -46,11 +44,6 @@ class MusicRepositoryImpl (private val networkClient: NetworkClient,
                         it.previewUrl
                     )
                 }
-
-                val favTracksId = appDatabase.favTracksDao().getFavTracksId()
-                tracks.forEach{ track ->
-                    if (track.trackId in favTracksId) track.isFavourite = true
-                }
                 emit(tracks)
             }
 
@@ -61,12 +54,6 @@ class MusicRepositoryImpl (private val networkClient: NetworkClient,
     }
 
     override suspend fun getHistory(): List<Track> {
-        val favTracksId = withContext(Dispatchers.IO) {
-            appDatabase.favTracksDao().getFavTracksId()
-        }
-        history.forEach{ track ->
-            if (track.trackId in favTracksId) track.isFavourite = true
-        }
         return history
     }
 

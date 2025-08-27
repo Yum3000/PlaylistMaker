@@ -31,16 +31,24 @@ class PlayerViewModel(
     private lateinit var playerTrackInfo: PlayerTrackInfo
 
     private var timerJob: Job? = null
+    private var favIdsJob: Job? = null
 
     private var currentTrack: Track? = null
 
     init {
         viewModelScope.launch {
             val track: Track? = historyInteractor.getHistory().firstOrNull { it.trackId == trackId }
+                ?: favTracksInteractor.getFavTrackById(trackId)
             currentTrack = track
             playerTrackInfo = trackToPlayerTrackInfo(track)
 
-            checkIsFavourite(currentTrack?.trackId)
+            if (track != null) {
+                playerTrackInfo = playerTrackInfo.copy(isFavourite = track.isFavourite)
+            } else {
+                playerTrackInfo = playerTrackInfo.copy(isFavourite = false)
+            }
+
+            observeFavIds(currentTrack?.trackId)
 
             playerStateLiveData.value = PlayerScreenState(
                 playerState = PlayerState.DEFAULT,
@@ -92,6 +100,7 @@ class PlayerViewModel(
         super.onCleared()
         playerInteractor.release()
         stopTimer()
+        favIdsJob?.cancel()
     }
 
     private fun play() {
@@ -199,14 +208,14 @@ class PlayerViewModel(
         }
     }
 
-    private suspend fun checkIsFavourite(trackId: Int?){
-        favTracksInteractor.getFavTracksId().collect{ ids ->
-            if (ids.contains(trackId)){
-                currentTrack?.isFavourite = true
-            } else {
-                currentTrack?.isFavourite = false
+    private fun observeFavIds(trackId: Int?) {
+        favIdsJob?.cancel()
+        if (trackId == null) return
+        favIdsJob = viewModelScope.launch {
+            favTracksInteractor.getFavTracksId().collect { ids ->
+                currentTrack?.isFavourite = ids.contains(trackId)
+                updatePlayerScreenState()
             }
-            updatePlayerScreenState()
         }
     }
 

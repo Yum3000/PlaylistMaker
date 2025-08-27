@@ -11,4 +11,6 @@ interface FavTracksRepository {
     suspend fun getFavTracks(): Flow<List<Track>>
 
     suspend fun getFavTracksId(): Flow<List<Int>>
+
+    suspend fun getFavTrackById(id: Int): Track?
 }

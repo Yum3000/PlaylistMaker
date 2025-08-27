@@ -16,27 +16,15 @@ import org.koin.dsl.module
 
 val interactorModule = module {
 
-    single<TracksInteractor> {
-        TracksInteractorImpl(get())
-    }
+    single<TracksInteractor> { TracksInteractorImpl(get()) }
 
-    single<TracksHistoryInteractor> {
-        TracksHistoryInteractorImpl(get())
-    }
+    single<TracksHistoryInteractor> { TracksHistoryInteractorImpl(get()) }
 
-    single<AudioPlayerInteractor> {
-        AudioPlayerInteractorImpl(get())
-    }
+    single<AudioPlayerInteractor> { AudioPlayerInteractorImpl(get()) }
 
-    single<SettingsInteractor> {
-        SettingsInteractorImpl(get())
-    }
+    single<SettingsInteractor> { SettingsInteractorImpl(get()) }
 
-    single<SharingInteractor> {
-        SharingInteractorImpl(get())
-    }
+    single<SharingInteractor> { SharingInteractorImpl(get())  }
 
-    single<FavTracksInteractor> {
-        FavTracksInteractorImpl(get())
-    }
+    single<FavTracksInteractor> { FavTracksInteractorImpl(get()) }
 }

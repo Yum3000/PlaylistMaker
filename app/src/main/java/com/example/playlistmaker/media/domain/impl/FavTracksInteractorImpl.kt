@@ -23,4 +23,8 @@ class FavTracksInteractorImpl(
     override suspend fun getFavTracksId(): Flow<List<Int>> {
         return favTrackRepository.getFavTracksId()
     }
+
+    override suspend fun getFavTrackById(id: Int): Track? {
+        return favTrackRepository.getFavTrackById(id)
+    }
 }
