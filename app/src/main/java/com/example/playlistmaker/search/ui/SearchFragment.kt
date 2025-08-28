@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.AudioPlayerFragment
-import com.example.playlistmaker.search.domain.models.SearchTrackInfo
+import com.example.playlistmaker.search.domain.models.ListTrackInfo
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -211,7 +211,7 @@ class SearchFragment : Fragment() {
         binding.progressBar.isVisible = true
     }
 
-    private fun showHistory(tracks: List<SearchTrackInfo>) {
+    private fun showHistory(tracks: List<ListTrackInfo>) {
         hideProgressBar()
         hideContent()
         hidePlaceholder()
@@ -225,7 +225,7 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun showContent(tracks: List<SearchTrackInfo>) {
+    private fun showContent(tracks: List<ListTrackInfo>) {
         hideProgressBar()
         hidePlaceholder()
         hideSearchHistory()

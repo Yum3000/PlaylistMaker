@@ -7,9 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.SingleLiveEvent
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
-import com.example.playlistmaker.search.domain.models.SearchTrackInfo
+import com.example.playlistmaker.search.domain.models.ListTrackInfo
 import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.utils.debounce
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -40,25 +41,17 @@ class SearchViewModel(
 
     private val handleHistoryTrackClickDebounced = debounce<Int> (
         CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
-        val track = historyInteractor.getHistory().find { it.trackId == trackId }
-        if (track != null) {
-            historyInteractor.updateHistory(track)
-            trackIdToOpenPlayer.postValue(trackId)
+        viewModelScope.launch {
+            val track = historyInteractor.getHistory().find { it.trackId == trackId }
+            if (track != null) {
+                historyInteractor.updateHistory(track)
+                trackIdToOpenPlayer.postValue(trackId)
+            }
         }
     }
 
     fun handleHistoryTrackClick(trackId: Int) {
         handleHistoryTrackClickDebounced(trackId)
-    }
-
-    private fun trackToSearchTrackInfo(track: Track?): SearchTrackInfo {
-        return SearchTrackInfo(
-            track?.trackId ?: -1,
-            track?.trackName ?: "",
-            track?.artistName ?: "",
-            track?.trackTimeMillis ?: "",
-            track?.artworkUrl100 ?: ""
-        )
     }
 
     fun clearHistory() {
@@ -67,15 +60,18 @@ class SearchViewModel(
     }
 
     private val handleSearchChangeDebounced = debounce<String>(
-        SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { querry ->
-        if (querry.isEmpty()) {
-            searchTracks.clear()
-            val tracks = historyInteractor.getHistory().map { trackToSearchTrackInfo(it) }
-            searchStateLiveData.postValue(SearchScreenState.History(tracks))
+        SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { query ->
+        if (query.isEmpty()) {
+            viewModelScope.launch {
+                searchTracks.clear()
+                val tracks =
+                    historyInteractor.getHistory().map { ListTrackInfo.trackToListTrackInfo(it) }
+                searchStateLiveData.postValue(SearchScreenState.History(tracks))
+            }
         } else {
-            searchStateLiveData.postValue(SearchScreenState.Loading)
-            executeRequest(querry)
-        }
+                searchStateLiveData.postValue(SearchScreenState.Loading)
+                executeRequest(query)
+            }
     }
 
     fun handleSearchChange(s: String) {
@@ -83,7 +79,7 @@ class SearchViewModel(
     }
 
     fun executeRequest(inputQuery: String) {
-         viewModelScope.launch {
+         viewModelScope.launch (Dispatchers.IO) {
              trackInteractor
                  .searchTracks(inputQuery)
                  .collect { tracks ->
@@ -96,7 +92,7 @@ class SearchViewModel(
         searchTracks.clear()
         if (foundTracks != null) {
             searchTracks.addAll(foundTracks)
-            val tracks = searchTracks.map { trackToSearchTrackInfo(it) }
+            val tracks = searchTracks.map { ListTrackInfo.trackToListTrackInfo(it) }
             searchStateLiveData.postValue(SearchScreenState.Content(tracks, inputQuery))
         } else {
             searchStateLiveData.postValue(SearchScreenState.Error(inputQuery))
@@ -105,8 +101,10 @@ class SearchViewModel(
 
     fun handleSearchTextFocus(focused: Boolean) {
         if (focused) {
-            val tracks = historyInteractor.getHistory().map { trackToSearchTrackInfo(it) }
-            searchStateLiveData.postValue(SearchScreenState.History(tracks))
+            viewModelScope.launch {
+                val tracks = historyInteractor.getHistory().map { ListTrackInfo.trackToListTrackInfo(it) }
+                searchStateLiveData.postValue(SearchScreenState.History(tracks))
+            }
         }
     }
 
