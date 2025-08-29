@@ -1,0 +1,10 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="@color/audioplayer_screen_bg" />
+
+    <corners android:radius="4dp" />
+
+    <stroke android:color="@color/grey"
+        android:width="1dp" />
+</shape>

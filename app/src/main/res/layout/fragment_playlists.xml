@@ -7,7 +7,7 @@
     tools:context="com.example.playlistmaker.media.ui.FragmentPlaylists">
 
     <Button
-        android:id="@+id/placeholder_button"
+        android:id="@+id/create_playlist_bt"
         android:layout_marginTop="@dimen/media_button_top_margin"
         android:text="@string/new_playlist"
         style="@style/SearchMediaScreenBt"/>

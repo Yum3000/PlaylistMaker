@@ -8,8 +8,11 @@ import org.koin.dsl.module
 import com.example.playlistmaker.App.Companion.HISTORY_DI
 import com.example.playlistmaker.App.Companion.SETTINGS_DI
 import com.example.playlistmaker.media.data.db.FavTrackRepositoryImpl
+import com.example.playlistmaker.media.data.db.PlaylistsRepositoryImpl
 import com.example.playlistmaker.media.data.db.converters.FavTrackDbConvertor
+import com.example.playlistmaker.media.data.db.converters.PlaylistDbConvertor
 import com.example.playlistmaker.media.domain.db.FavTracksRepository
+import com.example.playlistmaker.media.domain.db.PlaylistsRepository
 import com.example.playlistmaker.player.data.AudioPlayerManagerImpl
 import com.example.playlistmaker.player.domain.api.AudioPlayerManager
 import com.example.playlistmaker.settings.data.SettingsManagerImpl
@@ -40,5 +43,9 @@ val repositoryModule = module {
 
     factory { FavTrackDbConvertor() }
 
+    factory { PlaylistDbConvertor() }
+
     single<FavTracksRepository> { FavTrackRepositoryImpl(get(), get()) }
+
+    single<PlaylistsRepository> { PlaylistsRepositoryImpl(get(), get()) }
 }

@@ -82,4 +82,18 @@
         <item name="android:textSize">14sp</item>
         <item name="fontFamily">@font/ys_display_medium</item>
     </style>
+
+    <style name="CreatePlaylistText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textColorHint">@color/playlist_text</item>
+        <item name="android:inputType">text</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginTop">32dp</item>
+        <item name="android:paddingStart">16dp</item>
+    </style>
 </resources>

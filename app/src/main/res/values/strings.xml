@@ -59,4 +59,12 @@
     <string name="favourites_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
     <string name="new_playlist">Новый плейлист</string>
+    <string name="playlist_cover_ph">Обложка плейлиста</string>
+    <string name="playlist_title">Название*</string>
+    <string name="playlist_desc">Описание</string>
+    <string name="create_playlist">Создать</string>
+    <string name="completion_playlist">Завершить создание плейлиста?</string>
+    <string name="comletion_warning">Все несохраненные данные будут потеряны</string>
+    <string name="cancel">Отмена</string>
+    <string name="finish">Завершить</string>
 </resources>

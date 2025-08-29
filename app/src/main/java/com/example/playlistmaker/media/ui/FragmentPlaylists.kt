@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.media.presentation.MediaScreenPlaylistsState
@@ -33,9 +34,14 @@ class FragmentPlaylists: Fragment() {
 
         playlistsViewModel.observeStatePlaylists().observe(viewLifecycleOwner){
             when(it){
-                MediaScreenPlaylistsState.Content -> showContent()
-                MediaScreenPlaylistsState.Empty -> showEmpty()
+                is MediaScreenPlaylistsState.Content -> showContent()
+                is MediaScreenPlaylistsState.Empty -> showEmpty()
+                is MediaScreenPlaylistsState.Loading -> showLoading()
             }
+        }
+
+        binding.createPlaylistBt.setOnClickListener {
+            findNavController().navigate(R.id.action_mediaFragment_to_fragmentCreatePlaylist)
         }
     }
 
@@ -50,6 +56,11 @@ class FragmentPlaylists: Fragment() {
         val imageResource = getPlaceholderImageResource()
         binding.messageView.placeholderImage.setImageResource(imageResource)
 
+    }
+
+    private fun showLoading() {
+        binding.messageView.root.isVisible = false
+        TODO()
     }
 
     private fun getPlaceholderImageResource(): Int {
