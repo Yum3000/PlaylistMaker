@@ -47,4 +47,7 @@
     <color name="bottom_menu">@color/dark_grey</color>
     <color name="bottom_menu_icons">@color/white</color>
 
+    <color name="bottom_sheet_handle">@color/white</color>
+    <color name="bottom_sheet_text">@color/white</color>
+
 </resources>

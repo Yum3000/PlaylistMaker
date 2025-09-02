@@ -46,5 +46,4 @@ class PlaylistsViewModel(
             renderState(MediaScreenPlaylistsState.Content(lists))
         }
     }
-
 }

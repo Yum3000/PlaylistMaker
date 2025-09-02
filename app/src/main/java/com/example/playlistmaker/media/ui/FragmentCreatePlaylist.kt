@@ -10,8 +10,10 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
@@ -22,6 +24,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.random.Random
 
 class FragmentCreatePlaylist: Fragment() {
 
@@ -31,6 +34,14 @@ class FragmentCreatePlaylist: Fragment() {
     private val binding get() = _binding!!
 
     lateinit var confirmDialog: MaterialAlertDialogBuilder
+
+    private val pickPhoto = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            binding.coverPlaylist.setImageURI(uri)
+            val newUri = saveImageToPrivateStorage(uri)
+            playlistCreateViewModel.passArgsUri(newUri)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,14 +62,11 @@ class FragmentCreatePlaylist: Fragment() {
         }
 
         binding.materialToolbar.setNavigationOnClickListener {
-            confirmDialog.show()
-        }
 
-        val pickPhoto = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            if (uri != null) {
-                binding.coverPlaylist.setImageURI(uri)
-                saveImageToPrivateStorage(uri)
-                playlistCreateViewModel.passArgsUri(uri)
+            if (playlistCreateViewModel.observePlaylistCreateState().value?.dialogNeeded == true) {
+                confirmDialog.show()
+            } else {
+                findNavController().navigateUp()
             }
         }
 
@@ -98,6 +106,10 @@ class FragmentCreatePlaylist: Fragment() {
 
         binding.createBtn.setOnClickListener {
             playlistCreateViewModel.createPlaylist()
+
+            val playlistTitle = playlistCreateViewModel.observePlaylistCreateState().value?.title
+            val message = getString(R.string.playlist_created, playlistTitle)
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             findNavController().navigateUp()
         }
     }
@@ -106,7 +118,7 @@ class FragmentCreatePlaylist: Fragment() {
         binding.createBtn.isEnabled = stateBtn
     }
 
-    private fun saveImageToPrivateStorage(uri: Uri) {
+    private fun saveImageToPrivateStorage(uri: Uri): Uri {
         val filePath = File(requireContext().getExternalFilesDir(
             Environment.DIRECTORY_PICTURES), "PlaylistMakerPics")
 
@@ -114,7 +126,12 @@ class FragmentCreatePlaylist: Fragment() {
             filePath.mkdirs()
         }
 
-        val file = File(filePath, "playlist_cover")
+        var playlistNum: Int
+        var file: File
+        do {
+            playlistNum = generateRandomNum(1, 100)
+            file = File(filePath, "$COVER_PLAYLIST_NAME $playlistNum")
+        } while (file.exists())
 
         val inputStream = requireContext().contentResolver.openInputStream(uri)
         val outputStream = FileOutputStream(file)
@@ -125,5 +142,14 @@ class FragmentCreatePlaylist: Fragment() {
 
         inputStream?.close()
         outputStream.close()
+        return file.toUri()
+    }
+
+    private fun generateRandomNum(min: Int, max: Int): Int {
+        return Random.nextInt(min, max + 1)
+    }
+
+    companion object {
+        private const val COVER_PLAYLIST_NAME = "playlist_cover"
     }
 }

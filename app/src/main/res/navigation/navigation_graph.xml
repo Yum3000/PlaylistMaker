@@ -9,7 +9,11 @@
         android:id="@+id/audioPlayerFragment"
         android:name="com.example.playlistmaker.player.ui.AudioPlayerFragment"
         android:label="fragment_audioplayer"
-        tools:layout="@layout/fragment_audioplayer" />
+        tools:layout="@layout/fragment_audioplayer" >
+        <action
+            android:id="@+id/action_audioPlayerFragment_to_fragmentCreatePlaylist"
+            app:destination="@id/fragmentCreatePlaylist" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.playlistmaker.settings.ui.SettingsFragment"
