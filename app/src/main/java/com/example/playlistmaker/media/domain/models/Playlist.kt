@@ -3,10 +3,10 @@ package com.example.playlistmaker.media.domain.models
 import android.net.Uri
 
 data class Playlist(
-    var id: Int? = null,
+    var id: Int = 0,
     val title: String?,
     val description: String?,
     val coverPath: Uri?,
     val tracksIdsList: List<Int>?,
-    val tracksCount: Int?
+    var tracksCount: Int?
 )

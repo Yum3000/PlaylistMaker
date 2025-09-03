@@ -24,7 +24,8 @@ class AudioPlayerFragment: Fragment() {
     private var trackId: Int = ERROR_TRACK_ID
 
     private val viewModel: PlayerViewModel by lazy {
-        getViewModel { parametersOf(trackId) }
+        val message = getString(R.string.unknow_error)
+        getViewModel { parametersOf(trackId, message) }
     }
 
     private var _binding: FragmentAudioplayerBinding? = null
@@ -33,7 +34,7 @@ class AudioPlayerFragment: Fragment() {
     private var playerState = PlayerState.DEFAULT
 
     private val playlistAdapter = PlaylistBottomAdapter(mutableListOf()) { playlist, _ ->
-        viewModel
+        viewModel.handleAddToPlaylistClick(playlist.id)
     }
 
     override fun onCreateView(
@@ -121,9 +122,27 @@ class AudioPlayerFragment: Fragment() {
                 is PlaylistBottomState.Empty -> {
                     binding.recyclerViewPlaylists.isVisible = false
                 }
+                is PlaylistBottomState.Error -> {
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
         }
 
+        viewModel.observeAddTrackStatus().observe(viewLifecycleOwner) { status ->
+            when(status) {
+                is AddTrackStatus.Added -> {
+                    Toast.makeText(requireContext(), R.string.added_to_playlist, Toast.LENGTH_SHORT)
+                        .show()
+                }
+                is AddTrackStatus.Exists -> {
+
+                    val message = getString(R.string.track_exists, )
+                    Toast.makeText(requireContext(), message , Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -192,6 +211,7 @@ class AudioPlayerFragment: Fragment() {
         binding.recyclerViewPlaylists.isVisible = true
         playlistAdapter.playlists.clear()
         playlistAdapter.playlists.addAll(playlists)
+
         playlistAdapter.notifyDataSetChanged()
     }
 

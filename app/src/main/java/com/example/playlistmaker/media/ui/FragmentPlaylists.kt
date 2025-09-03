@@ -79,6 +79,8 @@ class FragmentPlaylists: Fragment() {
             }
         }
 
+        playlistsViewModel.handleViewCreated()
+
         binding.createPlaylistBt.setOnClickListener {
             findNavController().navigate(R.id.action_mediaFragment_to_fragmentCreatePlaylist)
         }
@@ -98,7 +100,6 @@ class FragmentPlaylists: Fragment() {
 
         val imageResource = getPlaceholderImageResource()
         binding.messageView.placeholderImage.setImageResource(imageResource)
-
     }
 
     private fun showLoading() {

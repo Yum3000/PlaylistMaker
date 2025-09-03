@@ -63,7 +63,7 @@ class PlaylistCreateViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val curState = statePlaylistCreate.value
             val newPlaylist = Playlist(
-                null, curState?.title, curState?.description,
+                0, curState?.title, curState?.description,
                 coverUri, emptyList(), 0
             )
             playlistsInteractor.createPlaylist(newPlaylist)

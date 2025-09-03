@@ -34,7 +34,7 @@
             android:id="@+id/tracks_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/tracks_count"
+            tools:text="@string/tracks_count_many"
             style="@style/PlaylistsFragmentText"/>
 
     </LinearLayout>

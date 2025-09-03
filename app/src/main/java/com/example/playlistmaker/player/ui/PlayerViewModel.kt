@@ -1,5 +1,6 @@
 package com.example.playlistmaker.player.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,7 @@ import java.util.Locale
 
 class PlayerViewModel(
     private val trackId: Int,
+    private val message: String,
     private val playerInteractor: AudioPlayerInteractor,
     historyInteractor: TracksHistoryInteractor,
     private val favTracksInteractor: FavTracksInteractor,
@@ -41,6 +43,9 @@ class PlayerViewModel(
     fun observeBottomState(): LiveData<PlaylistBottomState> = playlistBottomState
 
     val listPlaylists: MutableList<Playlist> = mutableListOf()
+
+    private val addTrackPlaylistStatus = MutableLiveData<AddTrackStatus>()
+    fun observeAddTrackStatus(): LiveData<AddTrackStatus> = addTrackPlaylistStatus
 
     init {
         viewModelScope.launch {
@@ -226,11 +231,39 @@ class PlayerViewModel(
         viewModelScope.launch {
             playlistsInteractor.getPlaylists().collect { playlists ->
                 listPlaylists.clear()
-                if (playlists != null) {
-                    listPlaylists.addAll(playlists)
-                    //val tracks = searchTracks.map { ListTrackInfo.trackToListTrackInfo(it) }
-                    playlistBottomState.postValue(PlaylistBottomState.Content(playlists))
-                }
+                listPlaylists.addAll(playlists)
+                playlistBottomState.postValue(PlaylistBottomState.Content(playlists))
+
+            }
+        }
+    }
+
+    private fun checkTrackInPlaylist(trackId: Int?, playlist: Playlist?): Boolean {
+        Log.d("PlaylistCheck", "Checking if trackId: $trackId is in playlist: ${playlist?.id}")
+        return playlist?.tracksIdsList?.contains(trackId) == true
+    }
+
+    fun handleAddToPlaylistClick(playlistId: Int?) {
+        val playlist = listPlaylists.find { it.id == playlistId }
+
+        if (playlistId == null || playlist == null || currentTrack == null) {
+            playlistBottomState.postValue(PlaylistBottomState.Error(message))
+            return
+        } else {
+            Log.d("PlaylistCheck", "Playlist found: ${playlist.id}, currentTrack: ${currentTrack!!.trackId}")
+            if (checkTrackInPlaylist(trackId, playlist)) {
+                addTrackPlaylistStatus.postValue(AddTrackStatus.Exists)
+                return
+            }
+
+            viewModelScope.launch {
+                playlistsInteractor.addTrackToPlaylist(currentTrack!!, playlist)
+
+                val updatedTrackCount = playlistsInteractor.getTrackCount(playlist.id)
+
+                playlist.tracksCount = updatedTrackCount
+
+                addTrackPlaylistStatus.postValue(AddTrackStatus.Added)
             }
         }
     }

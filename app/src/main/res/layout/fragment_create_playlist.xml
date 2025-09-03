@@ -36,26 +36,49 @@
         android:clickable="true"
         android:src="@drawable/add_photo_rect" />
 
-    <EditText
-        android:id="@+id/create_playlist_title"
-        style="@style/CreatePlaylistText"
-        android:autofillHints="playlistTitle"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutTitle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:hint="@string/playlist_title"
+        android:layout_marginTop="32dp"
+        app:boxStrokeColor="@color/blue"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundMode="outline"
+        app:cursorColor="@color/blue"
+        app:hintTextColor="@color/blue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/coverPlaylist"
-        android:hint="@string/playlist_title"
-        android:background="@drawable/rect_rounded_edittext"/>
+        app:layout_constraintTop_toBottomOf="@+id/coverPlaylist">
 
-    <EditText
-        android:id="@+id/create_playlist_desc"
-        style="@style/CreatePlaylistText"
-        android:autofillHints="playlistDesc"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/create_playlist_title"
+            android:background="@drawable/rect_rounded_edittext"
+            style="@style/CreatePlaylistText"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/playlist_desc"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_playlist_title"
-        android:hint="@string/playlist_desc"
-        android:background="@drawable/rect_rounded_edittext"/>
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"> <!-- Example style -->
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/create_playlist_desc"
+            android:inputType="textPersonName"
+            style="@style/CreatePlaylistText"
+            android:background="@drawable/rect_rounded_edittext"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
     
     <com.google.android.material.button.MaterialButton
         android:id="@+id/create_btn"

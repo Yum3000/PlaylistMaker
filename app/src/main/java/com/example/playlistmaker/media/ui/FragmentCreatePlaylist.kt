@@ -24,9 +24,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.random.Random
+import java.util.UUID
 
-class FragmentCreatePlaylist: Fragment() {
+class FragmentCreatePlaylist : Fragment() {
 
     private val playlistCreateViewModel: PlaylistCreateViewModel by viewModel()
 
@@ -35,13 +35,14 @@ class FragmentCreatePlaylist: Fragment() {
 
     lateinit var confirmDialog: MaterialAlertDialogBuilder
 
-    private val pickPhoto = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            binding.coverPlaylist.setImageURI(uri)
-            val newUri = saveImageToPrivateStorage(uri)
-            playlistCreateViewModel.passArgsUri(newUri)
+    private val pickPhoto =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                binding.coverPlaylist.setImageURI(uri)
+                val newUri = saveImageToPrivateStorage(uri)
+                playlistCreateViewModel.passArgsUri(newUri)
+            }
         }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,28 +78,28 @@ class FragmentCreatePlaylist: Fragment() {
         confirmDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.completion_playlist))
             .setMessage(getString(R.string.comletion_warning))
-            .setNeutralButton (getString(R.string.cancel)){ dialog, which -> }
-            .setPositiveButton(getString(R.string.finish)){ dialog, which ->
+            .setNeutralButton(getString(R.string.cancel)) { dialog, which -> }
+            .setPositiveButton(getString(R.string.finish)) { dialog, which ->
                 findNavController().navigateUp()
             }
 
-        binding.createPlaylistTitle.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged (p0: Editable?) { }
+        binding.createPlaylistTitle.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
 
-            override fun beforeTextChanged (p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged (p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 val title = p0.toString()
                 playlistCreateViewModel.handleTitleChange(title)
             }
         })
 
-        binding.createPlaylistDesc.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged (p0: Editable?) { }
+        binding.createPlaylistDesc.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
 
-            override fun beforeTextChanged (p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged (p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 val description = p0.toString()
                 playlistCreateViewModel.handleDescChange(description)
             }
@@ -119,19 +120,18 @@ class FragmentCreatePlaylist: Fragment() {
     }
 
     private fun saveImageToPrivateStorage(uri: Uri): Uri {
-        val filePath = File(requireContext().getExternalFilesDir(
-            Environment.DIRECTORY_PICTURES), "PlaylistMakerPics")
+        val filePath = File(
+            requireContext().getExternalFilesDir(
+                Environment.DIRECTORY_PICTURES
+            ), "PlaylistMakerPics"
+        )
 
-        if (!filePath.exists()){
+        if (!filePath.exists()) {
             filePath.mkdirs()
         }
 
-        var playlistNum: Int
-        var file: File
-        do {
-            playlistNum = generateRandomNum(1, 100)
-            file = File(filePath, "$COVER_PLAYLIST_NAME $playlistNum")
-        } while (file.exists())
+        val playlistNum = UUID.randomUUID()
+        val file = File(filePath, "$COVER_PLAYLIST_NAME $playlistNum")
 
         val inputStream = requireContext().contentResolver.openInputStream(uri)
         val outputStream = FileOutputStream(file)
@@ -143,10 +143,6 @@ class FragmentCreatePlaylist: Fragment() {
         inputStream?.close()
         outputStream.close()
         return file.toUri()
-    }
-
-    private fun generateRandomNum(min: Int, max: Int): Int {
-        return Random.nextInt(min, max + 1)
     }
 
     companion object {

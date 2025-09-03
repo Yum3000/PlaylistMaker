@@ -22,14 +22,13 @@ class PlaylistsViewModel(
 
     init {
         renderState(MediaScreenPlaylistsState.Loading)
-        updatePlaylists()
     }
 
-    fun renderState(state: MediaScreenPlaylistsState) {
+    private fun renderState(state: MediaScreenPlaylistsState) {
         statePlaylistsScreen.postValue(state)
     }
 
-    fun updatePlaylists() {
+    private fun updatePlaylists() {
         viewModelScope.launch (Dispatchers.IO) {
             playlistsInteractor.getPlaylists().collect { playlists ->
                 processResult(playlists)
@@ -37,7 +36,7 @@ class PlaylistsViewModel(
         }
     }
 
-    fun processResult(playlists: List<Playlist>) {
+    private fun processResult(playlists: List<Playlist>) {
         lists = playlists
         if (lists.isEmpty()) {
             renderState(MediaScreenPlaylistsState.Empty(
@@ -45,5 +44,9 @@ class PlaylistsViewModel(
         } else {
             renderState(MediaScreenPlaylistsState.Content(lists))
         }
+    }
+
+    fun handleViewCreated() {
+        updatePlaylists()
     }
 }

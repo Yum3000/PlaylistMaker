@@ -19,8 +19,8 @@ val viewModelModule = module {
         SettingsViewModel(get(), get())
     }
 
-    viewModel { (trackId: Int) ->
-        PlayerViewModel(trackId, get(),
+    viewModel { (trackId: Int, message: String) ->
+        PlayerViewModel(trackId, message, get(),
             get(), get(), get())
     }
 
