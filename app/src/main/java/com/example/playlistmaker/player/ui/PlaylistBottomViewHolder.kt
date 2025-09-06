@@ -5,6 +5,7 @@ import android.util.TypedValue
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlaylistBottomSheetViewBinding
 import com.example.playlistmaker.media.domain.models.Playlist
@@ -22,11 +23,14 @@ class PlaylistBottomViewHolder(
         val counter = getTrackCountString(playlist.tracksCount, context)
         binding.listCount.text = counter
 
-        Glide.with(itemView)
-            .load(playlist.coverPath ?: "")
+        val options = RequestOptions()
             .placeholder(R.drawable.cover_placeholder)
-            .transform(RoundedCorners(cornerRadius))
             .centerCrop()
+            .transform(RoundedCorners(cornerRadius))
+
+        Glide.with(itemView)
+            .load(playlist.coverPath)
+            .apply(options)
             .into(binding.listCover)
     }
 

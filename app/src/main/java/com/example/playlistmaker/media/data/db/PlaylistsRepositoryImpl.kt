@@ -1,6 +1,5 @@
 package com.example.playlistmaker.media.data.db
 
-import android.util.Log
 import com.example.playlistmaker.media.data.db.converters.PlaylistDbConvertor
 import com.example.playlistmaker.media.data.db.dao.AddToPlaylistDao
 import com.example.playlistmaker.media.data.db.dao.PlaylistsDao
@@ -15,6 +14,7 @@ class PlaylistsRepositoryImpl(
     private val playlistsDao: PlaylistsDao,
     private val addToPlaylistDao: AddToPlaylistDao,
     private val playlistDbConvertor: PlaylistDbConvertor): PlaylistsRepository {
+
     override suspend fun createPlaylist(playlist: Playlist) {
         playlistsDao.createPlaylist(convertPlaylistToEntity(playlist))
     }
@@ -29,14 +29,11 @@ class PlaylistsRepositoryImpl(
         val currentTracksIdsList = playlist.tracksIdsList ?: emptyList()
 
         if (!currentTracksIdsList.contains(track.trackId)) {
-            Log.d("PlaylistsRepository", "Adding track: ${track.trackId} to playlist: ${playlist.id}")
             addToPlaylistDao.addToPlaylist(playlistDbConvertor.trackToAddedTrack(track))
 
             val updatedTracksIdsList = getUpdatedTracksIdsList(track, playlist)
             val newTracksCount = currentTracksIdsList.size + 1
             updatePlaylistTracks(playlist.id, updatedTracksIdsList, newTracksCount)
-        } else {
-            Log.d("PlaylistsRepository", "Track: ${track.trackId} already exists in playlist: ${playlist.id}")
         }
     }
 
@@ -46,7 +43,9 @@ class PlaylistsRepositoryImpl(
             playlistDbConvertor.deserializeTracksIdsList(it)
         } ?: emptyList()
 
-        return playlistDbConvertor.serializeTracksIdsList((currentTracksIdsList + track.trackId).distinct() as List<Int>?)
+        val updatedIds = (currentTracksIdsList + track.trackId).requireNoNulls().distinct()
+
+        return playlistDbConvertor.serializeTracksIdsList(updatedIds)
     }
 
     override suspend fun updatePlaylistTracks(

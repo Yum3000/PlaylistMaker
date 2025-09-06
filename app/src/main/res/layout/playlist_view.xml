@@ -1,42 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
     android:layout_marginTop="16dp"
-    android:layout_marginEnd="16dp">
+    android:layout_marginEnd="16dp"
+    android:background="@color/media_screen_bg"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/playlist_cover"
+        android:layout_width="@dimen/playlist_size"
+        android:layout_height="@dimen/playlist_size"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:src="@drawable/cover_placeholder"
+        android:contentDescription="@string/playlist_cover_ph"/>
+
+    <TextView
+        android:id="@+id/playlist_title"
+        style="@style/PlaylistsFragmentText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/media_screen_bg"
-        android:orientation="vertical">
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        tools:text="Заголовок плейлиста" />
 
-        <ImageView
-            android:id="@+id/playlist_cover"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:scaleType="fitCenter"
-            android:layout_gravity="center"
-            android:src="@drawable/cover_placeholder"/>
+    <TextView
+        android:id="@+id/tracks_count"
+        style="@style/PlaylistsFragmentText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Число треков" />
 
-        <TextView
-            android:id="@+id/playlist_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            style="@style/PlaylistsFragmentText"
-            tools:text="ОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписаниеОписание" />
-
-        <TextView
-            android:id="@+id/tracks_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="@string/tracks_count_many"
-            style="@style/PlaylistsFragmentText"/>
-
-    </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+</LinearLayout>

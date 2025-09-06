@@ -20,12 +20,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
-class AudioPlayerFragment: Fragment() {
+class AudioPlayerFragment : Fragment() {
     private var trackId: Int = ERROR_TRACK_ID
 
     private val viewModel: PlayerViewModel by lazy {
-        val message = getString(R.string.unknow_error)
-        getViewModel { parametersOf(trackId, message) }
+        getViewModel { parametersOf(trackId) }
     }
 
     private var _binding: FragmentAudioplayerBinding? = null
@@ -34,7 +33,7 @@ class AudioPlayerFragment: Fragment() {
     private var playerState = PlayerState.DEFAULT
 
     private val playlistAdapter = PlaylistBottomAdapter(mutableListOf()) { playlist, _ ->
-        viewModel.handleAddToPlaylistClick(playlist.id)
+        viewModel.handleAddToPlaylistClick(playlist.id, playlist.title)
     }
 
     override fun onCreateView(
@@ -81,26 +80,17 @@ class AudioPlayerFragment: Fragment() {
             }
 
         binding.addBtn.setOnClickListener {
+            viewModel.loadPlaylists()
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             binding.overlay.isVisible = true
         }
 
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 
-                when (newState) {
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-
-                    }
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-
-                    }
-                    BottomSheetBehavior.STATE_HIDDEN -> {
-                        binding.overlay.isVisible = false
-                    }
-                    else -> {
-
-                    }
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    binding.overlay.isVisible = false
                 }
             }
 
@@ -117,36 +107,37 @@ class AudioPlayerFragment: Fragment() {
         }
 
         viewModel.observeBottomState().observe(viewLifecycleOwner) { state ->
-            when(state) {
+            when (state) {
                 is PlaylistBottomState.Content -> showContent(state.playlists)
                 is PlaylistBottomState.Empty -> {
                     binding.recyclerViewPlaylists.isVisible = false
-                }
-                is PlaylistBottomState.Error -> {
-                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT)
-                        .show()
                 }
             }
         }
 
         viewModel.observeAddTrackStatus().observe(viewLifecycleOwner) { status ->
-            when(status) {
+            when (status) {
                 is AddTrackStatus.Added -> {
-                    Toast.makeText(requireContext(), R.string.added_to_playlist, Toast.LENGTH_SHORT)
+                    val message = getString(R.string.added_to_playlist, status.playlistName)
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
                         .show()
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
-                is AddTrackStatus.Exists -> {
 
-                    val message = getString(R.string.track_exists, )
-                    Toast.makeText(requireContext(), message , Toast.LENGTH_SHORT)
+                is AddTrackStatus.Exists -> {
+                    val message = getString(R.string.track_exists, status.playlistName)
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
                         .show()
                 }
+
+                is AddTrackStatus.Default -> {}
             }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.handleDestroyView()
         _binding = null
     }
 

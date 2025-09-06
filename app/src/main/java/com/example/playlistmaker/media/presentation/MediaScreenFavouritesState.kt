@@ -8,5 +8,4 @@ sealed interface MediaScreenFavouritesState {
 
     data class Content(val tracks: List<Track>): MediaScreenFavouritesState
     data class Empty(val message: String): MediaScreenFavouritesState
-
 }

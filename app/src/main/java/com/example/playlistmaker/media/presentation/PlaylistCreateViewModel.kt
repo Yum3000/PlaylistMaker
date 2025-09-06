@@ -18,7 +18,7 @@ class PlaylistCreateViewModel(
     private val statePlaylistCreate = MutableLiveData<PlaylistCreateState?>()
     fun observePlaylistCreateState(): LiveData<PlaylistCreateState?> = statePlaylistCreate
 
-    private var coverUri: Uri? = null
+    var coverUri: Uri? = null
 
     fun handleTitleChange(text: String) {
         val oldState = statePlaylistCreate.value ?: PlaylistCreateState()
@@ -63,8 +63,12 @@ class PlaylistCreateViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val curState = statePlaylistCreate.value
             val newPlaylist = Playlist(
-                0, curState?.title, curState?.description,
-                coverUri, emptyList(), 0
+                id = 0,
+                title = curState?.title,
+                description = curState?.description,
+                coverPath = coverUri,
+                tracksIdsList = emptyList(),
+                tracksCount = 0
             )
             playlistsInteractor.createPlaylist(newPlaylist)
         }

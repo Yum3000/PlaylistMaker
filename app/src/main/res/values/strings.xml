@@ -75,5 +75,7 @@
     <string name="track_exists">Трек уже добавлен в плейлист %1$s</string>
     <string name="added_to_playlist">Добавлено в плейлист %1$s</string>
 
+    <string name="permissions_granted">Разрешение предоставлено</string>
+    <string name="permissions_denied">Разрешение отклонено</string>
     <string name="unknow_error">Неизвестная ошибка</string>
 </resources>

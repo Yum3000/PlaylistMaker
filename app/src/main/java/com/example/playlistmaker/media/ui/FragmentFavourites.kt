@@ -26,7 +26,8 @@ class FragmentFavourites: Fragment() {
         favouritesViewModel.handleTrackClick(track.trackId)
     }
 
-    private lateinit var binding: FragmentFavouritesBinding
+    private var _binding: FragmentFavouritesBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +35,7 @@ class FragmentFavourites: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         favouritesViewModel.updateFavouriteList()
-        binding = FragmentFavouritesBinding.inflate(inflater, container, false)
+        _binding = FragmentFavouritesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -53,6 +54,11 @@ class FragmentFavourites: Fragment() {
         favouritesViewModel.getTrackIdToOpenPlayer().observe(viewLifecycleOwner) {
                 trackId -> openPlayerActivity(trackId)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun showContent(tracks: List<Track>) {

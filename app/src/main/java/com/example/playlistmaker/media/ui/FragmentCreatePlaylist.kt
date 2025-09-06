@@ -115,6 +115,36 @@ class FragmentCreatePlaylist : Fragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(PLAYLIST_TITLE, binding.createPlaylistTitle.text.toString())
+        outState.putString(PLAYLIST_DESC, binding.createPlaylistDesc.text.toString())
+        outState.putString(PLAYLIST_COVER_URI, playlistCreateViewModel.coverUri.toString())
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            val title = savedInstanceState.getString(PLAYLIST_TITLE, "")
+            val description = savedInstanceState.getString(PLAYLIST_DESC, "")
+            val coverUriStr = savedInstanceState.getString(PLAYLIST_COVER_URI)
+
+            binding.createPlaylistTitle.setText(title)
+            binding.createPlaylistDesc.setText(description)
+
+            if (coverUriStr != null) {
+                val coverUri = coverUriStr.toUri()
+                binding.coverPlaylist.setImageURI(coverUri)
+                playlistCreateViewModel.passArgsUri(coverUri)
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun updateForm(stateBtn: Boolean) {
         binding.createBtn.isEnabled = stateBtn
     }
@@ -147,5 +177,8 @@ class FragmentCreatePlaylist : Fragment() {
 
     companion object {
         private const val COVER_PLAYLIST_NAME = "playlist_cover"
+        const val PLAYLIST_TITLE = "playlist_title"
+        const val PLAYLIST_DESC = "playlist_description"
+        const val PLAYLIST_COVER_URI = "playlist_cover_uri"
     }
 }

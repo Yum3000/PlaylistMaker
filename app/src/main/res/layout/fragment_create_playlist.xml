@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -23,60 +24,50 @@
 
     <ImageView
         android:id="@+id/coverPlaylist"
-        android:layout_width="312dp"
-        android:layout_height="312dp"
+        android:layout_width="@dimen/playlist_cover_create"
+        android:layout_height="@dimen/playlist_cover_create"
         android:layout_marginTop="26dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginHorizontal="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialToolbar"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         android:contentDescription="@string/playlist_cover_ph"
         android:clickable="true"
         android:src="@drawable/add_photo_rect" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTitle"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/TextInputLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_marginHorizontal="16dp"
         android:hint="@string/playlist_title"
         android:layout_marginTop="32dp"
-        app:boxStrokeColor="@color/blue"
-        app:boxStrokeWidth="1dp"
-        app:boxBackgroundMode="outline"
-        app:cursorColor="@color/blue"
-        app:hintTextColor="@color/blue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coverPlaylist">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/create_playlist_title"
-            android:background="@drawable/rect_rounded_edittext"
-            style="@style/CreatePlaylistText"/>
-
+            style="@style/EditTextPlaylistStyle"/>
     </com.google.android.material.textfield.TextInputLayout>
-
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutDesc"
+        style="@style/TextInputLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/playlist_desc"
         android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"> <!-- Example style -->
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/create_playlist_desc"
-            android:inputType="textPersonName"
-            style="@style/CreatePlaylistText"
-            android:background="@drawable/rect_rounded_edittext"/>
+            style="@style/EditTextPlaylistStyle"/>
 
     </com.google.android.material.textfield.TextInputLayout>
     
@@ -85,8 +76,9 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:text="@string/create_playlist"
-        android:backgroundTint="@color/grey"
+        android:backgroundTint="@drawable/button_color_selector"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         app:cornerRadius="8dp"
         android:enabled="false"
         app:layout_constraintStart_toStartOf="parent"

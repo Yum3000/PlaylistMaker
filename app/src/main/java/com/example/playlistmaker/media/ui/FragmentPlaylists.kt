@@ -4,10 +4,10 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -25,7 +25,8 @@ class FragmentPlaylists: Fragment() {
 
     private val playlistsViewModel: PlaylistsViewModel by viewModel()
 
-    private lateinit var binding: FragmentPlaylistsBinding
+    private var _binding: FragmentPlaylistsBinding? = null
+    private val binding get() = _binding!!
 
     private val playlistsAdapter = PlaylistAdapter(mutableListOf())
 
@@ -48,7 +49,7 @@ class FragmentPlaylists: Fragment() {
             )
         }
 
-        binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
+        _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -60,7 +61,13 @@ class FragmentPlaylists: Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("FragmentPlaylist", "Permissions Granted!")
+                Toast.makeText(
+                    requireContext(), R.string.permissions_granted, Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    requireContext(), R.string.permissions_denied, Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -75,7 +82,6 @@ class FragmentPlaylists: Fragment() {
             when(it){
                 is MediaScreenPlaylistsState.Content -> showContent(it.playlists)
                 is MediaScreenPlaylistsState.Empty -> showEmpty()
-                is MediaScreenPlaylistsState.Loading -> showLoading()
             }
         }
 
@@ -84,6 +90,11 @@ class FragmentPlaylists: Fragment() {
         binding.createPlaylistBt.setOnClickListener {
             findNavController().navigate(R.id.action_mediaFragment_to_fragmentCreatePlaylist)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun showContent(playlists: List<Playlist>){
@@ -100,11 +111,6 @@ class FragmentPlaylists: Fragment() {
 
         val imageResource = getPlaceholderImageResource()
         binding.messageView.placeholderImage.setImageResource(imageResource)
-    }
-
-    private fun showLoading() {
-        binding.messageView.root.isVisible = false
-        // дописать ??
     }
 
     private fun getPlaceholderImageResource(): Int {

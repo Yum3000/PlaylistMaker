@@ -20,10 +20,6 @@ class PlaylistsViewModel(
 
     private var lists: List<Playlist> = emptyList()
 
-    init {
-        renderState(MediaScreenPlaylistsState.Loading)
-    }
-
     private fun renderState(state: MediaScreenPlaylistsState) {
         statePlaylistsScreen.postValue(state)
     }
