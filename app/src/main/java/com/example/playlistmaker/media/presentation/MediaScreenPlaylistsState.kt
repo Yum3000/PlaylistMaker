@@ -1,7 +1,9 @@
 package com.example.playlistmaker.media.presentation
 
-sealed class MediaScreenPlaylistsState {
+import com.example.playlistmaker.media.domain.models.Playlist
 
-    data object Content: MediaScreenPlaylistsState()
-    data object Empty: MediaScreenPlaylistsState()
+sealed interface MediaScreenPlaylistsState {
+
+    data class Content(val playlists: List<Playlist>): MediaScreenPlaylistsState
+    data class Empty(val message: String): MediaScreenPlaylistsState
 }

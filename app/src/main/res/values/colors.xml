@@ -48,9 +48,15 @@
     <color name="media_screen_toolbar">@color/dark_grey</color>
     <color name="media_screen_text">@color/black</color>
     <color name="media_tab_indicator">@color/dark_grey</color>
+    <color name="playlist_text">@color/dark_grey</color>
 
     <color name="bottom_menu">@color/white</color>
     <color name="bottom_menu_icons">@color/dark_grey</color>
+
+    <color name="text_input_layout">@color/dark_grey</color>
+    <color name="text_input_layout_edittext">@color/grey</color>
+    <color name="bottom_sheet_handle">@color/light_grey</color>
+    <color name="bottom_sheet_text">@color/dark_grey</color>
 
 </resources>
 
