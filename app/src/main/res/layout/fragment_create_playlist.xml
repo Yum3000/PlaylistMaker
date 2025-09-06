@@ -24,10 +24,11 @@
 
     <ImageView
         android:id="@+id/coverPlaylist"
-        android:layout_width="@dimen/playlist_cover_create"
-        android:layout_height="@dimen/playlist_cover_create"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="26dp"
         android:layout_marginHorizontal="24dp"
+        app:layout_constraintDimensionRatio="h, 1:1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/materialToolbar"

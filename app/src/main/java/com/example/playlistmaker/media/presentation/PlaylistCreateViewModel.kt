@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.media.domain.db.PlaylistsInteractor
 import com.example.playlistmaker.media.domain.models.Playlist
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PlaylistCreateViewModel(
@@ -23,7 +22,8 @@ class PlaylistCreateViewModel(
     fun handleTitleChange(text: String) {
         val oldState = statePlaylistCreate.value ?: PlaylistCreateState()
         val updateState = oldState.copy(
-            title = text, enabledBtn = text.isNotEmpty(),
+            title = text,
+            enabledBtn = text.isNotBlank(),
             dialogNeeded = shouldShowDialog(
                 text, oldState.description,
                 oldState.filePath?.toUri()
@@ -36,7 +36,6 @@ class PlaylistCreateViewModel(
         val oldState = statePlaylistCreate.value ?: PlaylistCreateState()
         val updateState = oldState.copy(
             description = text,
-            enabledBtn = oldState.title?.isNotEmpty() == true,
             dialogNeeded = shouldShowDialog(
                 oldState.title, text,
                 oldState.filePath?.toUri()
@@ -50,7 +49,6 @@ class PlaylistCreateViewModel(
         val oldState = statePlaylistCreate.value ?: PlaylistCreateState()
         val updateState = oldState.copy(
             filePath = coverUri.toString(),
-            enabledBtn = oldState.title?.isNotEmpty() == true,
             dialogNeeded = shouldShowDialog(
                 oldState.title, oldState.description,
                 coverUri
@@ -60,7 +58,7 @@ class PlaylistCreateViewModel(
     }
 
     fun createPlaylist() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val curState = statePlaylistCreate.value
             val newPlaylist = Playlist(
                 id = 0,
@@ -75,6 +73,6 @@ class PlaylistCreateViewModel(
     }
 
     private fun shouldShowDialog(title: String?, description: String?, uri: Uri?): Boolean {
-        return !title.isNullOrEmpty() || !description.isNullOrEmpty() || uri != null
+        return !title.isNullOrBlank() || !description.isNullOrEmpty() || uri != null
     }
 }

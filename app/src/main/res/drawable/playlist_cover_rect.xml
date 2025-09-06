@@ -4,8 +4,6 @@
     <size android:width="312dp"
         android:height="312dp"/>
 
-    <solid android:color="@color/audioplayer_screen_bg" />
-
     <stroke
         android:color="@color/grey"
         android:width="1dp"

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.TypedValue
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.example.playlistmaker.R
@@ -13,8 +14,10 @@ import com.example.playlistmaker.media.domain.models.Playlist
 class PlaylistBottomViewHolder(
     private val binding: PlaylistBottomSheetViewBinding
 ): RecyclerView.ViewHolder(binding.root) {
-    private val cornerRadius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2f,
-        itemView.resources.displayMetrics).toInt()
+    private val cornerRadius = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP, 2f,
+        itemView.resources.displayMetrics)
+        .toInt()
 
     fun bind(playlist: Playlist) {
         binding.listTitle.text = playlist.title ?: ""
@@ -25,8 +28,7 @@ class PlaylistBottomViewHolder(
 
         val options = RequestOptions()
             .placeholder(R.drawable.cover_placeholder)
-            .centerCrop()
-            .transform(RoundedCorners(cornerRadius))
+            .transform(CenterCrop(), RoundedCorners(cornerRadius))
 
         Glide.with(itemView)
             .load(playlist.coverPath)

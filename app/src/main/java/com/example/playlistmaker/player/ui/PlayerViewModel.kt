@@ -242,11 +242,8 @@ class PlayerViewModel(
 
     fun handleAddToPlaylistClick(playlistId: Int, playlistName: String?) {
 
-        val playlist = listPlaylists.find { it.id == playlistId }
-
-        if (playlist == null || currentTrack == null) {
-            return
-        }
+        val playlist = listPlaylists.find { it.id == playlistId } ?: return
+        val currentTrack  = currentTrack ?: return
 
         if (playlist.tracksIdsList?.contains(trackId) == true) {
             addTrackPlaylistStatus.postValue(AddTrackStatus.Exists(playlistName))
@@ -254,7 +251,7 @@ class PlayerViewModel(
         }
 
         viewModelScope.launch {
-            playlistsInteractor.addTrackToPlaylist(currentTrack!!, playlist)
+            playlistsInteractor.addTrackToPlaylist(currentTrack, playlist)
 
             val updatedTrackCount = playlistsInteractor.getTrackCount(playlist.id)
             playlist.tracksCount = updatedTrackCount

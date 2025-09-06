@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
@@ -37,11 +38,11 @@ class FragmentCreatePlaylist : Fragment() {
 
     private val pickPhoto =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            if (uri != null) {
-                binding.coverPlaylist.setImageURI(uri)
-                val newUri = saveImageToPrivateStorage(uri)
-                playlistCreateViewModel.passArgsUri(newUri)
-            }
+            if (uri == null) return@registerForActivityResult
+
+            binding.coverPlaylist.setImageURI(uri)
+            val newUri = saveImageToPrivateStorage(uri)
+            playlistCreateViewModel.passArgsUri(newUri)
         }
 
     override fun onCreateView(
@@ -94,16 +95,10 @@ class FragmentCreatePlaylist : Fragment() {
             }
         })
 
-        binding.createPlaylistDesc.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                val description = p0.toString()
-                playlistCreateViewModel.handleDescChange(description)
-            }
-        })
+        binding.createPlaylistDesc.doOnTextChanged { p0, _, _, _ ->
+            val description = p0.toString()
+            playlistCreateViewModel.handleDescChange(description)
+        }
 
         binding.createBtn.setOnClickListener {
             playlistCreateViewModel.createPlaylist()
@@ -166,12 +161,14 @@ class FragmentCreatePlaylist : Fragment() {
         val inputStream = requireContext().contentResolver.openInputStream(uri)
         val outputStream = FileOutputStream(file)
 
-        BitmapFactory
-            .decodeStream(inputStream)
-            .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
-
-        inputStream?.close()
-        outputStream.close()
+        try {
+            BitmapFactory
+                .decodeStream(inputStream)
+                .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+        } finally {
+            inputStream?.close()
+            outputStream.close()
+        }
         return file.toUri()
     }
 

@@ -31,14 +31,14 @@ class PlaylistsRepositoryImpl(
         if (!currentTracksIdsList.contains(track.trackId)) {
             addToPlaylistDao.addToPlaylist(playlistDbConvertor.trackToAddedTrack(track))
 
-            val updatedTracksIdsList = getUpdatedTracksIdsList(track, playlist)
+            val updatedTracksIdsList = getUpdatedTracksIdsList(track, playlist.id)
             val newTracksCount = currentTracksIdsList.size + 1
             updatePlaylistTracks(playlist.id, updatedTracksIdsList, newTracksCount)
         }
     }
 
-    override suspend fun getUpdatedTracksIdsList(track: Track, playlist: Playlist): String {
-        val existingPlaylist = playlistsDao.getPlaylistById(playlist.id)
+    override suspend fun getUpdatedTracksIdsList(track: Track, playlistId: Int): String {
+        val existingPlaylist = playlistsDao.getPlaylistById(playlistId)
         val currentTracksIdsList = existingPlaylist?.tracksIdsList.let {
             playlistDbConvertor.deserializeTracksIdsList(it)
         } ?: emptyList()

@@ -77,5 +77,4 @@
 
     <string name="permissions_granted">Разрешение предоставлено</string>
     <string name="permissions_denied">Разрешение отклонено</string>
-    <string name="unknow_error">Неизвестная ошибка</string>
 </resources>
