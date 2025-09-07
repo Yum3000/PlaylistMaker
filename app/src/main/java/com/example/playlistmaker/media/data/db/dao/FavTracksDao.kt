@@ -10,7 +10,7 @@ import com.example.playlistmaker.media.data.db.entity.FavouriteTrackEntity
 @Dao
 interface FavTracksDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(FavouriteTrackEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun addToFavourites(track: FavouriteTrackEntity)
 
     @Delete(FavouriteTrackEntity::class)

@@ -20,4 +20,8 @@
 
     <dimen name="media_screen_placeholder_top_margin">106dp</dimen>
     <dimen name="media_button_top_margin">24dp</dimen>
+
+    <dimen name="box_corner_radius">4dp</dimen>
+    <dimen name="playlist_size">160dp</dimen>
+    <dimen name="playlist_cover_create">312dp</dimen>
 </resources>
