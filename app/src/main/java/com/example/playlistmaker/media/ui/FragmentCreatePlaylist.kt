@@ -27,12 +27,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 
-class FragmentCreatePlaylist : Fragment() {
+open class FragmentCreatePlaylist : Fragment() {
 
-    private val playlistCreateViewModel: PlaylistCreateViewModel by viewModel()
+    protected open val playlistViewModel: PlaylistCreateViewModel by viewModel()
 
     private var _binding: FragmentCreatePlaylistBinding? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
 
     lateinit var confirmDialog: MaterialAlertDialogBuilder
 
@@ -42,7 +42,7 @@ class FragmentCreatePlaylist : Fragment() {
 
             binding.coverPlaylist.setImageURI(uri)
             val newUri = saveImageToPrivateStorage(uri)
-            playlistCreateViewModel.passArgsUri(newUri)
+            playlistViewModel.passArgsUri(newUri)
         }
 
     override fun onCreateView(
@@ -57,15 +57,14 @@ class FragmentCreatePlaylist : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        playlistCreateViewModel.observePlaylistCreateState().observe(viewLifecycleOwner) {
+        playlistViewModel.observePlaylistCreateState().observe(viewLifecycleOwner) {
             when (it) {
                 is PlaylistCreateState -> updateForm(it.enabledBtn)
             }
         }
 
         binding.materialToolbar.setNavigationOnClickListener {
-
-            if (playlistCreateViewModel.observePlaylistCreateState().value?.dialogNeeded == true) {
+            if (shouldShowConfirmDialog()) {
                 confirmDialog.show()
             } else {
                 findNavController().navigateUp()
@@ -91,19 +90,19 @@ class FragmentCreatePlaylist : Fragment() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 val title = p0.toString()
-                playlistCreateViewModel.handleTitleChange(title)
+                playlistViewModel.handleTitleChange(title)
             }
         })
 
         binding.createPlaylistDesc.doOnTextChanged { p0, _, _, _ ->
             val description = p0.toString()
-            playlistCreateViewModel.handleDescChange(description)
+            playlistViewModel.handleDescChange(description)
         }
 
         binding.createBtn.setOnClickListener {
-            playlistCreateViewModel.createPlaylist()
+            playlistViewModel.createPlaylist()
 
-            val playlistTitle = playlistCreateViewModel.observePlaylistCreateState().value?.title
+            val playlistTitle = playlistViewModel.observePlaylistCreateState().value?.title
             val message = getString(R.string.playlist_created, playlistTitle)
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             findNavController().navigateUp()
@@ -114,7 +113,7 @@ class FragmentCreatePlaylist : Fragment() {
         super.onSaveInstanceState(outState)
         outState.putString(PLAYLIST_TITLE, binding.createPlaylistTitle.text.toString())
         outState.putString(PLAYLIST_DESC, binding.createPlaylistDesc.text.toString())
-        outState.putString(PLAYLIST_COVER_URI, playlistCreateViewModel.coverUri.toString())
+        outState.putString(PLAYLIST_COVER_URI, playlistViewModel.coverUri.toString())
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -130,7 +129,7 @@ class FragmentCreatePlaylist : Fragment() {
             if (coverUriStr != null) {
                 val coverUri = coverUriStr.toUri()
                 binding.coverPlaylist.setImageURI(coverUri)
-                playlistCreateViewModel.passArgsUri(coverUri)
+                playlistViewModel.passArgsUri(coverUri)
             }
         }
     }
@@ -170,6 +169,14 @@ class FragmentCreatePlaylist : Fragment() {
             outputStream.close()
         }
         return file.toUri()
+    }
+
+    private fun shouldShowConfirmDialog(): Boolean {
+        return if (this is FragmentModifyPlaylist) {
+            false
+        } else {
+            playlistViewModel.observePlaylistCreateState().value?.dialogNeeded == true
+        }
     }
 
     companion object {

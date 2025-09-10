@@ -13,4 +13,10 @@ interface AddToPlaylistDao {
 
     @Query("UPDATE playlists_table SET tracksIdsList = :newTracksIdsList, tracksCount = :tracksCount WHERE id = :playlistId")
     suspend fun updatePlaylistTracks(playlistId: Int, newTracksIdsList: String, tracksCount: Int)
+
+    @Query("SELECT * FROM added_playlist_tracks_table WHERE trackId IN (:tracksIds)")
+    suspend fun getAllTracks(tracksIds: List<Int>): List<AddedTrackToPlaylistEntity>
+
+    @Query("DELETE FROM added_playlist_tracks_table WHERE trackId NOT IN (:tracksIds)")
+    suspend fun deleteUnusedTracks(tracksIds: List<Int>)
 }

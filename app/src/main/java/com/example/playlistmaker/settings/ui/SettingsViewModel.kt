@@ -25,7 +25,7 @@ class SettingsViewModel(
     }
 
     fun shareApp(link: String) {
-        sharingInteractor.shareApp(link)
+        sharingInteractor.shareLink(link)
     }
 
     fun writeToSupport(subject: String, message: String, sendTo: String) {

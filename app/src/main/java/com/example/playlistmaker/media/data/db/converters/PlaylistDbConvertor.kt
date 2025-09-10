@@ -1,6 +1,5 @@
 package com.example.playlistmaker.media.data.db.converters
 
-import android.util.Log
 import androidx.core.net.toUri
 import com.example.playlistmaker.media.data.db.entity.AddedTrackToPlaylistEntity
 import com.example.playlistmaker.media.data.db.entity.PlaylistEntity
@@ -11,14 +10,12 @@ import com.google.gson.reflect.TypeToken
 
 class PlaylistDbConvertor {
     fun map(playlist: Playlist): PlaylistEntity {
-        Log.d("PlaylistDBConvertor", "COUNT = ${playlist.tracksIdsList?.size}")
         return PlaylistEntity(
             playlist.id, playlist.title, playlist.description,
             playlist.coverPath?.toString(),
             serializeTracksIdsList(playlist.tracksIdsList),
             playlist.tracksIdsList?.size
         )
-
     }
 
     fun map(playlist: PlaylistEntity): Playlist {
@@ -44,6 +41,15 @@ class PlaylistDbConvertor {
         return AddedTrackToPlaylistEntity(
             track.trackId, track.trackName, track.collectionName,
             track.artistName, track.trackTimeMillis, track.releaseDate,
+            track.primaryGenreName, track.country, track.artworkUrl100,
+            track.previewUrl
+        )
+    }
+
+    fun addedTrackEntityToTrack(track: AddedTrackToPlaylistEntity): Track  {
+        return Track(
+            track.trackId, track.trackName, track.collectionName,
+            track.artistName, track.trackTime, track.releaseDate,
             track.primaryGenreName, track.country, track.artworkUrl100,
             track.previewUrl
         )

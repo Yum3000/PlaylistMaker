@@ -28,7 +28,9 @@ class FragmentPlaylists: Fragment() {
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
 
-    private val playlistsAdapter = PlaylistAdapter(mutableListOf())
+    private val playlistsAdapter = PlaylistAdapter(mutableListOf()) { playlist, _ ->
+        playlistsViewModel.handlePlaylistClick(playlist.id)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,6 +92,10 @@ class FragmentPlaylists: Fragment() {
         binding.createPlaylistBt.setOnClickListener {
             findNavController().navigate(R.id.action_mediaFragment_to_fragmentCreatePlaylist)
         }
+
+        playlistsViewModel.getPlaylistIdToShowContent().observe(viewLifecycleOwner) {
+                playlistId -> openPlaylistScreen(playlistId)
+        }
     }
 
     override fun onDestroyView() {
@@ -108,9 +114,15 @@ class FragmentPlaylists: Fragment() {
     private fun showEmpty(){
         binding.messageView.root.isVisible = true
         binding.messageView.placeholderMessage.text = requireActivity().getString(R.string.no_playlists)
+        binding.recyclerView.isVisible = false
 
         val imageResource = getPlaceholderImageResource()
         binding.messageView.placeholderImage.setImageResource(imageResource)
+    }
+
+    private fun openPlaylistScreen(playlistId: Int) {
+        val bundle = PlaylistFragment.createArgs(playlistId)
+        findNavController().navigate(R.id.action_mediaFragment_to_playlistFragment, bundle)
     }
 
     private fun getPlaceholderImageResource(): Int {
