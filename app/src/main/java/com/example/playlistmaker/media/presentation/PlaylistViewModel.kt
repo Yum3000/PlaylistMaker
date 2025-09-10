@@ -177,7 +177,7 @@ class PlaylistViewModel(
 
         messageBuilder.append("$trackCountStr\n")
 
-        for (i in 0 until count) {
+        for (i in 0 until tracks.size) {
             messageBuilder.append(
                 "${i + 1}. ${tracks[i].artistName} - " +
                         "${tracks[i].trackName} " +

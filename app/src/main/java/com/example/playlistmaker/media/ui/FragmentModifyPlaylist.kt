@@ -37,6 +37,7 @@ class FragmentModifyPlaylist(): FragmentCreatePlaylist() {
 
         binding.createBtn.setOnClickListener {
             playlistViewModel.saveUpdates(playlistId)
+            findNavController().navigateUp()
         }
 
         playlistViewModel.observeInitPlaylistState().observe(viewLifecycleOwner) { playlist ->
