@@ -24,4 +24,24 @@ class PlaylistsInteractorImpl(
     override suspend fun getTrackCount(playlistId: Int): Int {
         return playlistsRepository.getTrackCount(playlistId)
     }
+
+    override suspend fun getPlaylistById(playlistId: Int): Playlist? {
+        return playlistsRepository.getPlaylistById(playlistId)
+    }
+
+    override suspend fun getTracksByIds(tracksIds: List<Int>): Flow<List<Track>> {
+        return playlistsRepository.getTracksByIds(tracksIds)
+    }
+
+    override suspend fun deleteTrack(trackId: Int, playlist: Playlist) {
+        playlistsRepository.deleteTrack(trackId, playlist)
+    }
+
+    override suspend fun deletePlaylist(playlistId: Int) {
+        playlistsRepository.deletePlaylist(playlistId)
+    }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        playlistsRepository.updatePlaylist(playlist)
+    }
 }

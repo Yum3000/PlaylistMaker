@@ -11,10 +11,17 @@ interface PlaylistsRepository {
 
     suspend fun addTrackToPlaylist(track: Track, playlist: Playlist)
 
-    suspend fun getUpdatedTracksIdsList(track: Track, playlistId: Int): String
-
-    suspend fun updatePlaylistTracks(playlistId: Int, newTracksIdsList: String, tracksCount: Int)
+    suspend fun getUpdatedTracksIdsList(trackId: Int, playlistId: Int): List<Int>?
 
     suspend fun getTrackCount(playlistId: Int): Int
 
+    suspend fun getPlaylistById(playlistId: Int): Playlist?
+
+    suspend fun getTracksByIds(tracksIds: List<Int>): Flow<List<Track>>
+
+    suspend fun deleteTrack(trackId: Int, playlist: Playlist)
+
+    suspend fun deletePlaylist(playlistId: Int)
+
+    suspend fun updatePlaylist(playlist: Playlist)
 }

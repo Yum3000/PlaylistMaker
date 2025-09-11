@@ -51,5 +51,6 @@
     <color name="text_input_layout_edittext">@color/white</color>
     <color name="bottom_sheet_handle">@color/white</color>
     <color name="bottom_sheet_text">@color/white</color>
+    <color name="cur_track_playlist_menu">@color/white</color>
 
 </resources>

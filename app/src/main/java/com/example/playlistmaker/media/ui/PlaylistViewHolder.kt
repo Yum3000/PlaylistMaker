@@ -10,7 +10,9 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlaylistViewBinding
 import com.example.playlistmaker.media.domain.models.Playlist
 
-class PlaylistViewHolder(private val binding: PlaylistViewBinding):
+class PlaylistViewHolder(
+    private val binding: PlaylistViewBinding,
+):
     RecyclerView.ViewHolder(binding.root) {
 
     private val cornerRadius = TypedValue.applyDimension(
@@ -21,9 +23,9 @@ class PlaylistViewHolder(private val binding: PlaylistViewBinding):
     fun bind(playlist: Playlist) {
         binding.playlistTitle.text = playlist.title
 
-        val context = itemView.context
-        val counter = getTrackCountString(playlist.tracksCount, context)
-        binding.tracksCount.text = counter
+        val trackCount = playlist.tracksCount ?: 0
+        val count = getTrackCountString(trackCount, itemView.context)
+        binding.tracksCount.text = count
 
         Glide.with(itemView)
             .load(playlist.coverPath)
@@ -35,8 +37,16 @@ class PlaylistViewHolder(private val binding: PlaylistViewBinding):
     private fun getTrackCountString(count: Int?, context: Context): String {
         val trackCount = count ?: 0
         return when {
-            (trackCount % 10 == 1 && trackCount % 100 != 11) -> context.getString(R.string.tracks_count_single, trackCount)
-            (trackCount % 10 in 2..4 && trackCount % 100 !in 12..14) -> context.getString(R.string.tracks_count_few, trackCount)
+            (trackCount % 10 == 1 && trackCount % 100 != 11) -> context.getString(
+                R.string.tracks_count_single,
+                trackCount
+            )
+
+            (trackCount % 10 in 2..4 && trackCount % 100 !in 12..14) -> context.getString(
+                R.string.tracks_count_few,
+                trackCount
+            )
+
             else -> context.getString(R.string.tracks_count_many, trackCount)
         }
     }

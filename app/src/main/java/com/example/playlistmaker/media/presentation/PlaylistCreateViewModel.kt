@@ -10,11 +10,11 @@ import com.example.playlistmaker.media.domain.db.PlaylistsInteractor
 import com.example.playlistmaker.media.domain.models.Playlist
 import kotlinx.coroutines.launch
 
-class PlaylistCreateViewModel(
-    private val playlistsInteractor: PlaylistsInteractor
+open class PlaylistCreateViewModel(
+    protected val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
-    private val statePlaylistCreate = MutableLiveData<PlaylistCreateState?>()
+    protected val statePlaylistCreate = MutableLiveData<PlaylistCreateState?>()
     fun observePlaylistCreateState(): LiveData<PlaylistCreateState?> = statePlaylistCreate
 
     var coverUri: Uri? = null
@@ -64,7 +64,7 @@ class PlaylistCreateViewModel(
                 id = 0,
                 title = curState?.title,
                 description = curState?.description,
-                coverPath = coverUri,
+                coverPath = curState?.filePath?.toUri(),
                 tracksIdsList = emptyList(),
                 tracksCount = 0
             )

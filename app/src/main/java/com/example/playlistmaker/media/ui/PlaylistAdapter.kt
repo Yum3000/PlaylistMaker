@@ -7,7 +7,8 @@ import com.example.playlistmaker.databinding.PlaylistViewBinding
 import com.example.playlistmaker.media.domain.models.Playlist
 
 class PlaylistAdapter(
-    var playlists: MutableList<Playlist>
+    var playlists: MutableList<Playlist>,
+    private val onPlaylistClick: (Playlist, PlaylistAdapter) -> Unit
 ): RecyclerView.Adapter<PlaylistViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -23,6 +24,10 @@ class PlaylistAdapter(
         position: Int
     ) {
         holder.bind(playlists[position])
+
+        holder.itemView.setOnClickListener {
+            onPlaylistClick(playlists[position], this)
+        }
     }
 
     override fun getItemCount(): Int {

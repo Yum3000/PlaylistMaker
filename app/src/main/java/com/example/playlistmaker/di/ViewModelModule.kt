@@ -2,10 +2,13 @@ package com.example.playlistmaker.di
 
 import com.example.playlistmaker.media.presentation.FavouritesViewModel
 import com.example.playlistmaker.media.presentation.PlaylistCreateViewModel
+import com.example.playlistmaker.media.presentation.PlaylistModifyViewModel
+import com.example.playlistmaker.media.presentation.PlaylistViewModel
 import com.example.playlistmaker.media.presentation.PlaylistsViewModel
 import com.example.playlistmaker.search.ui.SearchViewModel
 import com.example.playlistmaker.settings.ui.SettingsViewModel
 import com.example.playlistmaker.player.ui.PlayerViewModel
+import com.example.playlistmaker.utils.ResourceProvider
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -34,5 +37,19 @@ val viewModelModule = module {
 
     viewModel {
         PlaylistCreateViewModel(get())
+    }
+
+    viewModel { (playlistId: Int) ->
+        PlaylistViewModel(
+            playlistId, get(), get(), get()
+        )
+    }
+
+    viewModel { (playlistId: Int) ->
+        PlaylistModifyViewModel(playlistId, get())
+    }
+
+    single {
+        ResourceProvider(context = get())
     }
 }
