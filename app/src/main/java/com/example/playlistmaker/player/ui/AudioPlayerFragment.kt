@@ -155,11 +155,11 @@ class AudioPlayerFragment : Fragment() {
 
         when (state) {
             PlayerState.PLAYING -> {
-                binding.playBtn.setImageResource(R.drawable.pause_btn)
+                binding.playBtn.setPlaybackBtnState(false)
             }
 
             PlayerState.PREPARED, PlayerState.PAUSED, PlayerState.DEFAULT -> {
-                binding.playBtn.setImageResource(R.drawable.play_btn)
+                binding.playBtn.setPlaybackBtnState(true)
             }
         }
     }
