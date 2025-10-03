@@ -99,15 +99,17 @@
             app:layout_constraintStart_toStartOf="@id/leftBorder"
             app:layout_constraintTop_toBottomOf="@id/artistName" />
 
-        <ImageButton
+        <com.example.playlistmaker.player.ui.PlaybackButtonView
             android:id="@+id/playBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/playback_btn_size"
+            android:layout_height="@dimen/playback_btn_size"
             android:background="@drawable/round_btn_bg"
             android:backgroundTint="@color/audioplayer_play_btn_bg_tint"
             android:clickable="true"
             android:contentDescription="@string/play_btn_desc"
             android:src="@drawable/play_btn"
+            app:playBtnImageResId="@drawable/play_btn"
+            app:pauseBtnImageResId="@drawable/pause_btn"
             app:layout_constraintBottom_toBottomOf="@id/addBtn"
             app:layout_constraintEnd_toStartOf="@id/addFavBtn"
             app:layout_constraintStart_toEndOf="@id/addBtn"

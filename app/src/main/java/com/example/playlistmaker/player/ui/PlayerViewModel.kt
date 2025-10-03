@@ -75,6 +75,7 @@ class PlayerViewModel(
                     trackInfo = playerTrackInfo,
                     curPosition = null
                 )
+                updatePlayerScreenState()
             }
         }
     }
