@@ -1,6 +1,7 @@
 package com.example.playlistmaker.search.ui
 
 import android.content.Context
+import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
@@ -9,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -17,6 +20,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.AudioPlayerFragment
 import com.example.playlistmaker.search.domain.models.ListTrackInfo
+import com.example.playlistmaker.utils.ConnectionBroadcastReceiver
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -36,6 +40,8 @@ class SearchFragment : Fragment() {
 
     private var inputedText: String = ""
     private var searchFieldFocus: Boolean = false
+
+    private lateinit var connectionBroadcastReceiver: ConnectionBroadcastReceiver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
@@ -143,6 +149,32 @@ class SearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        connectionBroadcastReceiver = ConnectionBroadcastReceiver ({ isConnected ->
+            if (!isConnected) {
+                Toast.makeText(
+                    context, R.string.no_network_connection, Toast.LENGTH_SHORT
+                ).show()
+            }
+        }, { context ->
+            connectionBroadcastReceiver.isNetworkAvailable(requireContext())
+        })
+
+        ContextCompat.registerReceiver(
+            requireContext(),
+            connectionBroadcastReceiver,
+            IntentFilter(ConnectionBroadcastReceiver.ACTION),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireContext().unregisterReceiver(connectionBroadcastReceiver)
     }
 
     private fun openPlayerActivity(trackId: Int) {
