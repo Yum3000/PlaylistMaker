@@ -8,7 +8,7 @@ import com.example.playlistmaker.SingleLiveEvent
 import com.example.playlistmaker.media.domain.db.FavTracksInteractor
 import com.example.playlistmaker.media.domain.db.PlaylistsInteractor
 import com.example.playlistmaker.media.domain.models.Playlist
-import com.example.playlistmaker.player.domain.api.AudioPlayerInteractor
+import com.example.playlistmaker.player.domain.api.AudioPlayerManager
 import com.example.playlistmaker.player.domain.models.PlayerTrackInfo
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.models.Track
@@ -21,7 +21,6 @@ import java.util.Locale
 
 class PlayerViewModel(
     private val trackId: Int,
-    private val playerInteractor: AudioPlayerInteractor,
     historyInteractor: TracksHistoryInteractor,
     private val favTracksInteractor: FavTracksInteractor,
     private val playlistsInteractor: PlaylistsInteractor
@@ -33,8 +32,6 @@ class PlayerViewModel(
 
     private lateinit var playerTrackInfo: PlayerTrackInfo
 
-    private var timerJob: Job? = null
-
     private var currentTrack: Track? = null
 
     private val playlistBottomState = MutableLiveData<PlaylistBottomState>()
@@ -44,6 +41,9 @@ class PlayerViewModel(
 
     private val addTrackPlaylistStatus = MutableLiveData<AddTrackStatus>()
     fun observeAddTrackStatus(): LiveData<AddTrackStatus> = addTrackPlaylistStatus
+
+    private var audioPlayerManager: AudioPlayerManager? = null
+    private var audioPlayerManagerJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -56,6 +56,7 @@ class PlayerViewModel(
             playerStateLiveData.value = PlayerScreenState(
                 playerState = PlayerState.DEFAULT,
                 trackInfo = playerTrackInfo,
+                curPosition = TIMER_DEFAULT_POS
             )
 
             val preview = playerTrackInfo.previewUrl
@@ -68,15 +69,15 @@ class PlayerViewModel(
                 }
             }
 
-            playerInteractor.setOnCompletionListener {
-                stopTimer()
-                playerStateLiveData.value = PlayerScreenState(
-                    playerState = PlayerState.PREPARED,
-                    trackInfo = playerTrackInfo,
-                    curPosition = null
-                )
-                updatePlayerScreenState()
-            }
+//            playerInteractor.setOnCompletionListener {
+//                stopTimer()
+//                playerStateLiveData.value = PlayerScreenState(
+//                    playerState = PlayerState.PREPARED,
+//                    trackInfo = playerTrackInfo,
+//                    curPosition = null
+//                )
+//                updatePlayerScreenState()
+//            }
         }
     }
 
@@ -102,87 +103,27 @@ class PlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        playerInteractor.release()
-        stopTimer()
-    }
-
-    private fun play() {
-        val oldState = playerStateLiveData.value
-        if (oldState == null) return
-        playerStateLiveData.postValue(
-            PlayerScreenState(
-                playerState = PlayerState.PLAYING,
-                trackInfo = oldState.trackInfo,
-                curPosition = oldState.curPosition
-            )
-        )
-        playerInteractor.startPlayback()
-        startTimer()
-    }
-
-    fun pause() {
-        if (playerInteractor.isPlaying()) {
-            playerInteractor.pausePlayback()
-        }
-        stopTimer()
-        val oldState = playerStateLiveData.value
-        if (oldState == null) return
-        playerStateLiveData.postValue(
-            PlayerScreenState(
-                playerState = PlayerState.PAUSED,
-                trackInfo = oldState.trackInfo,
-                curPosition = oldState.curPosition
-            )
-        )
+        audioPlayerManager = null
     }
 
     fun handlePlayBtnClick() {
         when (playerStateLiveData.value?.playerState) {
             PlayerState.PLAYING -> {
-                pause()
+                audioPlayerManager?.pausePlayer()
             }
 
             PlayerState.PAUSED -> {
-                play()
+                audioPlayerManager?.startPlayer()
             }
 
             PlayerState.PREPARED -> {
-                play()
+                audioPlayerManager?.startPlayer()
             }
 
             else -> {
                 playerErrorToast.postValue(Unit)
             }
         }
-    }
-
-    private fun startTimer() {
-        timerJob?.cancel()
-        timerJob = viewModelScope.launch(Dispatchers.IO) {
-            while (playerInteractor.isPlaying()) {
-                delay(TIMER_UPDATE_DELAY)
-                val curPos = SimpleDateFormat(
-                    "mm:ss",
-                    Locale.getDefault()
-                ).format(playerInteractor.getCurrentPosition())
-
-                val oldState = playerStateLiveData.value
-                if (oldState != null) {
-                    playerStateLiveData.postValue(
-                        PlayerScreenState(
-                            playerState = oldState.playerState,
-                            trackInfo = oldState.trackInfo,
-                            curPosition = curPos
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun stopTimer() {
-        timerJob?.cancel()
-        timerJob = null
     }
 
     fun onFavoriteClicked() {
@@ -244,7 +185,7 @@ class PlayerViewModel(
     fun handleAddToPlaylistClick(playlistId: Int, playlistName: String?) {
 
         val playlist = listPlaylists.find { it.id == playlistId } ?: return
-        val currentTrack  = currentTrack ?: return
+        val currentTrack = currentTrack ?: return
 
         if (playlist.tracksIdsList?.contains(trackId) == true) {
             addTrackPlaylistStatus.postValue(AddTrackStatus.Exists(playlistName))
@@ -260,7 +201,35 @@ class PlayerViewModel(
         }
     }
 
+    fun setAudioPlayerManager(audioPlayerManager: AudioPlayerManager) {
+        this.audioPlayerManager = audioPlayerManager
+
+        val oldState = playerStateLiveData.value
+
+        audioPlayerManagerJob = viewModelScope.launch {
+            audioPlayerManager.getPlayerState().collect { state ->
+                playerStateLiveData.postValue(
+                    PlayerScreenState(
+                        state.playerState,
+                        oldState!!.trackInfo,
+                        currentPlayerPositionToStr(state.curPos)
+                    ))
+            }
+        }
+    }
+
+    fun removeAudioPlayerManager() {
+        audioPlayerManager = null
+    }
+
+    private fun currentPlayerPositionToStr(position: Int?): String {
+        return SimpleDateFormat(TIME_PATTERN, Locale.getDefault()).format(
+            position
+        ) ?: TIMER_DEFAULT_POS
+    }
+
     companion object {
-        private const val TIMER_UPDATE_DELAY = 300L
+        const val TIMER_DEFAULT_POS = "00:00"
+        const val TIME_PATTERN = "mm:ss"
     }
 }

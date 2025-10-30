@@ -24,15 +24,15 @@ class SearchViewModel(
     private val searchStateLiveData = MutableLiveData<SearchScreenState>()
     fun getSearchStateLiveData(): LiveData<SearchScreenState> = searchStateLiveData
 
-    private val trackIdToOpenPlayer = SingleLiveEvent<Int>()
-    fun getTrackIdToOpenPlayer(): LiveData<Int> = trackIdToOpenPlayer
+    private val trackToOpenPlayer = SingleLiveEvent<Track>()
+    fun getTrackToOpenPlayer(): LiveData<Track> = trackToOpenPlayer
 
     private val handleTrackClickDebounced = debounce<Int> (
         CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
         val track = searchTracks.find { it.trackId == trackId }
         if (track != null) {
             historyInteractor.updateHistory(track)
-            trackIdToOpenPlayer.postValue(trackId)
+            trackToOpenPlayer.postValue(track)
         }
     }
 
@@ -46,7 +46,7 @@ class SearchViewModel(
             val track = historyInteractor.getHistory().find { it.trackId == trackId }
             if (track != null) {
                 historyInteractor.updateHistory(track)
-                trackIdToOpenPlayer.postValue(trackId)
+                trackToOpenPlayer.postValue(track)
             }
         }
     }
