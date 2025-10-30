@@ -41,6 +41,8 @@ class SearchFragment : Fragment() {
     private var inputedText: String = ""
     private var searchFieldFocus: Boolean = false
 
+    private var currentSearchText: String = ""
+
     private lateinit var connectionBroadcastReceiver: ConnectionBroadcastReceiver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -96,6 +98,7 @@ class SearchFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                currentSearchText = s.toString()
                 binding.clearIcon.isVisible = !s.isNullOrEmpty()
                 viewModel.handleSearchChange(s.toString())
             }
@@ -122,7 +125,7 @@ class SearchFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, binding.searchEditText.text.toString())
+        outState.putString(SEARCH_TEXT, currentSearchText)
         outState.putBoolean(SEARCH_FOCUS, searchFieldFocus)
     }
 
