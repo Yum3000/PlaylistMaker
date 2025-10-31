@@ -101,4 +101,6 @@
     <string name="save">Сохранить</string>
     <string name="edit">Редактировать</string>
     <string name="menu">Меню</string>
+
+    <string name="notification_channel_desc">Channel for playing music</string>
 </resources>

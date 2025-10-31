@@ -101,7 +101,12 @@ class FragmentFavourites: Fragment() {
     }
 
     private fun openPlayerFragment(track: Track) {
-        val bundle = AudioPlayerFragment.createArgs(track.trackId, track.previewUrl)
+        val bundle = AudioPlayerFragment.createArgs(
+            track.trackId,
+            track.previewUrl,
+            track.artistName,
+            track.trackName
+        )
         findNavController().navigate(R.id.action_mediaFragment_to_audioPlayerFragment, bundle)
     }
 

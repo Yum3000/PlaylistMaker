@@ -33,6 +33,7 @@
 
         <service
             android:name=".services.AudioPlayerService"
+            android:foregroundServiceType="mediaPlayback"
             android:exported="false" />
     </application>
 

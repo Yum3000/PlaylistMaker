@@ -182,9 +182,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun openPlayerFragment(track: Track) {
-        val bundle = AudioPlayerFragment.createArgs(track.trackId, track.previewUrl).apply {
-            putString(INTENT_TRACK_URL, track.previewUrl)
-        }
+        val bundle = AudioPlayerFragment.createArgs(
+            track.trackId,
+            track.previewUrl,
+            track.artistName,
+            track.trackName
+        )
         findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment, bundle)
     }
 
@@ -298,7 +301,5 @@ class SearchFragment : Fragment() {
     private companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SEARCH_FOCUS = "SEARCH_FOCUS"
-
-        const val INTENT_TRACK_URL = "track_url"
     }
 }

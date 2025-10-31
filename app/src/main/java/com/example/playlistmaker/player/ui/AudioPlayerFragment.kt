@@ -33,8 +33,9 @@ import org.koin.core.parameter.parametersOf
 
 class AudioPlayerFragment : Fragment() {
     private var trackId: Int = ERROR_TRACK_ID
-
     private var trackUrl: String? = null
+    private var trackArtist: String? = null
+    private var trackTitle: String? = null
 
     private val viewModel: PlayerViewModel by lazy {
         getViewModel { parametersOf(trackId) }
@@ -57,13 +58,6 @@ class AudioPlayerFragment : Fragment() {
             val binder = service as AudioPlayerService.AudioPlayerServiceBinder
             isServiceConnected = true
             viewModel.setAudioPlayerManager(binder.getService())
-
-//            lifecycleScope.launch {
-//                audioPlayerService?.playerState?.collect {
-//                    playerState = it
-//
-//                }
-//            }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -99,9 +93,13 @@ class AudioPlayerFragment : Fragment() {
 
         trackId = requireArguments().getInt(INTENT_TRACK_KEY, ERROR_TRACK_ID)
         trackUrl = requireArguments().getString(INTENT_TRACK_URL)
+        trackArtist = requireArguments().getString(INTENT_TRACK_ARTIST)
+        trackTitle = requireArguments().getString(INTENT_TRACK_TITLE)
 
         serviceIntent = Intent(requireContext(), AudioPlayerService::class.java).apply {
             putExtra(INTENT_TRACK_URL, trackUrl)
+            putExtra(INTENT_TRACK_ARTIST, trackArtist)
+            putExtra(INTENT_TRACK_TITLE, trackTitle)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -211,6 +209,20 @@ class AudioPlayerFragment : Fragment() {
         super.onDestroy()
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (isServiceConnected) {
+            viewModel.startForeground()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isServiceConnected) {
+            viewModel.stopForeground()
+        }
+    }
+
     private fun bindMusicService() {
         requireContext().bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE)
     }
@@ -284,11 +296,17 @@ class AudioPlayerFragment : Fragment() {
         const val ERROR_TRACK_ID = -1
 
         const val INTENT_TRACK_URL = "track_url"
+        const val INTENT_TRACK_ARTIST = "track_artist"
+        const val INTENT_TRACK_TITLE = "track_title"
 
-        fun createArgs(trackId: Int?, trackUrl: String?): Bundle =
+        fun createArgs(
+            trackId: Int?, trackUrl: String?, trackArtist: String?, trackTitle: String?
+        ): Bundle =
             bundleOf(
                 INTENT_TRACK_KEY to trackId,
-                INTENT_TRACK_URL to trackUrl
+                INTENT_TRACK_URL to trackUrl,
+                INTENT_TRACK_ARTIST to trackArtist,
+                INTENT_TRACK_TITLE to trackTitle
                 )
     }
 }

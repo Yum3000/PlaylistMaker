@@ -103,6 +103,7 @@ class PlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        stopForeground()
         audioPlayerManager = null
     }
 
@@ -241,6 +242,18 @@ class PlayerViewModel(
         return SimpleDateFormat(TIME_PATTERN, Locale.getDefault()).format(
             position
         ) ?: TIMER_DEFAULT_POS
+    }
+
+    fun startForeground() {
+        if (playerStateLiveData.value?.playerState == PlayerState.PLAYING) {
+            audioPlayerManager?.startForeground()
+        }
+    }
+
+    fun stopForeground() {
+        if (playerStateLiveData.value?.playerState == PlayerState.PLAYING) {
+            audioPlayerManager?.stopForeground()
+        }
     }
 
     companion object {
