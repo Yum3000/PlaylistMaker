@@ -80,7 +80,8 @@ class AudioPlayerService: Service(), AudioPlayerManager {
         }
     }
 
-    override fun getPlayerState(): StateFlow<State> {
+    // уже есть доступ через asStateFlow() ??
+    override fun fetchPlayerState(): StateFlow<State> {
         return playerState
     }
 
@@ -111,7 +112,9 @@ class AudioPlayerService: Service(), AudioPlayerManager {
         timerJob = CoroutineScope(Dispatchers.Default).launch {
             while (mediaPlayer?.isPlaying == true) {
                 delay(TIMER_UPDATE_DELAY)
-                _playerState.value = State(PlayerState.PLAYING, mediaPlayer?.currentPosition)
+
+                val curPos = mediaPlayer?.currentPosition ?: 0
+                _playerState.value = playerState.value.copy(curPos = curPos)
             }
         }
     }

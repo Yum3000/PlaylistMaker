@@ -1,5 +1,6 @@
 package com.example.playlistmaker.player.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +15,6 @@ import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -59,15 +59,15 @@ class PlayerViewModel(
                 curPosition = TIMER_DEFAULT_POS
             )
 
-            val preview = playerTrackInfo.previewUrl
-            if (!preview.isNullOrEmpty()) {
-                playerInteractor.prepare(preview) {
-                    playerStateLiveData.value = PlayerScreenState(
-                        playerState = PlayerState.PREPARED,
-                        trackInfo = playerTrackInfo,
-                    )
-                }
-            }
+//            val preview = playerTrackInfo.previewUrl
+//            if (!preview.isNullOrEmpty()) {
+//                playerInteractor.prepare(preview) {
+//                    playerStateLiveData.value = PlayerScreenState(
+//                        playerState = PlayerState.PREPARED,
+//                        trackInfo = playerTrackInfo,
+//                    )
+//                }
+//            }
 
 //            playerInteractor.setOnCompletionListener {
 //                stopTimer()
@@ -204,16 +204,31 @@ class PlayerViewModel(
     fun setAudioPlayerManager(audioPlayerManager: AudioPlayerManager) {
         this.audioPlayerManager = audioPlayerManager
 
-        val oldState = playerStateLiveData.value
-
         audioPlayerManagerJob = viewModelScope.launch {
-            audioPlayerManager.getPlayerState().collect { state ->
-                playerStateLiveData.postValue(
-                    PlayerScreenState(
-                        state.playerState,
-                        oldState!!.trackInfo,
-                        currentPlayerPositionToStr(state.curPos)
-                    ))
+            audioPlayerManager.fetchPlayerState().collect { state ->
+                val oldState = playerStateLiveData.value
+                if (oldState == null) {
+                    Log.d("VIEWMODEL", "Old state is null")
+                    return@collect
+                }
+
+                if ((state.playerState == PlayerState.PLAYING || state.playerState == PlayerState.PAUSED)) {
+                    playerStateLiveData.postValue(
+                        PlayerScreenState(
+                            playerState = state.playerState,
+                            trackInfo = oldState.trackInfo,
+                            curPosition = currentPlayerPositionToStr(state.curPos)
+                        )
+                    )
+                } else {
+                    playerStateLiveData.postValue(
+                        PlayerScreenState(
+                            playerState = state.playerState,
+                            trackInfo = oldState.trackInfo,
+                            curPosition = currentPlayerPositionToStr(0)
+                        )
+                    )
+                }
             }
         }
     }

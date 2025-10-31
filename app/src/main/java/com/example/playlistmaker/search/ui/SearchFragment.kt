@@ -70,8 +70,8 @@ class SearchFragment : Fragment() {
             }
         }
 
-        viewModel.getTrackToOpenPlayer().observe(viewLifecycleOwner) {
-                trackId -> openPlayerFragment(trackId)
+        viewModel.getTrackToOpenPlayer().observe(viewLifecycleOwner) { track ->
+            openPlayerFragment(track)
         }
 
         binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -182,7 +182,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun openPlayerFragment(track: Track) {
-        val bundle = AudioPlayerFragment.createArgs(track.trackId).apply {
+        val bundle = AudioPlayerFragment.createArgs(track.trackId, track.previewUrl).apply {
             putString(INTENT_TRACK_URL, track.previewUrl)
         }
         findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment, bundle)

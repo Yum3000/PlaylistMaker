@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -13,10 +14,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -25,17 +26,15 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioplayerBinding
 import com.example.playlistmaker.media.domain.models.Playlist
 import com.example.playlistmaker.player.domain.models.PlayerTrackInfo
-import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.services.AudioPlayerService
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
 class AudioPlayerFragment : Fragment() {
     private var trackId: Int = ERROR_TRACK_ID
 
-    private var curTrack: Track? = null
+    private var trackUrl: String? = null
 
     private val viewModel: PlayerViewModel by lazy {
         getViewModel { parametersOf(trackId) }
@@ -98,15 +97,20 @@ class AudioPlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        trackId = requireArguments().getInt(INTENT_TRACK_KEY, ERROR_TRACK_ID)
+        trackUrl = requireArguments().getString(INTENT_TRACK_URL)
 
         serviceIntent = Intent(requireContext(), AudioPlayerService::class.java).apply {
-            putExtra(INTENT_TRACK_URL, curTrack?.previewUrl)
+            putExtra(INTENT_TRACK_URL, trackUrl)
         }
 
-        trackId = requireArguments().getInt(INTENT_TRACK_KEY, ERROR_TRACK_ID)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED) {
+                bindMusicService()
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) // Запрос разрешения
+            }
         } else {
             bindMusicService()
         }
@@ -208,11 +212,7 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private fun bindMusicService() {
-        val intent = Intent(requireContext(), AudioPlayerService::class.java).apply {
-            putExtra("track_url", INTENT_TRACK_URL)
-        }
-
-        requireContext().bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+        requireContext().bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE)
     }
 
     private fun unbindMusicService() {
@@ -285,7 +285,10 @@ class AudioPlayerFragment : Fragment() {
 
         const val INTENT_TRACK_URL = "track_url"
 
-        fun createArgs(trackId: Int?): Bundle =
-            bundleOf(INTENT_TRACK_KEY to trackId)
+        fun createArgs(trackId: Int?, trackUrl: String?): Bundle =
+            bundleOf(
+                INTENT_TRACK_KEY to trackId,
+                INTENT_TRACK_URL to trackUrl
+                )
     }
 }

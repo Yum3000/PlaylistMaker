@@ -184,7 +184,8 @@ class PlaylistFragment() : Fragment() {
     }
 
     private fun openPlayer(track: ListTrackInfo) {
-        val bundle = AudioPlayerFragment.createArgs(track.trackId)
+        // !!!!!!
+        val bundle = AudioPlayerFragment.createArgs(track.trackId, "")
         findNavController().navigate(R.id.action_playlistFragment_to_audioPlayerFragment, bundle)
     }
 

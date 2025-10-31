@@ -51,8 +51,8 @@ class FragmentFavourites: Fragment() {
             }
         }
 
-        favouritesViewModel.getTrackIdToOpenPlayer().observe(viewLifecycleOwner) {
-                trackId -> openPlayerActivity(trackId)
+        favouritesViewModel.getTrackToOpenPlayer().observe(viewLifecycleOwner) {
+                track -> openPlayerFragment(track)
         }
     }
 
@@ -100,8 +100,8 @@ class FragmentFavourites: Fragment() {
         return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     }
 
-    private fun openPlayerActivity(trackId: Int) {
-        val bundle = AudioPlayerFragment.createArgs(trackId)
+    private fun openPlayerFragment(track: Track) {
+        val bundle = AudioPlayerFragment.createArgs(track.trackId, track.previewUrl)
         findNavController().navigate(R.id.action_mediaFragment_to_audioPlayerFragment, bundle)
     }
 

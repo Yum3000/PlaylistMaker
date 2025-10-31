@@ -12,7 +12,7 @@ interface AudioPlayerManager {
 //    fun setOnCompletionListener(listener: () -> Unit)
 //    fun releasePlayer()
 
-    fun getPlayerState(): StateFlow<AudioPlayerService.State>
+    fun fetchPlayerState(): StateFlow<AudioPlayerService.State>
     fun startPlayer()
     fun pausePlayer()
 
