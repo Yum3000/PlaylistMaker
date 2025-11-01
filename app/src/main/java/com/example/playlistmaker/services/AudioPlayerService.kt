@@ -46,11 +46,13 @@ class AudioPlayerService: Service(), AudioPlayerManager {
         trackArtist = intent?.getStringExtra(INTENT_TRACK_ARTIST_KEY) ?: ""
         trackTitle = intent?.getStringExtra(INTENT_TRACK_TITLE_KEY) ?: ""
         initMediaPlayer()
+        Log.d("AudioPlayer Service", "OnBind service")
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
         releasePlayer()
+        Log.d("AudioPlayer Service", "onUnbind service")
         return super.onUnbind(intent)
     }
 
@@ -112,6 +114,7 @@ class AudioPlayerService: Service(), AudioPlayerManager {
         mediaPlayer?.setOnCompletionListener(null)
         mediaPlayer?.release()
         mediaPlayer = null
+        Log.d("AudioPlayer Service", "release player")
     }
 
     private fun startTimer() {

@@ -1,20 +1,17 @@
 package com.example.playlistmaker.player.ui
 
-import android.Manifest
 import android.content.ComponentName
 import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -36,6 +33,8 @@ class AudioPlayerFragment : Fragment() {
     private var trackUrl: String? = null
     private var trackArtist: String? = null
     private var trackTitle: String? = null
+
+    private var shouldStartService: Boolean = false
 
     private val viewModel: PlayerViewModel by lazy {
         getViewModel { parametersOf(trackId) }
@@ -90,36 +89,43 @@ class AudioPlayerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         trackId = requireArguments().getInt(INTENT_TRACK_KEY, ERROR_TRACK_ID)
-        trackUrl = requireArguments().getString(INTENT_TRACK_URL)
-        trackArtist = requireArguments().getString(INTENT_TRACK_ARTIST)
-        trackTitle = requireArguments().getString(INTENT_TRACK_TITLE)
-
-        serviceIntent = Intent(requireContext(), AudioPlayerService::class.java).apply {
-            putExtra(INTENT_TRACK_URL, trackUrl)
-            putExtra(INTENT_TRACK_ARTIST, trackArtist)
-            putExtra(INTENT_TRACK_TITLE, trackTitle)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
-                == PackageManager.PERMISSION_GRANTED) {
-                bindMusicService()
-            } else {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) // Запрос разрешения
-            }
-        } else {
-            bindMusicService()
-        }
 
         viewModel.getPlayerStateLiveData().observe(viewLifecycleOwner) { state ->
+            trackUrl = state.trackInfo.previewUrl
+            trackArtist = state.trackInfo.artistName
+            trackTitle = state.trackInfo.trackName
+            Log.d("AudioPlayer Fragment", "observe and get track data $trackArtist")
+
+            shouldStartService = !trackUrl.isNullOrEmpty()
+
             playerState = state.playerState
             redrawPlayer(state.playerState, state.curPosition)
             redrawTrack(state.trackInfo)
 
             updateFavBtn(state.trackInfo.isFavourite)
+
+            if (shouldStartService && !trackUrl.isNullOrEmpty()) {
+                serviceIntent = Intent(requireContext(), AudioPlayerService::class.java).apply {
+                    putExtra(INTENT_TRACK_URL, trackUrl)
+                    putExtra(INTENT_TRACK_ARTIST, trackArtist)
+                    putExtra(INTENT_TRACK_TITLE, trackTitle)
+                }
+                bindMusicService()
+            }
+            Log.d("AudioPlayer Fragment", "shouldStartService $shouldStartService")
         }
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+//                == PackageManager.PERMISSION_GRANTED) {
+//                bindMusicService()
+//            } else {
+//                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) // Запрос разрешения
+//            }
+//        } else {
+//            bindMusicService()
+//        }
 
         viewModel.getPlayerErrorToast().observe(viewLifecycleOwner) {
             showToast()
@@ -221,14 +227,26 @@ class AudioPlayerFragment : Fragment() {
         if (isServiceConnected) {
             viewModel.stopForeground()
         }
+
+        if (shouldStartService) {
+            Log.d("AudioPlayer Fragment", "should start service onResume")
+            serviceIntent = Intent(requireContext(), AudioPlayerService::class.java).apply {
+                putExtra(INTENT_TRACK_URL, trackUrl)
+                putExtra(INTENT_TRACK_ARTIST, trackArtist)
+                putExtra(INTENT_TRACK_TITLE, trackTitle)
+            }
+            bindMusicService()
+        }
     }
 
     private fun bindMusicService() {
         requireContext().bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE)
+        Log.d("AudioPlayer Fragment", "bind service")
     }
 
     private fun unbindMusicService() {
         requireContext().unbindService(serviceConnection)
+        Log.d("AudioPlayer Fragment", "unbind service")
     }
 
     private fun redrawPlayer(state: PlayerState, curPos: String?) {
@@ -299,14 +317,7 @@ class AudioPlayerFragment : Fragment() {
         const val INTENT_TRACK_ARTIST = "track_artist"
         const val INTENT_TRACK_TITLE = "track_title"
 
-        fun createArgs(
-            trackId: Int?, trackUrl: String?, trackArtist: String?, trackTitle: String?
-        ): Bundle =
-            bundleOf(
-                INTENT_TRACK_KEY to trackId,
-                INTENT_TRACK_URL to trackUrl,
-                INTENT_TRACK_ARTIST to trackArtist,
-                INTENT_TRACK_TITLE to trackTitle
-                )
+        fun createArgs(trackId: Int?): Bundle =
+            bundleOf(INTENT_TRACK_KEY to trackId)
     }
 }

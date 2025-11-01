@@ -20,7 +20,6 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.AudioPlayerFragment
 import com.example.playlistmaker.search.domain.models.ListTrackInfo
-import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.utils.ConnectionBroadcastReceiver
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -70,8 +69,8 @@ class SearchFragment : Fragment() {
             }
         }
 
-        viewModel.getTrackToOpenPlayer().observe(viewLifecycleOwner) { track ->
-            openPlayerFragment(track)
+        viewModel.getTrackIdToOpenPlayer().observe(viewLifecycleOwner) { trackId ->
+            openPlayerFragment(trackId)
         }
 
         binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -181,13 +180,8 @@ class SearchFragment : Fragment() {
         requireContext().unregisterReceiver(connectionBroadcastReceiver)
     }
 
-    private fun openPlayerFragment(track: Track) {
-        val bundle = AudioPlayerFragment.createArgs(
-            track.trackId,
-            track.previewUrl,
-            track.artistName,
-            track.trackName
-        )
+    private fun openPlayerFragment(trackId: Int?) {
+        val bundle = AudioPlayerFragment.createArgs(trackId)
         findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment, bundle)
     }
 
