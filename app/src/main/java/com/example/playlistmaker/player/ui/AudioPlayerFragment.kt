@@ -34,6 +34,7 @@ class AudioPlayerFragment : Fragment() {
     private var trackArtist: String? = null
     private var trackTitle: String? = null
 
+    private var isServiceBound: Boolean = false
     private var shouldStartService: Boolean = false
 
     private val viewModel: PlayerViewModel by lazy {
@@ -105,13 +106,14 @@ class AudioPlayerFragment : Fragment() {
 
             updateFavBtn(state.trackInfo.isFavourite)
 
-            if (shouldStartService && !trackUrl.isNullOrEmpty()) {
+            if (shouldStartService && !isServiceBound) {
                 serviceIntent = Intent(requireContext(), AudioPlayerService::class.java).apply {
                     putExtra(INTENT_TRACK_URL, trackUrl)
                     putExtra(INTENT_TRACK_ARTIST, trackArtist)
                     putExtra(INTENT_TRACK_TITLE, trackTitle)
                 }
                 bindMusicService()
+                isServiceBound = true
             }
             Log.d("AudioPlayer Fragment", "shouldStartService $shouldStartService")
         }

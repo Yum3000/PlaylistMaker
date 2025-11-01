@@ -96,14 +96,14 @@ class AudioPlayerService: Service(), AudioPlayerManager {
 
     override fun startPlayer() {
         mediaPlayer?.start()
-        _playerState.value = State(PlayerState.PLAYING, mediaPlayer?.currentPosition)
+        _playerState.value = playerState.value.copy(playerState = PlayerState.PLAYING)
         startTimer()
     }
 
     override fun pausePlayer() {
         mediaPlayer?.pause()
         timerJob?.cancel()
-        _playerState.value = State(PlayerState.PAUSED, mediaPlayer?.currentPosition)
+        _playerState.value = playerState.value.copy(playerState = PlayerState.PAUSED)
     }
 
     private fun releasePlayer() {
