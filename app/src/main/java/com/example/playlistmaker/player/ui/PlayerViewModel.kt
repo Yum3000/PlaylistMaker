@@ -1,6 +1,5 @@
 package com.example.playlistmaker.player.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -58,26 +57,6 @@ class PlayerViewModel(
                 trackInfo = playerTrackInfo,
                 curPosition = TIMER_DEFAULT_POS
             )
-
-//            val preview = playerTrackInfo.previewUrl
-//            if (!preview.isNullOrEmpty()) {
-//                playerInteractor.prepare(preview) {
-//                    playerStateLiveData.value = PlayerScreenState(
-//                        playerState = PlayerState.PREPARED,
-//                        trackInfo = playerTrackInfo,
-//                    )
-//                }
-//            }
-
-//            playerInteractor.setOnCompletionListener {
-//                stopTimer()
-//                playerStateLiveData.value = PlayerScreenState(
-//                    playerState = PlayerState.PREPARED,
-//                    trackInfo = playerTrackInfo,
-//                    curPosition = null
-//                )
-//                updatePlayerScreenState()
-//            }
         }
     }
 
@@ -160,11 +139,7 @@ class PlayerViewModel(
 
     private suspend fun checkIsFavourite(trackId: Int?) {
         favTracksInteractor.getFavTracksId().collect { ids ->
-            if (ids.contains(trackId)) {
-                currentTrack?.isFavourite = true
-            } else {
-                currentTrack?.isFavourite = false
-            }
+            currentTrack?.isFavourite = ids.contains(trackId)
             updatePlayerScreenState()
         }
     }
@@ -206,10 +181,9 @@ class PlayerViewModel(
         this.audioPlayerManager = audioPlayerManager
 
         audioPlayerManagerJob = viewModelScope.launch {
-            audioPlayerManager.fetchPlayerState().collect { state ->
+            audioPlayerManager.getPlayerState().collect { state ->
                 val oldState = playerStateLiveData.value
                 if (oldState == null) {
-                    Log.d("VIEWMODEL", "Old state is null")
                     return@collect
                 }
 

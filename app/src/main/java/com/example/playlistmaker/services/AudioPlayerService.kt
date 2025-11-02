@@ -9,7 +9,6 @@ import android.content.pm.ServiceInfo
 import android.media.MediaPlayer
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.example.playlistmaker.R
@@ -35,7 +34,7 @@ class AudioPlayerService: Service(), AudioPlayerManager {
     private val binder = AudioPlayerServiceBinder()
 
     private val _playerState = MutableStateFlow<State>(State(PlayerState.DEFAULT, 0))
-    val playerState = _playerState.asStateFlow()
+    private val playerState = _playerState.asStateFlow()
 
     private var timerJob: Job? = null
 
@@ -46,13 +45,11 @@ class AudioPlayerService: Service(), AudioPlayerManager {
         trackArtist = intent?.getStringExtra(INTENT_TRACK_ARTIST_KEY) ?: ""
         trackTitle = intent?.getStringExtra(INTENT_TRACK_TITLE_KEY) ?: ""
         initMediaPlayer()
-        Log.d("AudioPlayer Service", "OnBind service")
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
         releasePlayer()
-        Log.d("AudioPlayer Service", "onUnbind service")
         return super.onUnbind(intent)
     }
 
@@ -62,13 +59,11 @@ class AudioPlayerService: Service(), AudioPlayerManager {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("AudioPlayer Service", "onCreate")
         mediaPlayer = MediaPlayer()
         createNotificationChannel()
     }
 
     override fun onDestroy() {
-        Log.d("AudioPlayer Service", "onDestroy")
         releasePlayer()
     }
 
@@ -78,19 +73,16 @@ class AudioPlayerService: Service(), AudioPlayerManager {
         mediaPlayer?.setDataSource(trackUrl)
         mediaPlayer?.prepareAsync()
         mediaPlayer?.setOnPreparedListener {
-            Log.d("AudioPlayer Service", "Media Player prepared")
             _playerState.value = State(PlayerState.PREPARED, 0)
         }
         mediaPlayer?.setOnCompletionListener {
-            Log.d("AudioPlayer Service", "Playback completed")
             timerJob?.cancel()
             _playerState.value = State(PlayerState.PREPARED, 0)
             stopForeground()
         }
     }
 
-    // уже есть доступ через asStateFlow() ??
-    override fun fetchPlayerState(): StateFlow<State> {
+    override fun getPlayerState(): StateFlow<State> {
         return playerState
     }
 
@@ -114,7 +106,6 @@ class AudioPlayerService: Service(), AudioPlayerManager {
         mediaPlayer?.setOnCompletionListener(null)
         mediaPlayer?.release()
         mediaPlayer = null
-        Log.d("AudioPlayer Service", "release player")
     }
 
     private fun startTimer() {
@@ -158,10 +149,6 @@ class AudioPlayerService: Service(), AudioPlayerManager {
     }
 
     override fun startForeground() {
-//        if (checkPermissions().not()) {
-//            stopSelf()
-//            return
-//        }
         ServiceCompat.startForeground(
             this,
             SERVICE_NOTIFICATION_ID,

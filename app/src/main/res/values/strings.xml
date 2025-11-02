@@ -103,4 +103,5 @@
     <string name="menu">Меню</string>
 
     <string name="notification_channel_desc">Channel for playing music</string>
+    <string name="denied_permission_fg_player_service">Нет прав на воспроизведение в фоне</string>
 </resources>

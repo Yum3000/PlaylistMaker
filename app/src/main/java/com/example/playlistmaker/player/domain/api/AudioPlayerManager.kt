@@ -4,7 +4,7 @@ import com.example.playlistmaker.services.AudioPlayerService
 import kotlinx.coroutines.flow.StateFlow
 
 interface AudioPlayerManager {
-    fun fetchPlayerState(): StateFlow<AudioPlayerService.State>
+    fun getPlayerState(): StateFlow<AudioPlayerService.State>
     fun startPlayer()
     fun pausePlayer()
     fun startForeground()

@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +38,6 @@ class AudioPlayerFragment : Fragment() {
     private var trackTitle: String? = null
 
     private var isServiceBound: Boolean = false
-    private var shouldStartService: Boolean = false
 
     private val viewModel: PlayerViewModel by lazy {
         getViewModel { parametersOf(trackId) }
@@ -79,7 +77,7 @@ class AudioPlayerFragment : Fragment() {
         if (isGranted) {
             bindMusicService()
         } else {
-            Toast.makeText(requireContext(), "Can't bind service!", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), R.string.denied_permission_fg_player_service, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -100,9 +98,6 @@ class AudioPlayerFragment : Fragment() {
             trackUrl = state.trackInfo.previewUrl
             trackArtist = state.trackInfo.artistName
             trackTitle = state.trackInfo.trackName
-            Log.d("AudioPlayer Fragment", "observe and get track data $trackArtist")
-
-            shouldStartService = !trackUrl.isNullOrEmpty()
 
             playerState = state.playerState
             redrawPlayer(state.playerState, state.curPosition)
@@ -110,6 +105,7 @@ class AudioPlayerFragment : Fragment() {
 
             updateFavBtn(state.trackInfo.isFavourite)
 
+            val shouldStartService = !trackUrl.isNullOrEmpty()
             if (shouldStartService && !isServiceBound) {
                 serviceIntent = Intent(requireContext(), AudioPlayerService::class.java).apply {
                     putExtra(INTENT_TRACK_URL, trackUrl)
@@ -119,7 +115,6 @@ class AudioPlayerFragment : Fragment() {
                 checkNotificationPermissionsAndBindService()
                 isServiceBound = true
             }
-            Log.d("AudioPlayer Fragment", "shouldStartService $shouldStartService")
         }
 
         viewModel.getPlayerErrorToast().observe(viewLifecycleOwner) {
@@ -226,12 +221,10 @@ class AudioPlayerFragment : Fragment() {
 
     private fun bindMusicService() {
         requireContext().bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE)
-        Log.d("AudioPlayer Fragment", "bind service")
     }
 
     private fun unbindMusicService() {
         requireContext().unbindService(serviceConnection)
-        Log.d("AudioPlayer Fragment", "unbind service")
     }
 
     private fun checkNotificationPermissionsAndBindService() {
@@ -244,7 +237,7 @@ class AudioPlayerFragment : Fragment() {
             ) {
                 bindMusicService()
             } else {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) // Запрос разрешения
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         } else {
             bindMusicService()
