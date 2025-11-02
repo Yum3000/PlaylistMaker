@@ -12,6 +12,7 @@ import com.example.playlistmaker.search.domain.models.Track
 import com.example.playlistmaker.utils.debounce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class SearchViewModel(
     private val trackInteractor: TracksInteractor,
@@ -23,15 +24,15 @@ class SearchViewModel(
     private val searchStateLiveData = MutableLiveData<SearchScreenState>()
     fun getSearchStateLiveData(): LiveData<SearchScreenState> = searchStateLiveData
 
-    private val trackIdToOpenPlayer = SingleLiveEvent<Int>()
-    fun getTrackIdToOpenPlayer(): LiveData<Int> = trackIdToOpenPlayer
+    private val trackIdToOpenPlayer = SingleLiveEvent<Int?>()
+    fun getTrackIdToOpenPlayer(): LiveData<Int?> = trackIdToOpenPlayer
 
     private val handleTrackClickDebounced = debounce<Int> (
         CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
         val track = searchTracks.find { it.trackId == trackId }
         if (track != null) {
             historyInteractor.updateHistory(track)
-            trackIdToOpenPlayer.postValue(trackId)
+            trackIdToOpenPlayer.postValue(track.trackId)
         }
     }
 
@@ -45,7 +46,7 @@ class SearchViewModel(
             val track = historyInteractor.getHistory().find { it.trackId == trackId }
             if (track != null) {
                 historyInteractor.updateHistory(track)
-                trackIdToOpenPlayer.postValue(trackId)
+                trackIdToOpenPlayer.postValue(track.trackId)
             }
         }
     }
@@ -80,11 +81,15 @@ class SearchViewModel(
 
     fun executeRequest(inputQuery: String) {
          viewModelScope.launch (Dispatchers.IO) {
-             trackInteractor
-                 .searchTracks(inputQuery)
-                 .collect { tracks ->
-                     processSearchTracks(tracks, inputQuery)
-                 }
+             try {
+                 trackInteractor
+                     .searchTracks(inputQuery)
+                     .collect { tracks ->
+                         processSearchTracks(tracks, inputQuery)
+                     }
+             } catch (e: IOException) {
+                 searchStateLiveData.postValue(SearchScreenState.Error(inputQuery))
+             }
          }
     }
 

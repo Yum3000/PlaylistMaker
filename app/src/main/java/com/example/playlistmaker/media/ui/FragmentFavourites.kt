@@ -52,7 +52,7 @@ class FragmentFavourites: Fragment() {
         }
 
         favouritesViewModel.getTrackIdToOpenPlayer().observe(viewLifecycleOwner) {
-                trackId -> openPlayerActivity(trackId)
+                trackId -> openPlayerFragment(trackId)
         }
     }
 
@@ -100,7 +100,7 @@ class FragmentFavourites: Fragment() {
         return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     }
 
-    private fun openPlayerActivity(trackId: Int) {
+    private fun openPlayerFragment(trackId: Int?) {
         val bundle = AudioPlayerFragment.createArgs(trackId)
         findNavController().navigate(R.id.action_mediaFragment_to_audioPlayerFragment, bundle)
     }

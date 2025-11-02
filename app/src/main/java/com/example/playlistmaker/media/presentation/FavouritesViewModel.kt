@@ -20,8 +20,8 @@ class FavouritesViewModel(
     private val stateFavouritesScreen = MutableLiveData<MediaScreenFavouritesState>()
     fun observeStateFavourites(): LiveData<MediaScreenFavouritesState> = stateFavouritesScreen
 
-    private val trackIdToOpenPlayer = SingleLiveEvent<Int>()
-    fun getTrackIdToOpenPlayer(): LiveData<Int> = trackIdToOpenPlayer
+    private val trackIdToOpenPlayer = SingleLiveEvent<Int?>()
+    fun getTrackIdToOpenPlayer(): LiveData<Int?> = trackIdToOpenPlayer
 
     private var tracks: List<Track> = emptyList()
 
@@ -30,7 +30,7 @@ class FavouritesViewModel(
     ) { trackId ->
         val track = tracks.find { it.trackId == trackId }
         if (track != null) {
-            trackIdToOpenPlayer.postValue(trackId)
+            trackIdToOpenPlayer.postValue(track.trackId)
         }
     }
 

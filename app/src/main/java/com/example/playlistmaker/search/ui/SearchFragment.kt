@@ -1,6 +1,7 @@
 package com.example.playlistmaker.search.ui
 
 import android.content.Context
+import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
@@ -9,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -17,6 +20,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.AudioPlayerFragment
 import com.example.playlistmaker.search.domain.models.ListTrackInfo
+import com.example.playlistmaker.utils.ConnectionBroadcastReceiver
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -36,6 +40,10 @@ class SearchFragment : Fragment() {
 
     private var inputedText: String = ""
     private var searchFieldFocus: Boolean = false
+
+    private var currentSearchText: String = ""
+
+    private lateinit var connectionBroadcastReceiver: ConnectionBroadcastReceiver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
@@ -61,8 +69,8 @@ class SearchFragment : Fragment() {
             }
         }
 
-        viewModel.getTrackIdToOpenPlayer().observe(viewLifecycleOwner) {
-                trackId -> openPlayerActivity(trackId)
+        viewModel.getTrackIdToOpenPlayer().observe(viewLifecycleOwner) { trackId ->
+            openPlayerFragment(trackId)
         }
 
         binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -90,6 +98,7 @@ class SearchFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                currentSearchText = s.toString()
                 binding.clearIcon.isVisible = !s.isNullOrEmpty()
                 viewModel.handleSearchChange(s.toString())
             }
@@ -116,7 +125,7 @@ class SearchFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, binding.searchEditText.text.toString())
+        outState.putString(SEARCH_TEXT, currentSearchText)
         outState.putBoolean(SEARCH_FOCUS, searchFieldFocus)
     }
 
@@ -145,8 +154,34 @@ class SearchFragment : Fragment() {
         _binding = null
     }
 
-    private fun openPlayerActivity(trackId: Int) {
-        val bundle = AudioPlayerFragment.createArgs(trackId) // Создаем Bundle с trackId
+    override fun onResume() {
+        super.onResume()
+
+        connectionBroadcastReceiver = ConnectionBroadcastReceiver ({ isConnected ->
+            if (!isConnected) {
+                Toast.makeText(
+                    context, R.string.no_network_connection, Toast.LENGTH_SHORT
+                ).show()
+            }
+        }, { context ->
+            connectionBroadcastReceiver.isNetworkAvailable(requireContext())
+        })
+
+        ContextCompat.registerReceiver(
+            requireContext(),
+            connectionBroadcastReceiver,
+            IntentFilter(ConnectionBroadcastReceiver.ACTION),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireContext().unregisterReceiver(connectionBroadcastReceiver)
+    }
+
+    private fun openPlayerFragment(trackId: Int?) {
+        val bundle = AudioPlayerFragment.createArgs(trackId)
         findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment, bundle)
     }
 
