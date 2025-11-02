@@ -149,7 +149,7 @@ class AudioPlayerService: Service(), AudioPlayerManager {
 
     private fun createServiceNotification(): Notification {
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.notification_icon)
             .setContentTitle(getString(R.string.app_name))
             .setContentText("$trackArtist - $trackTitle")
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
