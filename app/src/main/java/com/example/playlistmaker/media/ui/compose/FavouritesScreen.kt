@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.stringResource
-import com.example.playlistmaker.EmptyMessage
+import com.example.playlistmaker.ErrorMessage
 import com.example.playlistmaker.ProgressBar
 import com.example.playlistmaker.R
 import com.example.playlistmaker.TrackList
@@ -22,12 +22,12 @@ fun FavouritesScreen(
     when (screenState) {
         is MediaScreenFavouritesState.Content -> {
             TrackList((screenState as MediaScreenFavouritesState.Content).tracks) {
-                if (it.trackId != null) openAudioPlayerScreen(it.trackId)
+                openAudioPlayerScreen(it)
             }
         }
 
         is MediaScreenFavouritesState.Empty -> {
-            EmptyMessage(
+            ErrorMessage(
                 stringResource(R.string.no_favourites),
                 getPlaceholderImageResource(),
                 106

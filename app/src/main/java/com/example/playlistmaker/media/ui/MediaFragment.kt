@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.AppTheme
-import com.example.playlistmaker.CustomTheme
 import com.example.playlistmaker.R
 import com.example.playlistmaker.media.ui.compose.MediaScreen
 import com.example.playlistmaker.player.ui.AudioPlayerFragment
@@ -22,15 +21,15 @@ class MediaFragment : Fragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setContent {
-                CustomTheme{
-                    AppTheme {
-                        MediaScreen(
-                            { openPlayerFragment(it) },
-                            openToModifyPlaylistScreen = { openModifyPlaylistScreen(it)},
-                            openToCreateNewPlaylistScreen = { createNewPlaylistScreen() },
-                        )
-                    }
+
+                AppTheme {
+                    MediaScreen(
+                        { openPlayerFragment(it) },
+                        openToModifyPlaylistScreen = { openModifyPlaylistScreen(it) },
+                        openToCreateNewPlaylistScreen = { createNewPlaylistScreen() },
+                    )
                 }
+
             }
         }
     }

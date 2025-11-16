@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.playlistmaker.Button
-import com.example.playlistmaker.EmptyMessage
+import com.example.playlistmaker.ErrorMessage
 import com.example.playlistmaker.Playlists
 import com.example.playlistmaker.R
 import com.example.playlistmaker.media.presentation.MediaScreenPlaylistsState
@@ -50,7 +50,7 @@ fun PlaylistsScreen(
             }
 
             is MediaScreenPlaylistsState.Empty -> {
-                EmptyMessage(
+                ErrorMessage(
                     message = stringResource(R.string.no_playlists),
                     iconId = R.drawable.no_results_icon_dark, // убрать
                     topPaddingDp = 46

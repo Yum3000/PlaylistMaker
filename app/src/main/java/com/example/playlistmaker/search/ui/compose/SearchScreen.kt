@@ -14,6 +14,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -29,29 +30,40 @@ import androidx.lifecycle.compose.LifecycleStartEffect
 import com.example.playlistmaker.AppTheme
 import com.example.playlistmaker.Button
 import com.example.playlistmaker.CustomTextField
-import com.example.playlistmaker.EmptyMessage
+import com.example.playlistmaker.ErrorMessage
+import com.example.playlistmaker.ListOfListTrackInfo
 import com.example.playlistmaker.ProgressBar
 import com.example.playlistmaker.R
 import com.example.playlistmaker.Toolbar
-import com.example.playlistmaker.TrackList
 import com.example.playlistmaker.TrackListHistory
-import com.example.playlistmaker.search.domain.models.Track
+import com.example.playlistmaker.search.domain.models.ListTrackInfo
 import com.example.playlistmaker.search.ui.SearchScreenState
 import com.example.playlistmaker.search.ui.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
-    var searchText by remember { mutableStateOf("") }
+fun SearchScreen(
+    openAudioPlayerScreen: (trackId: Int) -> Unit,
+    viewModel: SearchViewModel = koinViewModel()) {
 
     val searchState by viewModel.getSearchStateLiveData().observeAsState()
+    val trackIdToOpenPlayer by viewModel.getTrackIdToOpenPlayer().observeAsState()
 
 
-//    LifecycleStartEffect(Unit) {
-//        viewModel.updateSearchResults()
-//        viewModel.updateHistory()
-//        onStopOrDispose { }
-//    }
+    LifecycleStartEffect(Unit) {
+        //viewModel.updateSearchResults()
+        viewModel.loadHistory()
+        onStopOrDispose {}
+    }
+
+    LaunchedEffect(trackIdToOpenPlayer) {
+        val trackId = trackIdToOpenPlayer
+
+        if (trackId != null && trackId > -1) {
+            viewModel.handleOpenTrack()
+            openAudioPlayerScreen(trackId)
+        }
+    }
 
     Scaffold(topBar = {
         Toolbar(title = stringResource(R.string.search_text))
@@ -64,16 +76,13 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val currentSearchText = when (searchState) {
-                is SearchScreenState.Content -> (searchState as SearchScreenState.Content).searchQuery
-                else -> ""
-            }
+            var searchFieldText by remember { mutableStateOf("") }
 
             CustomTextField(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                     //.focusRequester(focusRequester),
-                text = currentSearchText,
+                text = searchFieldText,
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.search_icon),
@@ -88,37 +97,55 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
                         contentDescription = stringResource(R.string.clear_input),
                         modifier = Modifier.clickable {
 //                            focusManager.clearFocus()
-                            viewModel.handleSearchChange("")
+                            //viewModel.handleSearchChange("")
+                            searchFieldText = ""
                         })
                 },
                 placeholderText = stringResource(R.string.search_text),
-                onTextChanged = { newText -> viewModel.handleSearchChange(newText) },
+                onTextChanged = { newText ->
+                    searchFieldText = newText
+                    viewModel.handleSearchChange(newText) },
                 onFocusChanged = { isFocused -> viewModel.handleSearchTextFocus(isFocused) }
             )
 
-            when (searchState) {
+            val state = searchState
+            when (state) {
                 is SearchScreenState.Loading -> { ProgressBar() }
 
                 is SearchScreenState.Content -> {
-//                    TrackList(
-//                        tracks = (searchState as SearchScreenState.Content).tracks,
-//                        onTrackClick = viewModel::onTrackClicked
-//                    )
+
+                    if (state.tracks.isEmpty()) {
+                        val imageResource = getPlaceholderImageResource(false)
+                        ErrorMessage(
+                            message = stringResource(R.string.nothings_found),
+                            iconId = imageResource,
+                            topPaddingDp = 110,
+                        )
+                    }
+                    ListOfListTrackInfo(
+                        tracks = state.tracks,
+                        onTrackClick = {
+                            trackId ->
+                                viewModel.handleTrackClick(trackId)
+                        }
+                    )
                 }
 
                 is SearchScreenState.Error -> {
+                    val imageResource = getPlaceholderImageResource(true)
                     ErrorMessage(
-                        connectionFailed = true,
-                        onUpdateClick = {viewModel.handleSearchChange(searchText)}
+                        message = stringResource(R.string.smth_wrong),
+                        iconId = imageResource,
+                        topPaddingDp = 110,
+                        onUpdateClick = {viewModel.handleSearchChange(searchFieldText)},
                     )
                 }
 
                 is SearchScreenState.History -> {
                     TracksHistory(
-                        tracks = mutableListOf(),
-                                //(searchState as SearchScreenState.History).tracks,
+                        tracks = state.tracks,
                         onClearHistoryClick = { viewModel.clearHistory() },
-                        onTrackClick = { viewModel.handleTrackClick(0) } //!!!!
+                        onTrackClick = { viewModel.handleTrackClick(it) }
                     )
                 }
 
@@ -128,28 +155,6 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
 
     }
 }
-
-@Composable
-fun ErrorMessage(connectionFailed: Boolean, onUpdateClick: () -> Unit) {
-    val topPaddingDp = 110
-
-    val imageResource = getPlaceholderImageResource(connectionFailed)
-
-    if (connectionFailed) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            EmptyMessage(
-                message = stringResource(R.string.smth_wrong),
-                iconId = imageResource,
-                topPaddingDp = topPaddingDp
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(stringResource(R.string.refresh), onClick = onUpdateClick)
-        }
-    }
-}
-
 
 @Composable
 private fun getPlaceholderImageResource(connectionFailed: Boolean): Int {
@@ -171,7 +176,7 @@ private fun getPlaceholderImageResource(connectionFailed: Boolean): Int {
 
 @Composable
 fun TracksHistory(
-    tracks: List<Track>, onTrackClick: (Track) -> Unit, onClearHistoryClick: () -> Unit
+    tracks: List<ListTrackInfo>, onTrackClick: (trackId: Int) -> Unit, onClearHistoryClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),

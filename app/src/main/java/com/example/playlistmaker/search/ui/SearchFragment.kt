@@ -1,32 +1,16 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Context
-import android.content.IntentFilter
-import android.content.res.Configuration
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.AppTheme
-import com.example.playlistmaker.CustomTheme
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.FragmentSearchBinding
-import com.example.playlistmaker.media.ui.compose.MediaScreen
 import com.example.playlistmaker.player.ui.AudioPlayerFragment
-import com.example.playlistmaker.search.domain.models.ListTrackInfo
 import com.example.playlistmaker.search.ui.compose.SearchScreen
-import com.example.playlistmaker.utils.ConnectionBroadcastReceiver
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
 
@@ -38,10 +22,15 @@ class SearchFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 AppTheme {
-                    SearchScreen()
+                    SearchScreen({ openPlayerFragment(it) })
                 }
             }
         }
+    }
+
+    private fun openPlayerFragment(trackId: Int) {
+        val bundle = AudioPlayerFragment.createArgs(trackId)
+        findNavController().navigate(R.id.action_searchFragment_to_audioPlayerFragment, bundle)
     }
 
 //    private var _binding: FragmentSearchBinding? = null

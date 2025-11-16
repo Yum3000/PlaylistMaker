@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,27 +26,41 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.playlistmaker.search.domain.models.ListTrackInfo
 import com.example.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun TrackList(tracks: List<Track>, onTrackClick: (Track) -> Unit) {
+fun TrackList(tracks: List<Track>, onTrackClick: (trackId: Int) -> Unit) {
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.padding(top = 16.dp)
     ) {
         items(tracks) { track ->
-            TrackItem(track, onTrackClick)
+            TrackItem(
+                track.trackId,
+                track.trackName,
+                track.artistName,
+                track.artworkUrl100,
+                track.trackTimeMillis,
+                onTrackClick)
         }
     }
 }
 
 @Composable
-fun TrackItem(track: Track, onTrackClick: (Track) -> Unit) {
-    val trackDuration = if (!track.trackTimeMillis.isNullOrBlank()) {
+fun TrackItem(
+    trackId: Int?,
+    trackName: String?,
+    trackArtist: String?,
+    trackUrl: String?,
+    trackDuration: String?,
+    onTrackClick: (trackId: Int) -> Unit
+) {
+    val trackDuration = if (!trackDuration.isNullOrBlank()) {
 
-        val parts = track.trackTimeMillis.split(":")
+        val parts = trackDuration.split(":")
         if (parts.size == 2) {
             val minutes = parts[0].toIntOrNull() ?: 0
             val seconds = parts[1].toIntOrNull() ?: 0
@@ -63,12 +78,12 @@ fun TrackItem(track: Track, onTrackClick: (Track) -> Unit) {
             .height(60.dp)
             .padding(horizontal = 12.dp)
             .clickable {
-                onTrackClick(track)
+                if (trackId != null) onTrackClick(trackId)
             },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
-        TrackSmallCover(track.artworkUrl100)
+        TrackSmallCover(trackUrl)
 
         Column(
             modifier = Modifier
@@ -77,7 +92,7 @@ fun TrackItem(track: Track, onTrackClick: (Track) -> Unit) {
                 .padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            track.trackName?.let {
+            trackName?.let {
                 Text(
                     text = it,
                     //style = AppTheme.typography.h4,
@@ -86,7 +101,7 @@ fun TrackItem(track: Track, onTrackClick: (Track) -> Unit) {
                 )
             }
             Row(horizontalArrangement = Arrangement.Start) {
-                track.artistName?.let {
+                trackArtist?.let {
                     Text(
                         text = it,
                         //style = AppTheme.typography.overline,
@@ -132,8 +147,8 @@ fun TrackSmallCover(url: String?) {
 
 @Composable
 fun TrackListHistory(
-    tracks: List<Track>,
-    onTrackClick: (Track) -> Unit,
+    tracks: List<ListTrackInfo>,
+    onTrackClick: (trackId: Int) -> Unit,
     onButtonClick: () -> Unit
 ) {
     LazyColumn(
@@ -142,12 +157,36 @@ fun TrackListHistory(
         modifier = Modifier.padding(top = 16.dp)
     ) {
         items(tracks) { track ->
-            TrackItem(track, onTrackClick)
+            TrackItem(
+                track.trackId,
+                track.trackName,
+                track.artistName,
+                track.artworkUrl,
+                track.trackTime,
+                onTrackClick)
         }
         item {
             Spacer(modifier = Modifier.height(24.dp))
             Button(title = stringResource(R.string.search_history_clear), onClick = onButtonClick)
             Spacer(modifier = Modifier.height(60.dp))
+        }
+    }
+}
+
+@Composable
+fun ListOfListTrackInfo(tracks: List<ListTrackInfo>, onTrackClick: (trackId: Int) -> Unit) {
+    LazyColumn(
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        items(tracks) { track ->
+            TrackItem(
+                track.trackId,
+                track.trackName,
+                track.artistName,
+                track.artworkUrl,
+                track.trackTime,
+                onTrackClick)
         }
     }
 }

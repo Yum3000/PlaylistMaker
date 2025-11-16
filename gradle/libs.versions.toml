@@ -2,6 +2,8 @@
 activityKtx = "1.10.1"
 agp = "8.9.1"
 coilCompose = "3.3.0"
+coilNetwork = "coil3-io"
+coilNetworkOkhttp = "3.3.0"
 converterGson = "2.9.0"
 coreKtxVersion = "1.17.0"
 glide = "4.14.2"
@@ -36,6 +38,8 @@ androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx" 
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+coil-network = { module = "io.coil-kt.coil3:coil-network", version.ref = "coilNetwork" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }

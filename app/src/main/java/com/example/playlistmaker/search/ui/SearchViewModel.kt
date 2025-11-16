@@ -40,20 +40,24 @@ class SearchViewModel(
         handleTrackClickDebounced(trackId)
     }
 
-    private val handleHistoryTrackClickDebounced = debounce<Int> (
-        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
-        viewModelScope.launch {
-            val track = historyInteractor.getHistory().find { it.trackId == trackId }
-            if (track != null) {
-                historyInteractor.updateHistory(track)
-                trackIdToOpenPlayer.postValue(track.trackId)
-            }
-        }
+    fun handleOpenTrack() {
+        trackIdToOpenPlayer.postValue(-1)
     }
 
-    fun handleHistoryTrackClick(trackId: Int) {
-        handleHistoryTrackClickDebounced(trackId)
-    }
+//    private val handleHistoryTrackClickDebounced = debounce<Int> (
+//        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
+//        viewModelScope.launch {
+//            val track = historyInteractor.getHistory().find { it.trackId == trackId }
+//            if (track != null) {
+//                historyInteractor.updateHistory(track)
+//                trackIdToOpenPlayer.postValue(track.trackId)
+//            }
+//        }
+//    }
+
+//    fun handleHistoryTrackClick(trackId: Int) {
+//        handleHistoryTrackClickDebounced(trackId)
+//    }
 
     fun clearHistory() {
         historyInteractor.clearHistory()
@@ -112,10 +116,14 @@ class SearchViewModel(
 
     fun handleSearchTextFocus(focused: Boolean) {
         if (focused) {
-            viewModelScope.launch {
-                val tracks = historyInteractor.getHistory().map { ListTrackInfo.trackToListTrackInfo(it) }
-                searchStateLiveData.postValue(SearchScreenState.History(tracks))
-            }
+            loadHistory()
+        }
+    }
+
+    fun loadHistory() {
+        viewModelScope.launch {
+            val tracks = historyInteractor.getHistory().map { ListTrackInfo.trackToListTrackInfo(it) }
+            searchStateLiveData.postValue(SearchScreenState.History(tracks))
         }
     }
 

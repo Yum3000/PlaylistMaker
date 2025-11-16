@@ -36,4 +36,9 @@ class SettingsViewModel(
     fun openUserAgreement(link: String) {
         sharingInteractor.openTerms(link)
     }
+
+    fun darkThemeSet(): Boolean {
+        return settingsInteractor.getTheme()
+    }
+
 }

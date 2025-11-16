@@ -1,5 +1,6 @@
 package com.example.playlistmaker.media.ui.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.playlistmaker.AppTheme
 import com.example.playlistmaker.R
 import com.example.playlistmaker.Toolbar
 import kotlinx.coroutines.launch
@@ -39,6 +41,7 @@ fun MediaScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .background(AppTheme.colors.primaryBackgroundColor)
         ) {
             TabRow(
                 selectedTabIndex = selectedTabIndex.value,
