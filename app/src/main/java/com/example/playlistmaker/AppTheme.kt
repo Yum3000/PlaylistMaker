@@ -74,8 +74,8 @@ fun AppTheme(
     darkThemeOn: Boolean = isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
-//    val colors = if (!darkThemeOn) lightPalette
-//    else darkPalette
+    val colors = if (!darkThemeOn) lightPalette
+    else darkPalette
 
     val typography = AppTypography(
         title = TextStyle(
@@ -102,7 +102,7 @@ fun AppTheme(
     //val appTypography = remember { typography }
 
     CompositionLocalProvider(
-        LocalColors.provides(lightPalette),
+        LocalColors.provides(colors),
         LocalTypography.provides(typography),
         content = content
     )

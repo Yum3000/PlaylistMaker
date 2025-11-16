@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -127,4 +128,26 @@ fun TrackSmallCover(url: String?) {
             .clip(RoundedCornerShape(2.dp)),
         error = painterResource(R.drawable.cover_placeholder),
     )
+}
+
+@Composable
+fun TrackListHistory(
+    tracks: List<Track>,
+    onTrackClick: (Track) -> Unit,
+    onButtonClick: () -> Unit
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        items(tracks) { track ->
+            TrackItem(track, onTrackClick)
+        }
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(title = stringResource(R.string.search_history_clear), onClick = onButtonClick)
+            Spacer(modifier = Modifier.height(60.dp))
+        }
+    }
 }

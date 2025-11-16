@@ -62,6 +62,12 @@ class SearchViewModel(
 
     private val handleSearchChangeDebounced = debounce<String>(
         SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { query ->
+
+        val currentState = searchStateLiveData.value
+        if (currentState is SearchScreenState.Content) {
+            searchStateLiveData.postValue(currentState.copy(searchQuery = query))
+        }
+
         if (query.isEmpty()) {
             viewModelScope.launch {
                 searchTracks.clear()

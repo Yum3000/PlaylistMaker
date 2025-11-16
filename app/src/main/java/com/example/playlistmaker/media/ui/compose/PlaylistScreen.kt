@@ -22,8 +22,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PlaylistsScreen(
-    openToModifyPlaylistScreen: () -> Unit,
-    openToCreateNewPlaylistScreen: (playlistId: Int) -> Unit,
+    openToModifyPlaylistScreen: (playlistId: Int) -> Unit,
+    openToCreateNewPlaylistScreen: () -> Unit,
     viewModel: PlaylistsViewModel = koinViewModel()
 ) {
     val screenState by viewModel.observeStatePlaylists().observeAsState()
@@ -38,14 +38,14 @@ fun PlaylistsScreen(
     ) {
         Spacer(modifier = Modifier.padding(top = 24.dp))
         Button(stringResource(R.string.new_playlist)) {
-            openToModifyPlaylistScreen
+            openToCreateNewPlaylistScreen
         }
 
         when (screenState) {
             is MediaScreenPlaylistsState.Content -> {
                 Playlists(
                     playlists = (screenState as MediaScreenPlaylistsState.Content).playlists,
-                    onClick = openToCreateNewPlaylistScreen
+                    onClick = openToModifyPlaylistScreen
                 )
             }
 

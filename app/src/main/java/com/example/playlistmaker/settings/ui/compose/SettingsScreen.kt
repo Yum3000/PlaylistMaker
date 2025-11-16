@@ -39,7 +39,9 @@ import com.example.playlistmaker.sharing.domain.api.SharingInteractor
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
+fun SettingsScreen(
+    onThemeChange: (isDark: Boolean) -> Unit,
+    viewModel: SettingsViewModel = koinViewModel()) {
     val settingsThemeDark by viewModel.getSettingsThemeDarkLiveData().observeAsState()
 
     val darkTheme = stringResource(R.string.dark_theme)
@@ -67,6 +69,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
 
             SettingsButtonWithSwitch(darkTheme, settingsThemeDark ?: false) { darkThemeOn ->
                 viewModel.switchTheme(darkThemeOn)
+                onThemeChange(darkThemeOn)
             }
 
             SettingsButton(shareBtn, R.drawable.share_icon) {
@@ -100,7 +103,8 @@ fun SettingsButtonWithSwitch(title: String, enabled: Boolean, onClick: (Boolean)
         Text(
             text = title,
             modifier = Modifier
-                .padding(start = 16.dp)
+                .padding(start = 16.dp),
+            style = AppTheme.typography.body
         )
         Switch(
             checked = enabled,
@@ -133,7 +137,8 @@ fun SettingsButton(title: String, icon: Int, onClick: () -> Unit) {
             text = title,
             modifier = Modifier
                 .padding(start = 16.dp)
-                .weight(1f)
+                .weight(1f),
+            style = AppTheme.typography.body
         )
 
         Icon(
@@ -142,7 +147,6 @@ fun SettingsButton(title: String, icon: Int, onClick: () -> Unit) {
             contentDescription = null,
             tint = LightGrey
         )
-
     }
 }
 
@@ -152,7 +156,7 @@ fun SettingsButton(title: String, icon: Int, onClick: () -> Unit) {
 @Composable
 fun SettingScreenPreview() {
     AppTheme {
-        SettingsScreen(
+        SettingsScreen({},
             SettingsViewModel(
                 sharingInteractor = object : SharingInteractor {
                     override fun shareLink(link: String) {}
