@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 
     id("kotlin-kapt")
 }
@@ -11,6 +12,7 @@ android {
 
     buildFeatures{
         viewBinding = true
+        compose = true
     }
 
     defaultConfig {
@@ -47,11 +49,12 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.material.v161)
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
     implementation(libs.gson)
@@ -72,4 +75,12 @@ dependencies {
     kapt("androidx.room:room-compiler:2.7.2")
     implementation(libs.androidx.room.ktx)
 
+    implementation(libs.material)
+    implementation (libs.androidx.ui)
+    implementation (libs.androidx.material)
+    implementation (libs.androidx.activity.compose)
+    implementation(libs.koin.androidx.compose)
+    debugImplementation(libs.androidx.ui.tooling)
+
+    implementation(libs.coil.compose)
 }

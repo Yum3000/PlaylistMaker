@@ -22,6 +22,7 @@ class SettingsViewModel(
     fun switchTheme(isDark: Boolean) {
         settingsInteractor.saveTheme(isDark)
         settingsInteractor.setSavedTheme()
+        settingsThemeDarkLiveData.value = isDark
     }
 
     fun shareApp(link: String) {
