@@ -5,10 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.stringResource
-import com.example.playlistmaker.ErrorMessage
-import com.example.playlistmaker.ProgressBar
+import com.example.playlistmaker.components.ErrorMessage
+import com.example.playlistmaker.components.ProgressBar
 import com.example.playlistmaker.R
-import com.example.playlistmaker.TrackList
+import com.example.playlistmaker.components.TrackList
 import com.example.playlistmaker.media.presentation.FavouritesViewModel
 import com.example.playlistmaker.media.presentation.MediaScreenFavouritesState
 import org.koin.androidx.compose.koinViewModel
@@ -43,7 +43,7 @@ fun FavouritesScreen(
 }
 
 @Composable
-private fun getPlaceholderImageResource(): Int {
+fun getPlaceholderImageResource(): Int {
     val isNightMode = isSystemInDarkTheme()
 
     return if (isNightMode) {

@@ -37,8 +37,4 @@ class SettingsViewModel(
         sharingInteractor.openTerms(link)
     }
 
-    fun darkThemeSet(): Boolean {
-        return settingsInteractor.getTheme()
-    }
-
 }

@@ -1,7 +1,5 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.components
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,10 +24,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.playlistmaker.AppTheme
+import com.example.playlistmaker.R
 import com.example.playlistmaker.search.domain.models.ListTrackInfo
 import com.example.playlistmaker.search.domain.models.Track
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun TrackList(tracks: List<Track>, onTrackClick: (trackId: Int) -> Unit) {
@@ -78,7 +76,9 @@ fun TrackItem(
             .height(60.dp)
             .padding(horizontal = 12.dp)
             .clickable {
-                if (trackId != null) onTrackClick(trackId)
+                if (trackId != null) {
+                    onTrackClick(trackId)
+                }
             },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
@@ -95,7 +95,7 @@ fun TrackItem(
             trackName?.let {
                 Text(
                     text = it,
-                    //style = AppTheme.typography.h4,
+                    style = AppTheme.typography.body,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -104,7 +104,7 @@ fun TrackItem(
                 trackArtist?.let {
                     Text(
                         text = it,
-                        //style = AppTheme.typography.overline,
+                        style = AppTheme.typography.body3,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -112,11 +112,11 @@ fun TrackItem(
                 Icon(
                     painter = painterResource(R.drawable.ellipse_icon13),
                     contentDescription = "",
-                    //tint = AppTheme.colors.colorOnTertiary
+                    tint = AppTheme.colors.additionColor
                 )
                 Text(
                     text = trackDuration,
-                    //style = AppTheme.typography.overline,
+                    style = AppTheme.typography.body3,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -125,8 +125,8 @@ fun TrackItem(
 
         Icon(
             painter = painterResource(R.drawable.arrow_forward_icon),
-            contentDescription = null, // добавить
-            //tint = AppTheme.colors.colorOnTertiary,
+            contentDescription = stringResource(R.string.play_btn_desc),
+            tint = AppTheme.colors.additionColor,
         )
     }
 }

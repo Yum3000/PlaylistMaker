@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.playlistmaker.AppTheme
+import com.example.playlistmaker.R
 import com.example.playlistmaker.media.domain.models.Playlist
 
 @Composable
@@ -56,22 +58,12 @@ fun Playlist(playlist: Playlist, onClick: (Int) -> Unit) {
         playlist.title?.let {
             Text(
                 text = it,
-                //style = AppTheme.typography.caption,
+                style = AppTheme.typography.desc,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
         }
-//        Text(
-//            text = pluralStringResource(
-//                R.plurals.track_plurals,
-//                playlist.tracksCount,
-//                playlist.tracksCount
-//            ),
-//            //style = AppTheme.typography.caption,
-//            maxLines = 1,
-//            overflow = TextOverflow.Ellipsis,
-//            modifier = Modifier.padding(bottom = 4.dp)
-//        )
+        TrackText(playlist.tracksCount)
     }
 }
 
@@ -88,28 +80,24 @@ fun PlaylistCover(url: String, modifier: Modifier) {
 }
 
 @Composable
-fun TrackPluralsText(tracksCount: Int) {
+fun TrackText(tracksCount: Int?) {
 
     val oneTrack = stringResource(R.string.tracks_count_single)
     val fewTracks = stringResource(R.string.tracks_count_few)
     val manyTracks = stringResource(R.string.tracks_count_many)
 
-    val trackCountString = remember {
+    val trackCountString = remember(tracksCount) {
         when {
-            (tracksCount % 10 == 1) ->
-                "$tracksCount $oneTrack"
-
-            (tracksCount % 10 in 2..4) ->
-                "$tracksCount $fewTracks"
-
-            else ->
-                "$tracksCount $manyTracks"
+            (tracksCount?.rem(100) in 11..14) -> String.format(manyTracks, tracksCount)
+            (tracksCount?.rem(10) == 1) -> String.format(oneTrack, tracksCount)
+            (tracksCount?.rem(10) in 2..4) -> String.format(fewTracks, tracksCount)
+            else -> String.format(manyTracks, tracksCount)
         }
     }
 
     Text(
         text = trackCountString,
-        //style = AppTheme.typography.caption,
+        style = AppTheme.typography.desc,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier.padding(bottom = 4.dp)

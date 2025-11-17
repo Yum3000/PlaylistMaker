@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.playlistmaker.AppTheme
 
 @Composable
 fun Button(title: String, onClick: () -> Unit) {
@@ -14,13 +15,12 @@ fun Button(title: String, onClick: () -> Unit) {
         onClick = onClick,
         shape = RoundedCornerShape(54.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = AppTheme.colors.secondaryBackgroundColor,
+            backgroundColor = AppTheme.colors.primaryTextColor,
             contentColor = AppTheme.colors.secondaryTextColor
         )
     ) {
         Text(text = title,
-            style = AppTheme.
-            typography.button,
+            style = AppTheme.typography.button,
             fontWeight = FontWeight(500)
         )
     }

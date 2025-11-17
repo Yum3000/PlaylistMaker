@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

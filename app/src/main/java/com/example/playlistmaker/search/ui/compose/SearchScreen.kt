@@ -28,14 +28,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
 import com.example.playlistmaker.AppTheme
-import com.example.playlistmaker.Button
-import com.example.playlistmaker.CustomTextField
-import com.example.playlistmaker.ErrorMessage
-import com.example.playlistmaker.ListOfListTrackInfo
-import com.example.playlistmaker.ProgressBar
+import com.example.playlistmaker.components.CustomTextField
+import com.example.playlistmaker.components.ErrorMessage
+import com.example.playlistmaker.components.ListOfListTrackInfo
+import com.example.playlistmaker.components.ProgressBar
 import com.example.playlistmaker.R
-import com.example.playlistmaker.Toolbar
-import com.example.playlistmaker.TrackListHistory
+import com.example.playlistmaker.components.Toolbar
+import com.example.playlistmaker.components.TrackListHistory
 import com.example.playlistmaker.search.domain.models.ListTrackInfo
 import com.example.playlistmaker.search.ui.SearchScreenState
 import com.example.playlistmaker.search.ui.SearchViewModel
@@ -49,9 +48,7 @@ fun SearchScreen(
     val searchState by viewModel.getSearchStateLiveData().observeAsState()
     val trackIdToOpenPlayer by viewModel.getTrackIdToOpenPlayer().observeAsState()
 
-
     LifecycleStartEffect(Unit) {
-        //viewModel.updateSearchResults()
         viewModel.loadHistory()
         onStopOrDispose {}
     }
@@ -70,7 +67,6 @@ fun SearchScreen(
     }) { innerPadding ->
         Column(
             modifier = Modifier
-                //.consumeWindowInsets(innerPadding)
                 .fillMaxSize()
                 .background(color = AppTheme.colors.primaryBackgroundColor)
                 .padding(innerPadding),
@@ -81,7 +77,6 @@ fun SearchScreen(
             CustomTextField(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                    //.focusRequester(focusRequester),
                 text = searchFieldText,
                 leadingIcon = {
                     Icon(
@@ -96,8 +91,6 @@ fun SearchScreen(
                         tint = AppTheme.colors.secondaryTextColor,
                         contentDescription = stringResource(R.string.clear_input),
                         modifier = Modifier.clickable {
-//                            focusManager.clearFocus()
-                            //viewModel.handleSearchChange("")
                             searchFieldText = ""
                         })
                 },
@@ -145,14 +138,13 @@ fun SearchScreen(
                     TracksHistory(
                         tracks = state.tracks,
                         onClearHistoryClick = { viewModel.clearHistory() },
-                        onTrackClick = { viewModel.handleTrackClick(it) }
+                        onTrackClick = { viewModel.handleHistoryTrackClick(it) }
                     )
                 }
 
                 null -> {}
             }
         }
-
     }
 }
 
@@ -183,15 +175,15 @@ fun TracksHistory(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(42.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
             text = stringResource(R.string.search_history_title),
-            //style = AppTheme.typography.h2,
+            style = AppTheme.typography.subtitle,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         TrackListHistory(
             tracks = tracks,

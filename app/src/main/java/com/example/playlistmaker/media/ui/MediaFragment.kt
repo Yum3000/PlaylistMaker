@@ -24,12 +24,13 @@ class MediaFragment : Fragment() {
 
                 AppTheme {
                     MediaScreen(
-                        { openPlayerFragment(it) },
-                        openToModifyPlaylistScreen = { openModifyPlaylistScreen(it) },
-                        openToCreateNewPlaylistScreen = { createNewPlaylistScreen() },
+                        openAudioPlayerScreen = { openPlayerFragment(it) },
+                        openPlaylistScreen = { openPlaylistScreen(it) },
+                        openToCreateNewPlaylistScreen = {
+                            createNewPlaylistScreen()
+                        },
                     )
                 }
-
             }
         }
     }
@@ -39,9 +40,9 @@ class MediaFragment : Fragment() {
         findNavController().navigate(R.id.action_mediaFragment_to_audioPlayerFragment, bundle)
     }
 
-    private fun openModifyPlaylistScreen(playlistId: Int) {
-        val bundle = FragmentModifyPlaylist.createArgs(playlistId)
-        findNavController().navigate(R.id.action_playlistFragment_to_fragmentModifyPlaylist, bundle)
+    private fun openPlaylistScreen(playlistId: Int) {
+        val bundle = PlaylistFragment.createArgs(playlistId)
+        findNavController().navigate(R.id.action_mediaFragment_to_playlistFragment, bundle)
     }
 
     private fun createNewPlaylistScreen() {

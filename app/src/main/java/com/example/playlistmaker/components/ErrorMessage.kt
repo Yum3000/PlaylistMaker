@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +16,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.playlistmaker.AppTheme
+import com.example.playlistmaker.R
 
 @Composable
 fun ErrorMessage(message: String, iconId: Int, topPaddingDp: Int, onUpdateClick: (() -> Unit)? = null) {
@@ -39,7 +41,7 @@ fun ErrorMessage(message: String, iconId: Int, topPaddingDp: Int, onUpdateClick:
                     .padding(top = 16.dp)
                     .padding(horizontal = 24.dp),
                 text = message,
-                //style = AppTheme.typography.h3,
+                style = AppTheme.typography.subtitle,
                 textAlign = TextAlign.Center
             )
         }
@@ -48,6 +50,4 @@ fun ErrorMessage(message: String, iconId: Int, topPaddingDp: Int, onUpdateClick:
             Button(stringResource(R.string.refresh), onClick = onUpdateClick)
         }
     }
-
-
 }

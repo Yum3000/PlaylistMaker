@@ -44,20 +44,20 @@ class SearchViewModel(
         trackIdToOpenPlayer.postValue(-1)
     }
 
-//    private val handleHistoryTrackClickDebounced = debounce<Int> (
-//        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
-//        viewModelScope.launch {
-//            val track = historyInteractor.getHistory().find { it.trackId == trackId }
-//            if (track != null) {
-//                historyInteractor.updateHistory(track)
-//                trackIdToOpenPlayer.postValue(track.trackId)
-//            }
-//        }
-//    }
+    private val handleHistoryTrackClickDebounced = debounce<Int> (
+        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
+        viewModelScope.launch {
+            val track = historyInteractor.getHistory().find { it.trackId == trackId }
+            if (track != null) {
+                historyInteractor.updateHistory(track)
+                trackIdToOpenPlayer.postValue(track.trackId)
+            }
+        }
+    }
 
-//    fun handleHistoryTrackClick(trackId: Int) {
-//        handleHistoryTrackClickDebounced(trackId)
-//    }
+    fun handleHistoryTrackClick(trackId: Int) {
+        handleHistoryTrackClickDebounced(trackId)
+    }
 
     fun clearHistory() {
         historyInteractor.clearHistory()

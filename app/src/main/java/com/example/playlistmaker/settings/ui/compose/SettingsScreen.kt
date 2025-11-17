@@ -1,6 +1,5 @@
 package com.example.playlistmaker.settings.ui.compose
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,19 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.playlistmaker.AppTheme
 import com.example.playlistmaker.Blue
 import com.example.playlistmaker.Grey
 import com.example.playlistmaker.LightBlue
 import com.example.playlistmaker.LightGrey
-import com.example.playlistmaker.LocalColors
 import com.example.playlistmaker.R
-import com.example.playlistmaker.Toolbar
-import com.example.playlistmaker.settings.domain.api.SettingsInteractor
+import com.example.playlistmaker.components.Toolbar
 import com.example.playlistmaker.settings.ui.SettingsViewModel
-import com.example.playlistmaker.sharing.domain.api.SharingInteractor
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -148,33 +143,5 @@ fun SettingsButton(title: String, icon: Int, onClick: () -> Unit) {
             tint = LightGrey
         )
     }
-}
-
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showSystemUi = true)
-@Composable
-fun SettingScreenPreview() {
-    AppTheme {
-        SettingsScreen({},
-            SettingsViewModel(
-                sharingInteractor = object : SharingInteractor {
-                    override fun shareLink(link: String) {}
-                    override fun openTerms(link: String) {}
-                    override fun writeToSupport(subject: String, message: String, sendTo: String) {}
-                },
-                settingsInteractor = object : SettingsInteractor {
-                    override fun getTheme(): Boolean {
-                        return true
-                    }
-
-                    override fun saveTheme(isDark: Boolean) {}
-
-                    override fun setSavedTheme() {}
-
-                }
-            ))
-    }
-
 }
 
