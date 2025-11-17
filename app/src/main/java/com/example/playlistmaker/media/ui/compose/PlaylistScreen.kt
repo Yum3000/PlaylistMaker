@@ -12,8 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.playlistmaker.components.Button
-import com.example.playlistmaker.components.ErrorMessage
+import com.example.playlistmaker.components.PlaylistMakerButton
+import com.example.playlistmaker.components.ErrorPlaceholder
 import com.example.playlistmaker.components.Playlists
 import com.example.playlistmaker.R
 import com.example.playlistmaker.media.presentation.MediaScreenPlaylistsState
@@ -37,7 +37,7 @@ fun PlaylistsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.padding(top = 24.dp))
-        Button(stringResource(R.string.new_playlist), onClick =  {
+        PlaylistMakerButton(stringResource(R.string.new_playlist), onClick =  {
             openToCreateNewPlaylistScreen()
         })
 
@@ -50,7 +50,7 @@ fun PlaylistsScreen(
             }
 
             is MediaScreenPlaylistsState.Empty -> {
-                ErrorMessage(
+                ErrorPlaceholder(
                     message = stringResource(R.string.no_playlists),
                     iconId = getPlaceholderImageResource(),
                     topPaddingDp = 46

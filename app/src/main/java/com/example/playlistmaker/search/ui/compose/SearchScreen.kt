@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
 import com.example.playlistmaker.AppTheme
 import com.example.playlistmaker.components.CustomTextField
-import com.example.playlistmaker.components.ErrorMessage
+import com.example.playlistmaker.components.ErrorPlaceholder
 import com.example.playlistmaker.components.ListOfListTrackInfo
 import com.example.playlistmaker.components.ProgressBar
 import com.example.playlistmaker.R
@@ -48,8 +48,11 @@ fun SearchScreen(
     val searchState by viewModel.getSearchStateLiveData().observeAsState()
     val trackIdToOpenPlayer by viewModel.getTrackIdToOpenPlayer().observeAsState()
 
+    var searchFieldText by remember { mutableStateOf("") }
+
     LifecycleStartEffect(Unit) {
-        viewModel.loadHistory()
+        val query = viewModel.handleFirstCompose()
+        searchFieldText = query
         onStopOrDispose {}
     }
 
@@ -72,8 +75,6 @@ fun SearchScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            var searchFieldText by remember { mutableStateOf("") }
-
             CustomTextField(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -92,6 +93,7 @@ fun SearchScreen(
                         contentDescription = stringResource(R.string.clear_input),
                         modifier = Modifier.clickable {
                             searchFieldText = ""
+                            viewModel.handleSearchChange("")
                         })
                 },
                 placeholderText = stringResource(R.string.search_text),
@@ -109,7 +111,7 @@ fun SearchScreen(
 
                     if (state.tracks.isEmpty()) {
                         val imageResource = getPlaceholderImageResource(false)
-                        ErrorMessage(
+                        ErrorPlaceholder(
                             message = stringResource(R.string.nothings_found),
                             iconId = imageResource,
                             topPaddingDp = 110,
@@ -126,7 +128,7 @@ fun SearchScreen(
 
                 is SearchScreenState.Error -> {
                     val imageResource = getPlaceholderImageResource(true)
-                    ErrorMessage(
+                    ErrorPlaceholder(
                         message = stringResource(R.string.smth_wrong),
                         iconId = imageResource,
                         topPaddingDp = 110,
@@ -135,11 +137,13 @@ fun SearchScreen(
                 }
 
                 is SearchScreenState.History -> {
-                    TracksHistory(
-                        tracks = state.tracks,
-                        onClearHistoryClick = { viewModel.clearHistory() },
-                        onTrackClick = { viewModel.handleHistoryTrackClick(it) }
-                    )
+                    if (state.tracks.isNotEmpty()) {
+                        TracksHistory(
+                            tracks = state.tracks,
+                            onClearHistoryClick = { viewModel.clearHistory() },
+                            onTrackClick = { viewModel.handleHistoryTrackClick(it) }
+                        )
+                    }
                 }
 
                 null -> {}

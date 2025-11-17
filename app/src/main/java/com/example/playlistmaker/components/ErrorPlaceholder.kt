@@ -20,7 +20,7 @@ import com.example.playlistmaker.AppTheme
 import com.example.playlistmaker.R
 
 @Composable
-fun ErrorMessage(message: String, iconId: Int, topPaddingDp: Int, onUpdateClick: (() -> Unit)? = null) {
+fun ErrorPlaceholder(message: String, iconId: Int, topPaddingDp: Int, onUpdateClick: (() -> Unit)? = null) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -47,7 +47,7 @@ fun ErrorMessage(message: String, iconId: Int, topPaddingDp: Int, onUpdateClick:
         }
         if (onUpdateClick != null) {
             Spacer(modifier = Modifier.height(24.dp))
-            Button(stringResource(R.string.refresh), onClick = onUpdateClick)
+            PlaylistMakerButton(stringResource(R.string.refresh), onClick = onUpdateClick)
         }
     }
 }

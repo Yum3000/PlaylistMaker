@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.example.playlistmaker.AppTheme
 
 @Composable
-fun Button(title: String, onClick: () -> Unit) {
+fun PlaylistMakerButton(title: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(54.dp),

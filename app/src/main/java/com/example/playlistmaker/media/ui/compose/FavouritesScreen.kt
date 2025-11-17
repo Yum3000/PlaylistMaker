@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.stringResource
-import com.example.playlistmaker.components.ErrorMessage
+import com.example.playlistmaker.components.ErrorPlaceholder
 import com.example.playlistmaker.components.ProgressBar
 import com.example.playlistmaker.R
 import com.example.playlistmaker.components.TrackList
@@ -27,7 +27,7 @@ fun FavouritesScreen(
         }
 
         is MediaScreenFavouritesState.Empty -> {
-            ErrorMessage(
+            ErrorPlaceholder(
                 stringResource(R.string.no_favourites),
                 getPlaceholderImageResource(),
                 106

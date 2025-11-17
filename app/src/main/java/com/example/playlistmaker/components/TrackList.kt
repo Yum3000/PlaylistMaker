@@ -167,7 +167,7 @@ fun TrackListHistory(
         }
         item {
             Spacer(modifier = Modifier.height(24.dp))
-            Button(title = stringResource(R.string.search_history_clear), onClick = onButtonClick)
+            PlaylistMakerButton(title = stringResource(R.string.search_history_clear), onClick = onButtonClick)
             Spacer(modifier = Modifier.height(60.dp))
         }
     }
