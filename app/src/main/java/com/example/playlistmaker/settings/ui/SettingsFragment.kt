@@ -1,59 +1,43 @@
 package com.example.playlistmaker.settings.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.FragmentSettingsBinding
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.example.playlistmaker.AppTheme
+import com.example.playlistmaker.settings.ui.compose.SettingsScreen
 
-class SettingsFragment: Fragment() {
-    private val viewModel: SettingsViewModel by viewModel()
-
-    private var _binding: FragmentSettingsBinding? = null
-    private val binding get() = _binding!!
+class SettingsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        val initialModeDark = isNightMode()
+        return ComposeView(requireContext()).apply {
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        viewModel.getSettingsThemeDarkLiveData().observe(viewLifecycleOwner) { isDark ->
-            binding.switchTheme.isChecked = isDark
-        }
-
-        binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.switchTheme(isChecked)
-        }
-
-        binding.shareTextview.setOnClickListener{
-            viewModel.shareApp(getString(R.string.share_app_msg))
-        }
-
-        binding.supportTextview.setOnClickListener {
-            viewModel.writeToSupport(
-                getString(R.string.support_subject),
-                getString(R.string.support_body),
-                getString(R.string.support_email)
-            )
-        }
-
-        binding.userAgreementTextview.setOnClickListener {
-            viewModel.openUserAgreement(getString(R.string.practicum_offer))
+            setContent {
+                var themeDark by remember {mutableStateOf(initialModeDark)}
+                AppTheme(themeDark) {
+                    SettingsScreen(
+                        {
+                            themeDark = it
+                        }
+                    )
+                }
+            }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun isNightMode(): Boolean {
+        return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     }
 }

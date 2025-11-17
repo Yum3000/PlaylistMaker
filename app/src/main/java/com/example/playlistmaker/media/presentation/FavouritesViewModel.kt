@@ -6,10 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.R
-import com.example.playlistmaker.SingleLiveEvent
 import com.example.playlistmaker.media.domain.db.FavTracksInteractor
 import com.example.playlistmaker.search.domain.models.Track
-import com.example.playlistmaker.utils.debounce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -20,23 +18,7 @@ class FavouritesViewModel(
     private val stateFavouritesScreen = MutableLiveData<MediaScreenFavouritesState>()
     fun observeStateFavourites(): LiveData<MediaScreenFavouritesState> = stateFavouritesScreen
 
-    private val trackIdToOpenPlayer = SingleLiveEvent<Int?>()
-    fun getTrackIdToOpenPlayer(): LiveData<Int?> = trackIdToOpenPlayer
-
     private var tracks: List<Track> = emptyList()
-
-    private val handleTrackClickDebounced = debounce<Int>(
-        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false
-    ) { trackId ->
-        val track = tracks.find { it.trackId == trackId }
-        if (track != null) {
-            trackIdToOpenPlayer.postValue(track.trackId)
-        }
-    }
-
-    fun handleTrackClick(trackId: Int) {
-        handleTrackClickDebounced(trackId)
-    }
 
     init {
         renderState(MediaScreenFavouritesState.Loading)
@@ -64,9 +46,5 @@ class FavouritesViewModel(
                     processResult(tracks)
                 }
         }
-    }
-
-    companion object {
-        private const val CLICK_TRACK_DEBOUNCE_DELAY = 1000L
     }
 }

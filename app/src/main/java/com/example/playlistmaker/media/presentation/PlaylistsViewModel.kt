@@ -28,7 +28,7 @@ class PlaylistsViewModel(
         statePlaylistsScreen.postValue(state)
     }
 
-    private fun updatePlaylists() {
+    fun updatePlaylists() {
         viewModelScope.launch (Dispatchers.IO) {
             playlistsInteractor.getPlaylists().collect { playlists ->
                 processResult(playlists)

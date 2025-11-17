@@ -27,8 +27,9 @@ class SearchViewModel(
     private val trackIdToOpenPlayer = SingleLiveEvent<Int?>()
     fun getTrackIdToOpenPlayer(): LiveData<Int?> = trackIdToOpenPlayer
 
-    private val handleTrackClickDebounced = debounce<Int> (
-        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
+    private val handleTrackClickDebounced = debounce<Int>(
+        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false
+    ) { trackId ->
         val track = searchTracks.find { it.trackId == trackId }
         if (track != null) {
             historyInteractor.updateHistory(track)
@@ -40,8 +41,13 @@ class SearchViewModel(
         handleTrackClickDebounced(trackId)
     }
 
-    private val handleHistoryTrackClickDebounced = debounce<Int> (
-        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false) { trackId ->
+    fun handleOpenTrack() {
+        trackIdToOpenPlayer.postValue(-1)
+    }
+
+    private val handleHistoryTrackClickDebounced = debounce<Int>(
+        CLICK_TRACK_DEBOUNCE_DELAY, viewModelScope, false
+    ) { trackId ->
         viewModelScope.launch {
             val track = historyInteractor.getHistory().find { it.trackId == trackId }
             if (track != null) {
@@ -61,7 +67,14 @@ class SearchViewModel(
     }
 
     private val handleSearchChangeDebounced = debounce<String>(
-        SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { query ->
+        SEARCH_DEBOUNCE_DELAY, viewModelScope, true
+    ) { query ->
+
+        val currentState = searchStateLiveData.value
+        if (currentState is SearchScreenState.Content) {
+            searchStateLiveData.postValue(currentState.copy(searchQuery = query))
+        }
+
         if (query.isEmpty()) {
             viewModelScope.launch {
                 searchTracks.clear()
@@ -70,9 +83,9 @@ class SearchViewModel(
                 searchStateLiveData.postValue(SearchScreenState.History(tracks))
             }
         } else {
-                searchStateLiveData.postValue(SearchScreenState.Loading)
-                executeRequest(query)
-            }
+            searchStateLiveData.postValue(SearchScreenState.Loading)
+            executeRequest(query)
+        }
     }
 
     fun handleSearchChange(s: String) {
@@ -80,17 +93,17 @@ class SearchViewModel(
     }
 
     fun executeRequest(inputQuery: String) {
-         viewModelScope.launch (Dispatchers.IO) {
-             try {
-                 trackInteractor
-                     .searchTracks(inputQuery)
-                     .collect { tracks ->
-                         processSearchTracks(tracks, inputQuery)
-                     }
-             } catch (e: IOException) {
-                 searchStateLiveData.postValue(SearchScreenState.Error(inputQuery))
-             }
-         }
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                trackInteractor
+                    .searchTracks(inputQuery)
+                    .collect { tracks ->
+                        processSearchTracks(tracks, inputQuery)
+                    }
+            } catch (e: IOException) {
+                searchStateLiveData.postValue(SearchScreenState.Error(inputQuery))
+            }
+        }
     }
 
     private fun processSearchTracks(foundTracks: List<Track>?, inputQuery: String) {
@@ -106,11 +119,25 @@ class SearchViewModel(
 
     fun handleSearchTextFocus(focused: Boolean) {
         if (focused) {
-            viewModelScope.launch {
-                val tracks = historyInteractor.getHistory().map { ListTrackInfo.trackToListTrackInfo(it) }
-                searchStateLiveData.postValue(SearchScreenState.History(tracks))
-            }
+            loadHistory()
         }
+    }
+
+    fun loadHistory() {
+        viewModelScope.launch {
+            val tracks =
+                historyInteractor.getHistory().map { ListTrackInfo.trackToListTrackInfo(it) }
+            searchStateLiveData.postValue(SearchScreenState.History(tracks))
+        }
+    }
+
+    fun handleFirstCompose(): String {
+        val curState = searchStateLiveData.value
+        if (curState is SearchScreenState.Content && curState.searchQuery.isNotEmpty()) {
+            return curState.searchQuery
+        }
+        loadHistory()
+        return ""
     }
 
     companion object {
